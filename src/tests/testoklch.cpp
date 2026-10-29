@@ -89,6 +89,10 @@ private slots:
     void foregrounds_support_light_tints_dark_tints_and_aaa();
     void visually_lost_tint_falls_back_to_black_or_white();
     void foreground_vector_matches_background_vector();
+    void generated_surface_text_meets_readability_target_data();
+    void generated_surface_text_meets_readability_target();
+    void terminal_dock_and_popup_text_keep_tint_with_stronger_contrast();
+    void generated_links_keep_visible_tints_at_stronger_contrast();
     void primary_from_dark_neutral_background_is_chromatic_and_readable();
     void primary_from_black_background_is_valid_and_readable();
     void primary_from_light_neutral_background_is_darker_chromatic_accent();
@@ -321,6 +325,80 @@ void TestOklchUtils::foreground_vector_matches_background_vector()
         } else {
             QCOMPARE(defaultContrast, bestBlackOrWhiteContrast(backgrounds.at(i)));
             QCOMPARE(tintedContrast, bestBlackOrWhiteContrast(backgrounds.at(i)));
+        }
+    }
+}
+
+void TestOklchUtils::generated_surface_text_meets_readability_target_data()
+{
+    QTest::addColumn<QColor>("base");
+    QTest::newRow("terminal") << QColor(QStringLiteral("#300a24"));
+    QTest::newRow("dark-green") << QColor(QStringLiteral("#174128"));
+    QTest::newRow("light-green") << QColor(QStringLiteral("#e5f2e8"));
+    QTest::newRow("middle-gray") << QColor(QStringLiteral("#888888"));
+    QTest::newRow("saturated-blue") << QColor(QStringLiteral("#0000ff"));
+    QTest::newRow("saturated-yellow") << QColor(QStringLiteral("#ffff00"));
+    QTest::newRow("black") << QColor(Qt::black);
+    QTest::newRow("white") << QColor(Qt::white);
+}
+
+void TestOklchUtils::generated_surface_text_meets_readability_target()
+{
+    QFETCH(QColor, base);
+    const QVector<QColor> shades = generateOklchShades(base, 6, themePolarityForBackground(base));
+    const QVector<QColor> foregrounds = aaForegroundsForBackgrounds(shades);
+    const QVector<QColor> tinted = aaForegroundsForBackgrounds(
+        shades, QColor(QStringLiteral("#49845c")));
+    QCOMPARE(foregrounds.size(), shades.size());
+    QCOMPARE(tinted.size(), shades.size());
+
+    for (int i = 0; i < shades.size(); ++i) {
+        for (const QColor& foreground : {foregrounds.at(i), tinted.at(i)}) {
+            QCOMPARE(foreground, QColor(foreground.name()));
+            for (const QColor& background : {shades.at(i), QColor(shades.at(i).name())}) {
+                const double contrast = contrastRatio(foreground, background);
+                if (bestBlackOrWhiteContrast(background) >= 10.0) {
+                    QVERIFY2(contrast >= 10.0,
+                             qPrintable(QStringLiteral("Shade %1: %2 on %3 gives %4:1")
+                                            .arg(i).arg(foreground.name(), background.name())
+                                            .arg(contrast, 0, 'f', 6)));
+                } else {
+                    QVERIFY(foreground == QColor(Qt::black) || foreground == QColor(Qt::white));
+                    QCOMPARE(contrast, bestBlackOrWhiteContrast(background));
+                }
+            }
+        }
+    }
+}
+
+void TestOklchUtils::terminal_dock_and_popup_text_keep_tint_with_stronger_contrast()
+{
+    const QVector<QColor> shades = generateOklchShades(
+        QColor(QStringLiteral("#300a24")), 6, ThemePolarity::Dark);
+    for (const int shade : {UiConfig::DockBackgroundShade, UiConfig::DockHeaderShade,
+                            UiConfig::CompletionPopupBackgroundShade}) {
+        const QColor background(shades.at(shade).name());
+        const QColor previous = aaForegroundForBackground(shades.at(shade), 7.0);
+        const QColor foreground = aaForegroundForBackground(shades.at(shade));
+        QVERIFY(contrastRatio(foreground, background) >= 10.0);
+        QVERIFY(contrastRatio(foreground, background) > contrastRatio(previous, background) + 2.9);
+        QVERIFY(foreground != QColor(Qt::white));
+        QVERIFY(qColorToOklch(foreground).c >= 0.015);
+    }
+}
+
+void TestOklchUtils::generated_links_keep_visible_tints_at_stronger_contrast()
+{
+    for (const QColor& background : {QColor(QStringLiteral("#333348")),
+                                     QColor(QStringLiteral("#232136")),
+                                     QColor(QStringLiteral("#e5f2e8"))}) {
+        const QColor formulaLink = aaForegroundForBackground(background, QColor(Qt::blue));
+        const QColor sectionLink = generateSecondaryLinkFromBackground(background, formulaLink);
+        for (const QColor& link : {formulaLink, sectionLink}) {
+            QVERIFY(link.isValid());
+            QCOMPARE(link, QColor(link.name()));
+            QVERIFY(contrastRatio(link, background) >= 10.0);
+            QVERIFY(qColorToOklch(link).c >= 0.015);
         }
     }
 }

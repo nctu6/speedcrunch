@@ -8,6 +8,7 @@
 #include "gui/displayformatutils.h"
 #include "gui/dockliststyle.h"
 #include "gui/themedlineedit.h"
+#include "gui/uiconfig.h"
 #include "core/settings.h"
 #include "core/unicodechars.h"
 
@@ -34,7 +35,6 @@ UserFunctionListWidget::UserFunctionListWidget(QWidget* parent)
     , m_pendingRefresh(false)
 {
     constexpr int kSearchRowHorizontalPadding = 8;
-    constexpr int kSearchRowVerticalPadding = 6;
 
     m_filterTimer->setInterval(500);
     m_filterTimer->setSingleShot(true);
@@ -59,9 +59,9 @@ UserFunctionListWidget::UserFunctionListWidget(QWidget* parent)
     searchLayout->addWidget(m_searchLabel);
     searchLayout->addWidget(m_searchFilter);
     searchLayout->setContentsMargins(kSearchRowHorizontalPadding,
-                                     kSearchRowVerticalPadding,
+                                     UiConfig::DockSearchRowVerticalPadding,
                                      kSearchRowHorizontalPadding,
-                                     kSearchRowVerticalPadding);
+                                     UiConfig::DockSearchRowVerticalPadding);
     searchBox->setLayout(searchLayout);
 
     QVBoxLayout* layout = new QVBoxLayout;

@@ -18,6 +18,10 @@ with either a period (``.``) or a comma (``,``) as the decimal separator.
 Accepted decimal separator and grouping conventions depend on the selected
 :ref:`Number Format <radix_character>`.
 
+For example, with either ``1234567.12345`` or ``1,234,567.12345`` selected,
+``1,000 * 2`` evaluates to ``2000`` because the comma groups thousands.
+With a comma-decimal format selected, the same rule applies to ``1.000 * 2``.
+
 Trailing zeros after the decimal point (like in ``12.300``) or leading zeros before it (``0012.3``) are redundant and can be included or omitted to the user's preference. Expressions like ``.5`` as a shorthand notation for ``0.5`` are also permitted.
 
 .. _digit_grouping_separators:
@@ -26,6 +30,12 @@ Digit Grouping Separators
 +++++++++++++++++++++++++
 
 To improve readability, SpeedCrunch accepts grouping separators inside number literals. Grouping separators are optional and ignored during evaluation.
+
+Commas and dots also serve as decimal separators, so their placement is
+checked according to the :ref:`Number Format rules <radix_character>`.
+Malformed punctuation groups such as ``1,2,3``, ``1.2.3``, and ``1,,234``
+are rejected. Spaces do not have a decimal meaning and can be placed freely
+between digits, so ``12 34`` is accepted as ``1234``.
 
 Allowed grouping separators are characters that are **not** letters or digits and are **not** number operators. In practice, this includes many punctuation and symbol characters, for example:
 
@@ -83,6 +93,9 @@ You can enter a number in any of these bases by marking it with the correspondin
 * ``0o`` or ``0O`` for **octal**, e.g. ``0o1412``.
 * ``0d`` or ``0D`` for **decimal**. These can be omitted since decimal is the default base.
 * ``0x``, ``0X``, or ``#`` for **hexadecimal**. The additional six digits are represented by the upper or lower case letters ``a`` to ``f``, e.g. ``0xdeadbeef`` or ``0xDEADBEEF``.
+
+Spaces can separate hexadecimal digit groups, including groups made entirely
+of letters. For example, ``0xAB CD`` has the same value as ``0xABCD`` (43981).
 
 You may even enter fractional values in any of these bases. Note that scientific notation is not
 supported for non-decimal bases, however. Examples::
@@ -295,6 +308,11 @@ The question mark character ``?`` starts a comment. Everything from ``?`` to the
     1 + 2 ? simple sum
     = 3
 
+Comment text is kept as written, including in the result window and when editing
+user definitions. For example, ``examplevar = 4 ? 2*2`` keeps ``2*2`` in the
+Description column of the User Variables dock, without changing it to ``2×2``.
+The same rule applies to user functions and user units.
+
 A line can also be comment-only. If the first non-space character is ``?``, the whole line is treated as a comment::
 
     ? start algorithm
@@ -425,7 +443,7 @@ SpeedCrunch supports the following operators, listed in order of decreasing prec
 
 For negative bases, fractional powers return the principal complex root.
 Use :func:`cbrt` when you specifically need the real cubic root of a real
-negative value.
+negative value, or :func:`root` for other odd root indices.
 
 
 Complex Numbers
@@ -445,9 +463,9 @@ Syntax note: ``5j`` means ``5*j``, while ``j5`` is a variable named ``j5``.
 Write ``j*5`` explicitly if needed.
 
 The displayed imaginary-unit symbol is configurable in
-:menuselection:`Settings --> Results --> Complex Numbers --> Imaginary Unit`.
+:menuselection:`Settings --> Results --> Imaginary Unit`.
 The displayed complex form is configurable in
-:menuselection:`Settings --> Results --> Complex Numbers --> Form`.
+:menuselection:`Settings --> Results --> Complex Form`.
 
 You can enter complex numbers in phasor notation with ``∠``. The expression
 ``r ∠ θ`` is interpreted as ``r * cis(θ)``. The phase follows the current angle
@@ -465,5 +483,9 @@ the reference.
 Caution: fractional powers return principal complex roots. For example,
 ``x^(1/3)`` may be non-real. In contrast, :func:`cbrt` always returns the real
 cubic root for real inputs.
+
+For other root indices, use :func:`root`, for example ``root(5; -32) = -2``.
+It returns the real root for real inputs whenever one exists. Negative real
+inputs with an even index return the principal complex root.
 
 :const:`i` and :const:`j` are built-in constants for the imaginary unit.

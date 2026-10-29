@@ -1,0 +1,87 @@
+name: Windows MSVC
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    # This image includes VS 2022 for Qt's MSVC 2022 kit.
+    runs-on: windows-2022
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC 2022 x64
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install Qt 6.12.0
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.12.0'
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          # aqtinstall 3.3.0 does not support Qt 6.12's repository layout.
+          aqtsource: 'git+https://github.com/miurahr/aqtinstall.git@076e1659807d0b362a3ed684d54c2e9c775eb9c7'
+          cache: 'true'
+          cache-key-prefix: windows-2022-qt-v1
+
+      - name: Verify toolchain
+        run: |
+          if ($env:VisualStudioVersion -notlike '17.*') {
+            throw "Expected Visual Studio 2022, got $env:VisualStudioVersion"
+          }
+          if ($env:VSCMD_ARG_TGT_ARCH -ne 'x64') {
+            throw "Expected an x64 toolchain, got $env:VSCMD_ARG_TGT_ARCH"
+          }
+          $qtVersion = & "$env:QT_ROOT_DIR/bin/qmake.exe" -query QT_VERSION
+          if ($LASTEXITCODE -ne 0 -or $qtVersion.Trim() -ne '6.12.0') {
+            throw "Expected Qt 6.12.0, got $qtVersion"
+          }
+          Write-Output "MSVC tools: $env:VCToolsVersion"
+          Write-Output "Windows SDK: $env:WindowsSDKVersion"
+          Write-Output "Qt: $qtVersion ($env:QT_ROOT_DIR)"
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+          -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
+          "-DCMAKE_PREFIX_PATH=$env:QT_ROOT_DIR"
+
+      - name: Build
+        run: cmake --build build --parallel 4
+
+      # Keep compiling UI tests, but do not run them on this runner yet.
+      - name: Run non-UI tests
+        run: >-
+          ctest --test-dir build -C Release -LE '^ui$'
+          --no-tests=error --output-on-failure --test-output-size-failed 0
+          --output-junit "$env:GITHUB_WORKSPACE/test-results.xml"
+
+      - name: Upload test logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-msvc-test-logs
+          path: |
+            build/Testing/Temporary/LastTest.log
+            test-results.xml
+          if-no-files-found: ignore

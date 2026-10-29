@@ -125,6 +125,9 @@ public:
     Quantity& setFormat(Format);
 
 private:
+    Quantity& setCoherentSiDisplayUnit(const QString& name);
+    Quantity& setAnglePerSecondDisplayUnit(const Quantity& angle);
+
     CNumber m_numericValue;
     QMap<UnitQuantity, Rational> m_dimension;
     CNumber* m_unit;
@@ -166,6 +169,7 @@ public:
     static Quantity trunc(const Quantity&, int prec = 0);
     static Quantity sqrt(const Quantity&);
     static Quantity cbrt(const Quantity&);
+    static Quantity root(const Quantity& n, const Quantity& x);
     static Quantity raise(const Quantity&, int);
     static Quantity raise(const Quantity&, const Quantity&);
     static Quantity sgn(const Quantity&);

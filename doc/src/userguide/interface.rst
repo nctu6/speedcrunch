@@ -15,9 +15,20 @@ Apart from the main display, SpeedCrunch offers a number of extra panels, referr
 Most of them are dockable panels that can be moved around the main window and enabled or disabled via the
 :menuselection:`View` menu.
 
+Panels docked on the left or right fill the available height. Panels above
+or below the display and keypad fit between the side panels.
+
 Use the cross in a dock panel's title bar to hide the panel, or the square
 to detach it into a floating window. Hidden panels can be shown again via
-the :menuselection:`View` menu.
+the :menuselection:`View` menu. Opening another panel leaves floating panels
+in their own windows.
+
+On Linux with Wayland, drag a floating panel by its title bar to move it.
+Use its square button or double-click the title bar to attach it to the
+main window again.
+
+Drag a table's column headers to change their order. Each window keeps its
+column order between launches, including for panels that are hidden.
 
 * Formula Book
     The formula book provides access to commonly used formulas and calculations. Simply insert
@@ -29,18 +40,11 @@ the :menuselection:`View` menu.
     The constants widget shows a large list of scientific constants (including CODATA-based entries),
     grouped by category and subcategory.
 
-    The list columns are:
-
-    * ``Name``
-    * ``Symbol`` (when available)
-    * ``Value``
-    * ``Unit`` (when available)
-    * ``Identifier`` (built-in constant key, typically ``k_*``)
-
-    Use the ``Category`` and ``Subcategory`` selectors to narrow the list.
-    The search field matches by name, symbol, and identifier.
-
-    Double-clicking an entry inserts its ``Identifier`` into the editor.
+    The columns show each constant's name, value, and unit.
+    Use the ``Domain`` and ``Subdomain`` selectors to narrow the list, or search by name or unit.
+    Press :kbd:`Up` and :kbd:`Down` in the search field to select a result while continuing to type.
+    Press :kbd:`Enter` or double-click an entry to insert its value and unit and return to the editor.
+    The mathematical constants pi and Euler's number are inserted as ``π`` and ``e``.
 
 * User Variables
     The variables widget lists all :ref:`user-defined variables <variables>`. Any of them can be inserted into the editor by double-clicking it.
@@ -78,7 +82,18 @@ the :menuselection:`View` menu.
     ``ln(`` and ``log10(``, respectively. Copying a scientific preset into a
     custom layout uses the same labels and function names.
 
-    Available entries in :menuselection:`View --> Keypad --> Zoom` are:
+    Since version 1.1, both scientific layouts show ``ⁿ√`` for the nth root
+    in place of the cube-root button. It inserts ``root(`` so you can enter
+    a root index and a value, for example ``root(5; 32)``. Copying either
+    scientific preset into a custom layout includes this button.
+
+    The scientific layouts also include ``x²``, which inserts ``^2``, and
+    ``;`` to separate function arguments. These replace the ``x`` and ``x=``
+    shortcuts in version 1.1. Related buttons sit together: ``√`` and ``x²``,
+    ``xʸ`` and ``ⁿ√``, ``E`` and ``exp``, ``ln`` and ``log10``, and each
+    trigonometric function with its inverse.
+
+    Available entries in :menuselection:`Settings --> Appearance --> Keypad --> Zoom` are:
 
     * ``50%``
     * ``100%`` (**default**)
@@ -88,6 +103,7 @@ the :menuselection:`View` menu.
     The zoom level scales the keypad buttons, including their text. Each window
     keeps its own zoom level. The Zoom submenu is unavailable while the keypad
     is disabled.
+    You can also right-click the keypad and choose :menuselection:`Zoom`.
 
     ``Custom...`` opens a dialog where you can define the keypad matrix size (rows and columns)
     and configure each button individually. For each position in the matrix, you can set:
@@ -129,23 +145,112 @@ the :menuselection:`View` menu.
 Session Tabs and Panes
 ----------------------
 
+New blank tabs receive an ``Untitled-XXX`` name that is not already used in any
+open window, including by empty tabs that have not been saved.
+
 When a pane contains more than one session, SpeedCrunch shows a tab bar above
 the result display. Click a tab to switch sessions, drag tabs horizontally to
 reorder them within the pane, or drag a tab away from the tab bar to move it to
 another pane. Dropping a dragged tab outside the current window creates a new
 window for that session; dropping it on a pane in another SpeedCrunch window
 moves it there.
+Use :menuselection:`Session --> Rename...` to rename the active session.
+You can also double-click its tab, choose :menuselection:`Rename...`
+from the tab context menu, or choose :menuselection:`Session --> Rename...`
+from the result display context menu.
+Choose :menuselection:`Session --> Clone...` to copy the active session under
+a new name, including its unfinished expression. This command is also available
+as :menuselection:`Clone...` in the tab context menu and
+:menuselection:`Session --> Clone...` in the result display context menu.
 Use :menuselection:`Session --> New Window` to open a blank
 session in a new window that copies the current window and dock layout.
+Choose :menuselection:`Session --> Close Tab` to close the active tab, or
+:menuselection:`Session --> Reopen Closed Tab` to restore the last ordinary tab
+you closed. Private tabs cannot be reopened.
+Both commands are also available from the tab context menu.
+When a floating dock has focus, session commands apply to its window.
+Use :menuselection:`View --> Split` to add a pane in any direction, and
+:menuselection:`View --> Close Pane` to close the active pane.
+The tab context menu also provides :menuselection:`Split` and
+:menuselection:`Close Pane`.
+
+The tab context menu's :menuselection:`Clear` command removes the session's
+calculations, unfinished expression, variables, functions, and units after
+confirmation. Global user definitions are kept. :menuselection:`Delete` removes
+the session itself after confirmation.
 When SpeedCrunch restores multiple windows after a restart, each window keeps
 its own dock layout, dock visibility, keypad visibility, layout and zoom,
 and—when window position saving is enabled—its own size and position.
 
 
+Private Sessions
+----------------
+
+Use :menuselection:`Session --> New Private Tab` or :kbd:`Ctrl+Shift+N`
+(:kbd:`Cmd+Shift+N` on macOS) to open a session that stays in memory.
+Private sessions are named ``Private-1``, ``Private-2``, and so on,
+using the first available number. A shield icon marks their tabs. The window
+title also identifies the active private session, even after you rename it.
+The tab bar is hidden when a private session is the only session in a single
+pane, just as it is for an ordinary session.
+
+Private sessions do not save their history, unfinished expressions, variables,
+functions, or units automatically. They are excluded from the workspace
+restored at the next launch. Closing a private session discards its contents,
+and it cannot be reopened with the Restore Closed Tab shortcut. Copying and
+explicit export remain available. Cloning a private session creates another
+private session.
+
+Choose :menuselection:`Session --> Keep` to save a private
+session, including its current contents. It receives the first available
+``Untitled-XXX`` name and behaves like an ordinary session from then on.
+
+Choose :menuselection:`Session --> Make Private...` to convert an ordinary
+session. SpeedCrunch asks for confirmation before deleting its saved JSON file.
+Its contents stay open under the first available ``Private-XXX`` name until you
+close it or exit. If the file cannot be deleted, the session remains ordinary.
+If a private session cannot be saved during conversion, it remains private.
+
+These actions are also available from the tab and result display context menus.
+In the result display, open the :guilabel:`Session` submenu and choose
+:guilabel:`Keep` or :guilabel:`Make Private...`.
+Privacy belongs to the session, so renaming it does not change whether it is
+saved. Ordinary sessions can remain open alongside private ones.
+
+Enable :menuselection:`Settings --> Window --> Open a Private Tab on Startup`
+to open and focus a fresh private tab whenever SpeedCrunch starts. This option
+is off by default. Saved ordinary sessions are restored as usual, with one new
+private tab in the active window, even when several windows are restored.
+An empty active ``Untitled-XXX`` session is used for the private tab instead of
+opening an extra ordinary tab. Sessions with history, unfinished expressions,
+or their own definitions stay open. When there are no sessions to restore,
+SpeedCrunch starts with just the private tab. Opening another window while
+the app is running still creates an ordinary session.
+
+.. versionadded:: 1.1
+
+
 Expression Editor Features
 --------------------------
 
+Turn off :menuselection:`Settings --> Editing --> Automatic Input Adjustments`
+to enter text without automatic text adjustments or character restrictions.
+
 The expression editor provides some advanced features:
+
+* Undo and redo
+    Choose :menuselection:`Edit --> Undo` or :menuselection:`Edit --> Redo`.
+    Press :kbd:`Ctrl+Z` to undo the last edit. On Windows/Linux, use
+    :kbd:`Ctrl+Shift+Z` or :kbd:`Ctrl+Y` to redo it. On macOS, use
+    :kbd:`Cmd+Shift+Z`. Each key press is a separate undo step.
+    Automatic changes made by that key, such as inserting a closing bracket
+    or converting an exponent to superscript, are undone together. Text
+    committed through an input method is undone as a single edit.
+
+    :menuselection:`Edit --> Cut` cuts selected input text. Copy also works on
+    selected result text. These actions are disabled when unavailable.
+    :menuselection:`Edit --> Wrap in Parentheses` wraps the selected input, or
+    the whole expression if nothing is selected.
 
 * Automatic closing parentheses and square brackets
     Typing ``(`` or ``[`` with no text selected inserts the matching closing
@@ -161,17 +266,25 @@ The expression editor provides some advanced features:
     With older Qt versions on Wayland, the list stays within the application window.
     Alignment follows the visible text even when the expression wraps or scrolls. Press :kbd:`Tab` to insert the current
     suggestion. Pressing :kbd:`Enter` evaluates the expression by default. If you explicitly navigate the popup with arrow/page/home/end keys or click a
-    suggestion with the mouse, then :kbd:`Enter` accepts that selected suggestion. Pressing :kbd:`Escape` dismisses the autocomplete popup.
+    suggestion with the mouse, then :kbd:`Enter` accepts that selected suggestion.
+    Enable :menuselection:`Settings --> Editing --> Autocomplete --> Accept with Enter`
+    to accept the current suggestion with :kbd:`Enter` immediately, without
+    first using the arrow keys. Pressing :kbd:`Escape` dismisses the autocomplete popup.
 
 * Function signature tooltip
     While typing a function call, the live result area can show the function signature (parameter list). The parameter currently being edited is highlighted.
     This also works for user-defined functions. Pressing :kbd:`Escape` will dismiss the tooltip.
 
 * Quick constant insertion
-    Press :kbd:`Ctrl+Space` to open a list of constants that allows quick access to the same constants as the constants widget (see above).
-    Use the arrow keys to navigate the list. Pressing :kbd:`Escape` will dismiss this popup.
+    Press :kbd:`Ctrl+Space` to search the same constants as the constants widget (see above).
+    Type a name or unit to filter the list. Each result shows its unit beside the name using the theme's unit color.
+    Press :kbd:`Up` and :kbd:`Down` to select a result. Press :kbd:`Tab` or :kbd:`Enter`, or click a result, to insert it and return to the editor.
+    :kbd:`Shift+Tab` moves focus backward. With no matches, :kbd:`Tab` leaves the popup open.
+    Press :kbd:`Escape` to cancel. Search text does not change the expression.
     The list follows the cursor's horizontal position and uses the same below-or-above placement rules as autocompletion.
-    Selecting an entry inserts its identifier (for example ``k_speed_of_light_in_vacuum``).
+
+    .. versionadded:: 1.1
+       Search in the quick constant popup and select dock search results with :kbd:`Up` and :kbd:`Down`.
 
   .. _context-help:
 * Context help
@@ -211,7 +324,7 @@ User Definitions
 .. versionadded:: 1.0
 
 To define user variables, user functions and user units that are loaded globally, use
-:menuselection:`Settings --> Symbols --> User Definitions...`.
+:menuselection:`Settings --> User Definitions...`.
 
 This dialog provides:
 
@@ -236,6 +349,21 @@ Settings
 SpeedCrunch's behavior can be customized to a large degree using the configuration options in the
 :menuselection:`Settings` menu. This section explains the settings that are available.
 
+Resetting Settings
+++++++++++++++++++
+
+Choose :menuselection:`Settings --> Reset All Settings...` to restore the default
+preferences. SpeedCrunch asks for confirmation before making any changes.
+The reset applies to all open windows immediately and is saved for the next
+launch. It includes appearance, editing options, number and result formats,
+language, and window preferences, including dock visibility and keypad settings.
+
+Your calculation history, open session tabs and panes, and user definitions are
+kept. Existing calculations keep their recorded result formats. New calculations
+and live previews use the default settings.
+
+.. versionadded:: 1.1
+
 Result Display Interactions
 +++++++++++++++++++++++++++
 
@@ -244,9 +372,31 @@ The result display supports mouse-driven interactions for navigation and editing
 * Right-click context menu
     Right-clicking an expression/calculation block in the result display opens a context menu
     for that specific block.
+    The :guilabel:`Copy` submenu starts with :guilabel:`Selection` to copy the
+    selected text. :guilabel:`Select All` selects all text in the display.
+    Open the :guilabel:`Copy` submenu and choose :guilabel:`Calculation`
+    to copy all displayed lines of the calculation at once, including the
+    expression, any simplification, and every result format.
+    The lines are copied as plain text in the order shown, without the blank
+    line between calculations. :guilabel:`Expression` and
+    :guilabel:`Result` let you copy either part separately.
+    :guilabel:`Remove` offers :guilabel:`This Calculation`,
+    :guilabel:`All Calculations Above`, and :guilabel:`All Calculations Below`.
     This menu includes an entry to toggle the main menu bar visibility.
+    Use its :guilabel:`Split` submenu to add a pane to the left, right, above,
+    or below the current pane.
+    :guilabel:`New Tab` and :guilabel:`New Private Tab` create sessions directly.
+    The :guilabel:`Session` submenu starts with :guilabel:`Open...`,
+    :guilabel:`Import...`, and :guilabel:`Export`. It also groups actions to
+    duplicate, rename, change privacy, clear, delete, or close the current session.
 
     .. versionadded:: 1.0
+
+    The :guilabel:`Copy` submenu also offers :guilabel:`Calculation as Single Line` to
+    join all displayed lines of the calculation with spaces, for example
+    ``120 / 8 = 15``.
+
+    .. versionadded:: 1.1
 
 * Hover highlighting of calculation blocks
     When :menuselection:`Settings --> Appearance --> Hover Highlighting` is enabled, moving the mouse over
@@ -346,23 +496,23 @@ determines the angle format of the arguments.
 Complex Numbers
 +++++++++++++++
 
-Configure global complex-number behavior via
-:menuselection:`Settings --> Results --> Complex Numbers`.
+Choose a result form via :menuselection:`Settings --> Results --> Complex Form`
+and a symbol via :menuselection:`Settings --> Results --> Imaginary Unit`.
 Complex numbers are always enabled.
 
 * :menuselection:`Imaginary Unit --> i`
     Use ``i`` as the imaginary unit symbol.
 * :menuselection:`Imaginary Unit --> j`
     Use ``j`` as the imaginary unit symbol.
-* :menuselection:`Form --> Rectangular (a + bi)`
+* :menuselection:`Complex Form --> Rectangular (a + bi)`
     Display complex results in rectangular form.
-* :menuselection:`Form --> Exponential (reⁱᶿ)`
+* :menuselection:`Complex Form --> Exponential (reⁱᶿ)`
     Display complex results in exponential form.
-* :menuselection:`Form --> Trigonometric (r(cos θ + i·sin θ))`
+* :menuselection:`Complex Form --> Trigonometric (r(cos θ + i·sin θ))`
     Display complex results in trigonometric form.
-* :menuselection:`Form --> Cis (r·cis(θ))`
+* :menuselection:`Complex Form --> Cis (r·cis(θ))`
     Display complex results in cis form.
-* :menuselection:`Form --> Phasor (r∠θ)`
+* :menuselection:`Complex Form --> Phasor (r∠θ)`
     Display complex results in phasor form.
 
 When the angle mode is set to radians, simple phase multiples of ``pi`` are
@@ -375,7 +525,11 @@ Number Format
 +++++++++++++
 
 Choose how decimal numbers are displayed and interpreted via
-:menuselection:`Settings --> Results --> Number Format...`.
+:menuselection:`Settings --> Number Format...`.
+
+This shared setting controls result formatting and, when
+:menuselection:`Settings --> Editing --> Group Digits in Input` is enabled,
+digit grouping in the input field.
 
 .. versionadded:: 1.0
 
@@ -384,6 +538,9 @@ menus with a single combined Number Format selection.
 
 The default option is no digit grouping with dot decimal separator
 (``1234567.12345``).
+
+A manually entered grouped number such as ``1,234,567`` keeps its grouping
+marks in the input field, even with this default format selected.
 
 Additional options let you choose:
 
@@ -405,14 +562,78 @@ copy/paste from other applications. In clear mixed-separator cases, it
 accepts the number and normalizes it by ignoring non-digit grouping
 characters as needed.
 
+When a single comma or dot could be either a decimal point or a grouping
+mark, the selected decimal separator takes priority. In any dot-decimal
+format, ``1,234`` means ``1234`` and ``1.234`` means ``1.234``. This also
+applies to ``1234567.12345``, which displays numbers without grouping.
+In comma-decimal formats, the roles are reversed. A grouping mark must
+separate one to three leading digits from a group of three digits.
+For numbers with only one comma or dot, the selected decimal mark remains
+a decimal point regardless of how many digits follow it. The other mark is
+also accepted as a decimal point when the number does not match the
+thousands-grouping pattern. With ``1234567.12345`` selected, for example,
+``1,2``, ``35,6``, ``987,1``, and ``2,34567`` mean ``1.2``, ``35.6``,
+``987.1``, and ``2.34567``. These inputs are accepted without changing their
+commas in the editor.
+This applies to every number format, including styles that display spaces,
+underscores, or fractional grouping. Accepted decimal values are displayed
+with the selected decimal separator and grouping pattern. For example,
+``2,34567`` has the same value in every format, but appears as ``2.345 67``
+with ``1 234 567.123 45`` selected or ``2,345.67`` with
+``1.234.567,123.45`` selected.
+With a dot-decimal format selected, ``0,123`` means ``123``. Leading zeroes
+do not change the grouping rule. In contrast, ``1234,567`` means
+``1234.567`` because four leading digits do not form a conventional single
+thousands group. Comma-decimal formats apply the same rules with the marks
+reversed.
+These rules also apply when pasting a number or entering scientific notation.
+Clear mixed-separator input such as ``1.000,23`` is accepted as ``1000.23``
+when it does not also match the selected fractional-grouping format.
+
+When input contains both commas and dots and has two possible readings,
+SpeedCrunch assumes the fractional part is not grouped unless the selected
+format explicitly groups fractional digits with those marks. For example,
+with ``1234567.12345``
+selected, ``1.000,000 * 2`` means ``1000 * 2`` and gives ``2000``.
+The same applies to ``1,000.000 * 2``.
+
+For formats that group fractional digits with commas or dots, valid input in
+the selected format takes priority. With ``1,234,567.123,45`` selected,
+``1.234,56`` means ``1.23456``. With ``1.234.567,123.45`` selected,
+``1,234.56`` has that same value. Other formats read these inputs as
+``1234.56``. Spaces can separate groups on either side of the decimal point,
+for example ``1 234.567 89`` means ``1234.56789``.
+
+With ``1,234,567.123,45`` selected, ``1.000,000 * 2`` instead gives ``2``
+because the comma groups fractional digits. The matching case with
+``1.234.567,123.45`` selected is ``1,000.000 * 2``, which also gives ``2``.
+
+Repeated commas or dots used for integer grouping must follow three-digit
+grouping or Indian 3-2-2 grouping. Empty groups are rejected. For example,
+``1,2,3``, ``1.2.3``, and ``1,,234`` report an error instead of having their
+punctuation removed. Spaces remain permissive, so ``12 34`` and ``1 2 3``
+mean ``1234`` and ``123`` respectively.
+
+The editor keeps commas and dots as you type or paste them, even when they
+differ from the selected format. The interpreted expression and results use
+the selected number format. Digit grouping in the editor can add visual
+separators, but does not replace punctuation you enter.
+
+The interpreted expression keeps leading and trailing zeroes from the input.
+With ``1234567.12345`` selected, ``0,123`` is shown as ``0123`` and evaluates
+to ``123``. With ``1234567,12345`` selected, the same input is shown as
+``0,123`` and evaluates to ``0,123``. Scientific notation keeps its exponent
+in the interpreted expression, using the selected decimal and grouping marks.
+
 History Size Limit
 ++++++++++++++++++
 
 This setting controls how calculation history is stored for the active session.
 It is available from :menuselection:`Session --> History Size Limit...`.
 
-Calculation history is saved automatically when a session changes and restored
-on the next launch.
+Calculation history in ordinary sessions is saved automatically when a session
+changes and restored on the next launch. Private sessions keep history only
+while they are open.
 
 The history size limit sets the maximum number of stored history entries for
 that session. By default, SpeedCrunch keeps up to 1000 entries per session and
@@ -429,6 +650,30 @@ Window
 
 This section contains settings that control the main window behavior.
 
+* :menuselection:`On Subsequent Launch`
+    Choose what happens when you launch SpeedCrunch while it is already running.
+    :menuselection:`Activate Existing Window` is the default.
+    :menuselection:`Open New Window` opens a blank session in another window.
+    :menuselection:`Open New Tab` opens a blank session in the most recently
+    active calculator window, using its active pane if the window is split.
+    The choice applies to all windows and is saved between launches.
+
+    This setting works on Windows, macOS, and Linux with X11 or Wayland.
+    On macOS, reopening the app from Finder or clicking its Dock icon also
+    follows this choice. Switching between apps or clicking an existing window
+    does not create a window or tab. On other desktops, the launcher or taskbar
+    action must launch the application again to use this setting.
+
+    If SpeedCrunch is not running, it starts normally and restores saved
+    sessions regardless of this choice. Requests received during restoration
+    wait until it finishes. If a modal dialog is open, finish or dismiss it
+    before SpeedCrunch creates the requested window or tab. The desktop's
+    focus policy still determines whether a window can come to the foreground.
+* :menuselection:`Open a Private Tab on Startup`
+    Open and focus a fresh private tab after restoring saved sessions. If there
+    are no sessions to restore, or the active session is an empty
+    ``Untitled-XXX`` tab, start without an extra ordinary tab. This option is off
+    by default.
 * :menuselection:`Save Window Position on Exit`
     Controls if the window position is saved and restored.
 * :menuselection:`Always on Top`
@@ -447,10 +692,6 @@ This section contains settings that control result output and post-evaluation be
     If set, SpeedCrunch will display partial results as you type your expression as well
     as results when selecting a partial expression in the editor.
 
-* :menuselection:`Number Format...`
-    Open the number-format dialog and pick one combined setting for decimal
-    separator and digit grouping. See :ref:`radix_character`.
-
 * :menuselection:`Notation & Precision...`
     Open a tabular layout with one mandatory ``Main Line`` row and four
     optional extra result-line rows. Each row has columns for enabling the
@@ -460,6 +701,15 @@ This section contains settings that control result output and post-evaluation be
     Applying changes from this dialog updates only the current editor previews
     immediately (live/selection) without rewriting already displayed
     calculation history.
+
+* :menuselection:`Remove Trailing Zeroes`
+    Hide trailing fractional zeroes after rounding to the selected decimal
+    places. For example, at three decimal places, ``3.140`` becomes ``3.14``
+    and ``12.000`` becomes ``12``. This option is off by default and applies
+    to the main and extra result lines. Changing it refreshes editor previews
+    without rewriting displayed history.
+
+    .. versionadded:: 1.1
 
 * :menuselection:`Rounding Mode`
     Choose how displayed results are rounded when formatting to a finite number
@@ -501,14 +751,13 @@ This section contains settings that control result output and post-evaluation be
     result-format settings, changes apply to subsequent calculations and
     previews; already stored history entries keep their original display.
 
-* :menuselection:`Complex Numbers`
-    Configure the imaginary unit and complex result form. See
-    :ref:`complex_numbers`.
+* :menuselection:`Complex Form` and :menuselection:`Imaginary Unit`
+    Configure the complex result form and imaginary unit. See :ref:`complex_numbers`.
 
 * :menuselection:`Unit Notation`
     Configure whether unit results use exponential notation, such as
     ``m·s⁻¹``, or fractional notation, such as ``m/s``.
-* :menuselection:`Automatically Copy New Results to Clipboard`
+* :menuselection:`Copy New Results Automatically`
     Automatically copy each newly evaluated result to the clipboard.
 * :menuselection:`Simplify Displayed Expressions`
     When enabled (default), SpeedCrunch adds an extra symbolic line before
@@ -517,6 +766,9 @@ This section contains settings that control result output and post-evaluation be
     constant terms). This interpreted line also makes implicit-multiplication
     association explicit. Disable this option to keep only the unsimplified
     interpreted expression and numeric results.
+
+    An extra line appears only when there is a useful reduction. For example,
+    ``ans / 9`` stays as written instead of becoming ``1 / 9 · ans``.
 
     Entering the expression ``2.1 − 1 cos(pi)^2 cos(pi) 5 cos pi  / −cos^2(pi) + 3.4``
     gives the following interpretation and simplification:
@@ -533,9 +785,76 @@ This section contains settings that control result output and post-evaluation be
 Editing
 +++++++
 
+* :menuselection:`Automatic Input Adjustments`
+    Automatically replace operators, adjust spacing, insert closing brackets,
+    convert powers to superscripts, and restrict input to valid characters.
+    Turn it off to keep typed and pasted characters as entered.
+    Tab still accepts the selected completion. Digit grouping
+    and automatic insertion of ``ans`` follow their own settings. Pasting
+    several lines evaluates each expression as usual.
+    Invalid expressions can be entered, but still report an error when evaluated.
+
+    This option is enabled by default. Changes apply immediately to all open
+    editors and are saved between launches. Switching modes leaves existing
+    text unchanged.
+
+    .. versionadded:: 1.1
+
+.. _automatic_result_reuse:
+
+* :menuselection:`Auto-Insert ans`
+    If a new expression starts with ``+``, ``-``, ``*``, or ``/``, SpeedCrunch inserts ``ans`` first.
+* :menuselection:`Group Digits in Input`
+    Group digits as you type, using the separator and grouping pattern selected
+    in :menuselection:`Settings --> Number Format...`. For example, ``1000``
+    appears as ``1 000`` with a space grouping format or ``1,000`` with a comma
+    grouping format. This option is enabled by default. A number format with
+    no grouping adds no separators.
+
+    Integer digits are grouped in threes for decimal and octal numbers,
+    or in fours for binary and hexadecimal numbers. The Indian format uses
+    3-2-2 grouping. Fractional digits are grouped only when the selected format
+    includes fractional grouping. Scientific exponents are left unchanged.
+    The separators only affect how the input looks, so copying the expression
+    keeps the original text.
+
+    This setting works even when syntax highlighting is disabled.
+
+    .. versionadded:: 1.1
+
+* :menuselection:`Blinking Cursor`
+    Make the cursor blink in the expression editor. This option is enabled
+    by default. Turn it off for a steady cursor. Changes apply immediately
+    to all open session panes and windows, and the choice is saved between
+    launches.
+
+    .. versionadded:: 1.1
+
+* :menuselection:`Escape Clears Editor`
+    Press :kbd:`Escape` to clear the focused expression editor. If a popup or
+    result preview is open, Escape dismisses it first. Press Escape again to
+    clear the expression. Cancelling a history edit still works as usual.
+    This option is off by default and is saved between launches. Changes apply
+    to all session panes and windows.
+
+    .. versionadded:: 1.1
+
+* :menuselection:`Keep Expression After Evaluation`
+    If selected, the entered expression remains in the editor after evaluating it.
+
 * :menuselection:`Autocomplete`
-    Controls which entities are included in editor autocompletion.
-    All options are enabled by default.
+    Controls how suggestions are accepted and which names appear in editor
+    autocompletion.
+
+    * ``Accept with Enter`` lets :kbd:`Enter` insert the current suggestion
+      without first selecting it with the arrow keys. It is off by default.
+      When no autocomplete popup is open, Enter still evaluates the expression.
+      Tab always accepts the current suggestion. The setting is saved between
+      launches and applies to all session panes and windows.
+
+      .. versionadded:: 1.1
+
+    The following suggestion categories are all enabled by default:
 
     * ``Built-in functions`` includes built-in function names.
     * ``Built-in variables`` includes built-in constant names.
@@ -547,14 +866,6 @@ Editing
 
     .. versionadded:: 1.0
 
-.. _automatic_result_reuse:
-
-* :menuselection:`Auto-Insert "ans" When Starting with an Operator`
-    If a new expression starts with ``+``, ``-``, ``*``, or ``/``, SpeedCrunch inserts ``ans`` first.
-* :menuselection:`Show Empty History Hint`
-    Show or hide the ``Type an expression here`` hint when there are no calculations in history.
-* :menuselection:`Keep Entered Expression After Evaluate`
-    If selected, the entered expression remains in the editor after evaluating it.
 * :menuselection:`Up/Down Arrow History`
     Controls whether :kbd:`Up` and :kbd:`Down` in the editor navigate history:
 
@@ -582,6 +893,11 @@ User Interface Settings
     dock titles, dock controls and table headers, dock search and content
     areas, pane splitters, and scrollbars. It also generates the
     primary/accent color unless the theme specifies a ``primary`` color.
+
+    Text on generated surfaces, including docks and popups, targets a contrast
+    ratio of at least 10:1 against its own background. SpeedCrunch keeps a tint
+    from the theme where possible. If a surface cannot reach that ratio, it
+    uses black or white, whichever gives better contrast.
 
     The :guilabel:`Colors` area provides per-role color selection buttons showing
     both the ``#RRGGBB`` value and the actual color. Changing any color creates a
@@ -616,8 +932,130 @@ User Interface Settings
 
     .. versionadded:: 1.0
        The :menuselection:`Theme...` dialog, including live preview and JSON import/export.
-* :menuselection:`Settings --> Appearance --> Font`
+
+* :menuselection:`Settings --> Appearance --> System Color Mode`
+    Choose the light or dark appearance for controls that use the system style:
+
+    * :guilabel:`Follow System` (the default) follows the operating system's
+      current appearance, including automatic light and dark changes.
+    * :guilabel:`Light` keeps the system controls light.
+    * :guilabel:`Dark` keeps the system controls dark.
+
+    It affects menus, docks, and the status bar when their appearance is set to
+    :guilabel:`System`, along with other native controls and dialogs. It does not
+    change the selected SpeedCrunch theme or the Input and Results appearance.
+
+    A system high-contrast accessibility theme may take precedence over the
+    selected light or dark mode, depending on platform support.
+
+    .. versionadded:: 1.2
+
+* :menuselection:`Settings --> Appearance --> Menus`
+    Choose how menus look:
+
+    * :guilabel:`System` uses the system's menu colors and styling,
+      including highlighted and disabled items. With :guilabel:`Follow System`
+      selected under :menuselection:`System Color Mode`, menus follow changes
+      to the system theme while SpeedCrunch is running.
+    * :guilabel:`SpeedCrunch Theme` (the default) uses the selected SpeedCrunch
+      theme for menu backgrounds and text, including highlighted items.
+      Menu icons also follow the theme's text colors. In popup menus, disabled
+      labels, shortcut hints, and icons appear dimmed.
+
+    This setting applies to the menu bar shown inside the application window,
+    dropdown menus, context menus, and dropdown lists in attached and floating
+    docks that use the SpeedCrunch theme. Closed dropdown controls follow the
+    :menuselection:`Docks` setting.
+    The macOS system menu bar keeps its native appearance.
+    Popup menus drawn by Qt can look slightly different from native macOS menus.
+    On GNOME, popup menus use the GTK theme's popup hover colors when GTK is
+    available and System Color Mode is set to :guilabel:`Follow System`.
+    Otherwise they use Qt's system palette.
+    The choice applies to all SpeedCrunch windows and is saved between launches.
+
+    Selections in the expression editor and result display use the SpeedCrunch
+    theme. Dock list selections follow the :menuselection:`Docks` setting.
+
+* :menuselection:`Settings --> Appearance --> Docks`
+    Choose how attached and floating docks look, including their title bars:
+
+    * :guilabel:`System` uses the system's colors and widget styles for lists,
+      search fields, dropdown controls, scrollbars, dock title bars, and the tabs
+      used to switch between overlapping docks.
+      Close and float buttons use the system style. Dropdown lists also
+      use the system appearance, regardless of the :menuselection:`Menus` choice.
+      The Formula Book and bitfield use system colors as well. Formula and
+      navigation links use the system link color directly. On bits use the system
+      selection colors, with a separate hover color for off bits.
+    * :guilabel:`SpeedCrunch Theme` (the default) uses the selected SpeedCrunch
+      theme for dock content, title bars, and tabs, including list selections and
+      search fields.
+
+    The choice applies immediately to all SpeedCrunch windows and is saved
+    between launches. With :guilabel:`Follow System` selected under
+    :menuselection:`System Color Mode`, system colors follow changes to the
+    system theme while SpeedCrunch is running.
+
+    .. versionadded:: 1.1
+
+* :menuselection:`Settings --> Appearance --> Status Bar`
+    Choose how the status bar looks:
+
+    * :guilabel:`System` uses the system's palette and widget styles for the
+      status bar, its labels, and its buttons. With :guilabel:`Follow System`
+      selected under :menuselection:`System Color Mode`, colors follow changes
+      to the system theme while SpeedCrunch is running.
+    * :guilabel:`SpeedCrunch Theme` (the default) uses the selected SpeedCrunch
+      theme for the status bar background and text.
+
+    The choice applies immediately to all SpeedCrunch windows and is saved
+    between launches. Popup menus follow the :menuselection:`Menus` setting.
+    Show or hide the status bar with :menuselection:`View --> Status Bar`.
+
+    .. versionadded:: 1.1
+
+* :menuselection:`Settings --> Appearance --> Input and Results`
+    Choose the layout of the expression editor and result display:
+
+    * :guilabel:`Modern` (the default) uses a rounded input box with compact
+      padding and a small gap around it. History aligns with the left edge of
+      the box.
+    * :guilabel:`Classic` uses a compact, full-width editor directly below the
+      results and a small history gutter. All editors use the Modern input
+      background color across the whole input area. Text and editor popups
+      share a small inset from the edge, with enough space below
+      the input for rounded window corners. A top line marks the active pane,
+      using the same thickness and accent color as the Modern outline.
+      This line is hidden when there is only one window and one pane,
+      regardless of how many session tabs it contains.
+      Vertical pane dividers remain visible through the input area.
+
+    Both styles keep the same editing features, including input that grows as
+    expressions wrap. The input grows to five visible lines, then scrolls to
+    keep the cursor in view. Line spacing follows the selected font.
+    The choice applies immediately to every window and pane and is saved
+    between launches.
+
+    .. versionadded:: 1.1
+
+* :menuselection:`Settings --> Appearance --> Input and Results --> Font...`
     Select the font to use for the expression editor and result display.
+    On macOS 27 and later, SpeedCrunch uses Qt's font dialog.
+
+* :menuselection:`Settings --> Appearance --> Keypad`
+    Choose the shape and spacing of the keypad buttons:
+
+    * :guilabel:`Classic` uses shallow rectangular buttons with smaller gaps,
+      similar to the keypad in SpeedCrunch 0.12.
+    * :guilabel:`Modern` (the default) keeps the larger square buttons.
+
+    The choice applies immediately to all windows and is saved between launches.
+    It works with every preset and custom keypad. Each window keeps its own
+    layout, selected from :menuselection:`View --> Keypad`, and zoom level,
+    selected from :menuselection:`Settings --> Appearance --> Keypad --> Zoom`.
+
+    .. versionadded:: 1.1
+
 * :menuselection:`Settings --> Appearance --> Syntax Highlighting`
     Enable or disable syntax highlighting.
 * :menuselection:`Settings --> Appearance --> Hover Highlighting`
@@ -625,8 +1063,33 @@ User Interface Settings
 * :menuselection:`Settings --> Language`
     Select the user interface language.
 
-* :menuselection:`Settings --> Check for Updates`
+
+Help
+----
+
+* :menuselection:`Help --> App Diagnostics`
+    Show system information and app settings. Use :guilabel:`Copy to Clipboard`
+    to share the report when reporting a problem.
+
+* :menuselection:`Help --> About SpeedCrunch`
+    Show the SpeedCrunch version, the operating system and its version, and the Qt
+    version. Portable builds display ``Portable`` next to the SpeedCrunch
+    version.
+
+* :menuselection:`Help --> Check for Updates`
     Trigger an update check and show information when a newer version is available.
+    Update checks are enabled in official SpeedCrunch builds. Other distributors
+    can choose whether to enable them. When enabled, this menu entry is available
+    and SpeedCrunch also checks for updates after the window first paints,
+    at most once every 24 hours.
+    Each network request has a five-second deadline, including redirects.
+    Receiving data does not extend that deadline.
+    Oversized update responses are rejected before their contents are parsed
+    or saved.
+    Closing a window requests that its update worker stop. Cleanup finishes
+    in the background, without making the window wait for network setup.
+    See :file:`BUILDING.md` at the repository root for build options and
+    package provider guidance.
 
     .. versionadded:: 1.0
 
@@ -644,8 +1107,12 @@ Editing
     Create a new session in the current session pane.
 * :kbd:`Ctrl+T` (:kbd:`Cmd+T` on macOS)
     Create a new session tab in the current session pane.
-* :kbd:`Ctrl+Shift+T`
+* :kbd:`Ctrl+Shift+N` (:kbd:`Cmd+Shift+N` on macOS)
+    Create a new private tab in the current session pane.
+* :kbd:`Ctrl+Shift+T` (:kbd:`Cmd+Shift+T` on macOS)
     Reopen the most recently closed session tab.
+* :kbd:`Ctrl+W` (:kbd:`Cmd+W` on macOS)
+    Close the active session tab.
 * :kbd:`Ctrl+C`
     Copy selected text to clipboard.
 * :kbd:`Ctrl+R`

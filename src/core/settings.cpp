@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "core/settings.h"
 
 #include "core/complexform.h"
@@ -17,6 +19,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QTemporaryFile>
 #include <QtCore/QStandardPaths>
 
 #include <filesystem>
@@ -128,6 +131,27 @@ bool shouldUseNonAtomicSettingsSync(const QString& fileName)
         std::filesystem::path(fileName.toStdU16String()), error);
     return !error && linkCount > 1;
 }
+
+#if defined(SPEEDCRUNCH_PORTABLE) && !defined(SPEEDCRUNCH_UI_TEST)
+QString portableStoragePath()
+{
+    QDir directory(QApplication::applicationDirPath());
+#ifdef Q_OS_MACOS
+    // Keep writable data outside the signed application bundle.
+    QDir bundle(directory);
+    if (bundle.dirName() == QLatin1String("MacOS")
+            && bundle.cdUp() && bundle.dirName() == QLatin1String("Contents")
+            && bundle.cdUp() && bundle.dirName().endsWith(QLatin1String(".app"), Qt::CaseInsensitive)) {
+        directory = bundle;
+        directory.cdUp();
+    }
+    return directory.filePath(QStringLiteral("SpeedCrunch-data"));
+#else
+    return directory.absolutePath();
+#endif
+}
+
+#endif
 } // namespace
 
 #ifdef SPEEDCRUNCH_UI_TEST
@@ -145,7 +169,7 @@ QString Settings::getConfigPath()
 #ifdef SPEEDCRUNCH_UI_TEST
     return uiTestStoragePath(QStringLiteral("config"));
 #elif defined(SPEEDCRUNCH_PORTABLE)
-    return QApplication::applicationDirPath();
+    return portableStoragePath();
 #elif defined(Q_OS_WIN)
     // On Windows, use AppData/Roaming/SpeedCrunch, the same path as getDataPath.
     return getDataPath();
@@ -163,7 +187,7 @@ QString Settings::getDataPath()
 #ifdef SPEEDCRUNCH_UI_TEST
     return uiTestStoragePath(QStringLiteral("data"));
 #elif defined(SPEEDCRUNCH_PORTABLE)
-    return QApplication::applicationDirPath();
+    return portableStoragePath();
 #elif QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 #elif defined(Q_OS_WIN)
@@ -195,10 +219,30 @@ QString Settings::getCachePath()
 #ifdef SPEEDCRUNCH_UI_TEST
     return uiTestStoragePath(QStringLiteral("cache"));
 #elif defined(SPEEDCRUNCH_PORTABLE)
-    return QApplication::applicationDirPath();
+    return portableStoragePath();
 #else
     return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 #endif
+}
+
+bool Settings::preparePortableStorage(QString* errorMessage)
+{
+#if defined(SPEEDCRUNCH_PORTABLE) && defined(Q_OS_MACOS) && !defined(SPEEDCRUNCH_UI_TEST)
+    const QString path = portableStoragePath();
+    if (!QDir().mkpath(path)) {
+        *errorMessage = QObject::tr("Could not create %1.").arg(path);
+        return false;
+    }
+
+    QTemporaryFile probe(QDir(path).filePath(QStringLiteral(".write-check-XXXXXX")));
+    if (!probe.open() || probe.write("1", 1) != 1 || !probe.flush()) {
+        *errorMessage = probe.errorString();
+        return false;
+    }
+#else
+    Q_UNUSED(errorMessage);
+#endif
+    return true;
 }
 
 static Settings* s_settingsInstance = 0;
@@ -273,12 +317,16 @@ Settings::CustomKeypad Settings::defaultCustomKeypad()
 
 Settings::Settings()
 {
+    inputDigitGrouping = true;
+    cursorBlinking = true;
+    escapeClearsEditor = false;
     digitGroupingIntegerPartOnly = true;
     numberFormatStyle = NumberFormatNoGroupingDot;
     hasNumberFormatStyleSetting = false;
     simplifyResultExpressions = true;
     complexNumbers = true;
     imaginaryUnit = 'i';
+    autoCompletionAcceptWithEnter = false;
     autoCompletionBuiltInFunctions = true;
     autoCompletionBuiltInVariables = true;
     autoCompletionLongFormUnits = true;
@@ -286,6 +334,7 @@ Settings::Settings()
     autoCompletionUserVariables = true;
     secondaryResultPrecision = -1;
     resultRoundingMode = ResultRoundingHalfAwayFromZero;
+    removeTrailingZeroes = false;
     unitNegativeExponentStyle = UnitNegativeExponentSuperscript;
     tertiaryResultPrecision = -1;
     quaternaryResultPrecision = -1;
@@ -311,12 +360,15 @@ Settings::Settings()
 
 void Settings::load()
 {
+    StartupDiagnostics::Scope timing("Read and migrate settings");
     const char* KEY = "SpeedCrunch";
 
+    StartupDiagnostics::Scope phaseTiming("Open settings storage and migrate schema");
     QSettings* settings = createQSettings(KEY);
     if (!settings)
         return;
 
+    phaseTiming.next("Decode general settings");
     QString key = QString::fromLatin1(KEY) + QLatin1String("/General/");
 
     // Angle mode special case.
@@ -337,6 +389,8 @@ void Settings::load()
     autoAns = settings->value(key + QLatin1String("AutoAns"), false).toBool();
     autoCalc = settings->value(key + QLatin1String("AutoCalc"), true).toBool();
     autoCompletion = settings->value(key + QLatin1String("AutoCompletion"), true).toBool();
+    autoCompletionAcceptWithEnter = settings->value(
+        key + QLatin1String("AutoCompletionAcceptWithEnter"), false).toBool();
     autoCompletionBuiltInFunctions = settings->value(
         key + QLatin1String("AutoCompletionBuiltInFunctions"), true).toBool();
     autoCompletionBuiltInVariables = settings->value(
@@ -368,13 +422,21 @@ void Settings::load()
         upDownArrowBehavior = UpDownArrowBehaviorAlways;
     }
     leaveLastExpression = settings->value(key + QLatin1String("LeaveLastExpression"), false).toBool();
-    showEmptyHistoryHint = settings->value(key + QLatin1String("ShowEmptyHistoryHint"), true).toBool();
     language = settings->value(key + QLatin1String("Language"), "C").toString();
     syntaxHighlighting = settings->value(key + QLatin1String("SyntaxHighlighting"), true).toBool();
+    automaticInputAdjustments = settings->value(
+        key + QLatin1String("AutomaticInputAdjustments"), true).toBool();
+    inputDigitGrouping = settings->value(key + QLatin1String("InputDigitGrouping"), true).toBool();
+    cursorBlinking = settings->value(key + QLatin1String("CursorBlinking"), true).toBool();
+    escapeClearsEditor = settings->value(key + QLatin1String("EscapeClearsEditor"), false).toBool();
     hoverHighlightResults = settings->value(key + QLatin1String("HoverHighlightResults"), true).toBool();
     autoResultToClipboard = settings->value(key + QLatin1String("AutoResultToClipboard"), false).toBool();
     simplifyResultExpressions = settings->value(key + QLatin1String("SimplifyResultExpressions"), true).toBool();
     windowPositionSave = settings->value(key + QLatin1String("WindowPositionSave"), true).toBool();
+    openPrivateTabOnStartup = settings->value(key + QLatin1String("OpenPrivateTabOnStartup"), false).toBool();
+    const int launchAction = settings->value(key + QLatin1String("SubsequentLaunchAction"), 0).toInt();
+    subsequentLaunchAction = launchAction >= ActivateExistingWindow && launchAction <= OpenNewTab
+        ? static_cast<SubsequentLaunchAction>(launchAction) : ActivateExistingWindow;
     complexNumbers = true;
     QString imaginaryUnitStr = settings->value(key + QLatin1String("ImaginaryUnit"), 'i').toString();
     if (imaginaryUnitStr != QLatin1String("i") && imaginaryUnitStr != QLatin1String("j"))
@@ -398,6 +460,7 @@ void Settings::load()
     if (numberFormatStyle == NumberFormatSystem)
         numberFormatStyle = NumberFormatNoGroupingDot;
     applyNumberFormatStyle();
+    phaseTiming.next("Decode result format settings");
     key = KEY + QLatin1String("/Format/");
 
     // Format special case.
@@ -467,6 +530,7 @@ void Settings::load()
         settings->value(key + QLatin1String("MainComplexForm"),
                         ComplexForm::toString(ComplexForm::Default)).toString());
 
+    removeTrailingZeroes = settings->value(key + QLatin1String("RemoveTrailingZeroes"), false).toBool();
     resultPrecision = settings->value(key + QLatin1String("MainPrecision"), -1).toInt();
     if (!settings->contains(key + QLatin1String("MainPrecision"))) {
         // Backward compatibility with legacy key.
@@ -532,6 +596,7 @@ void Settings::load()
     if (quinaryResultPrecision > DECPRECISION)
         quinaryResultPrecision = DECPRECISION;
 
+    phaseTiming.next("Decode window layout settings");
     key = KEY + QLatin1String("/Layout/");
     customKeypad = defaultCustomKeypad();
     windowOnfullScreen = settings->value(key + QLatin1String("WindowOnFullScreen"), false).toBool();
@@ -586,17 +651,35 @@ void Settings::load()
     userUnitsDockSearchText = settings->value(key + QLatin1String("UserUnitsDockSearchText"), QString()).toString();
     variablesDockSearchText = settings->value(key + QLatin1String("VariablesDockSearchText"), QString()).toString();
     formulaBookActivePage = settings->value(key + QLatin1String("FormulaBookActivePage"), QStringLiteral("index")).toString();
+    dockColumnOrdersJson = settings->value(key + QLatin1String("DockColumnOrders"), QString()).toString();
 
     windowState = settings->value(key + QLatin1String("State")).toByteArray();
     windowGeometry = settings->value(key + QLatin1String("WindowGeometry")).toByteArray();
     manualWindowGeometry = settings->value(key + QLatin1String("ManualWindowGeometry")).toByteArray();
     sessionLayoutJson = settings->value(key + QLatin1String("SessionLayoutJson"), QString()).toString();
 
+    phaseTiming.next("Decode display settings");
     key = KEY + QLatin1String("/Display/");
     displayFont = settings->value(key + QLatin1String("DisplayFont"), QFont().toString()).toString();
     colorScheme = settings->value(key + QLatin1String("ColorSchemeName"), DefaultColorScheme).toString();
+    const int systemColorModeValue = settings->value(key + QLatin1String("SystemColorMode"),
+                                                   SystemColorModeFollowSystem).toInt();
+    systemColorMode = systemColorModeValue >= SystemColorModeFollowSystem
+            && systemColorModeValue <= SystemColorModeDark
+        ? static_cast<SystemColorMode>(systemColorModeValue) : SystemColorModeFollowSystem;
+    menuAppearance = settings->value(key + QLatin1String("MenuAppearance"), MenuAppearanceSpeedCrunch).toInt()
+        == MenuAppearanceSystem ? MenuAppearanceSystem : MenuAppearanceSpeedCrunch;
+    dockAppearance = settings->value(key + QLatin1String("DockAppearance"), DockAppearanceSpeedCrunch).toInt()
+        == DockAppearanceSystem ? DockAppearanceSystem : DockAppearanceSpeedCrunch;
+    statusBarAppearance = settings->value(key + QLatin1String("StatusBarAppearance"), StatusBarAppearanceSpeedCrunch).toInt()
+        == StatusBarAppearanceSystem ? StatusBarAppearanceSystem : StatusBarAppearanceSpeedCrunch;
+    editorDisplayStyle = settings->value(key + QLatin1String("EditorDisplayStyle"), EditorDisplayModern).toInt()
+        == EditorDisplayClassic ? EditorDisplayClassic : EditorDisplayModern;
+    keypadAppearance = settings->value(key + QLatin1String("KeypadAppearance"), KeypadAppearanceModern).toInt()
+        == KeypadAppearanceClassic ? KeypadAppearanceClassic : KeypadAppearanceModern;
     customColorSchemeJson = settings->value(key + QLatin1String("CustomColorSchemeJson"), QString()).toString();
 
+    phaseTiming.next("Close settings storage");
     delete settings;
 }
 
@@ -611,8 +694,8 @@ void Settings::save()
     QString key = KEY + QLatin1String("/General/");
 
     settings->setValue(key + QLatin1String("LeaveLastExpression"), leaveLastExpression);
-    settings->setValue(key + QLatin1String("ShowEmptyHistoryHint"), showEmptyHistoryHint);
     settings->setValue(key + QLatin1String("AutoCompletion"), autoCompletion);
+    settings->setValue(key + QLatin1String("AutoCompletionAcceptWithEnter"), autoCompletionAcceptWithEnter);
     settings->setValue(key + QLatin1String("AutoCompletionBuiltInFunctions"), autoCompletionBuiltInFunctions);
     settings->setValue(key + QLatin1String("AutoCompletionBuiltInVariables"), autoCompletionBuiltInVariables);
     settings->setValue(key + QLatin1String("AutoCompletionLongFormUnits"), autoCompletionLongFormUnits);
@@ -623,6 +706,10 @@ void Settings::save()
     settings->setValue(
         key + QLatin1String("UpDownArrowBehavior"), static_cast<int>(upDownArrowBehavior));
     settings->setValue(key + QLatin1String("SyntaxHighlighting"), syntaxHighlighting);
+    settings->setValue(key + QLatin1String("AutomaticInputAdjustments"), automaticInputAdjustments);
+    settings->setValue(key + QLatin1String("InputDigitGrouping"), inputDigitGrouping);
+    settings->setValue(key + QLatin1String("CursorBlinking"), cursorBlinking);
+    settings->setValue(key + QLatin1String("EscapeClearsEditor"), escapeClearsEditor);
     settings->setValue(key + QLatin1String("HoverHighlightResults"), hoverHighlightResults);
     settings->setValue(key + QLatin1String("DigitGrouping"), digitGrouping);
     settings->setValue(key + QLatin1String("DigitGroupingIntegerPartOnly"), digitGroupingIntegerPartOnly);
@@ -631,6 +718,8 @@ void Settings::save()
     settings->setValue(key + QLatin1String("SimplifyResultExpressions"), simplifyResultExpressions);
     settings->setValue(key + QLatin1String("Language"), language);
     settings->setValue(key + QLatin1String("WindowPositionSave"), windowPositionSave);
+    settings->setValue(key + QLatin1String("OpenPrivateTabOnStartup"), openPrivateTabOnStartup);
+    settings->setValue(key + QLatin1String("SubsequentLaunchAction"), int(subsequentLaunchAction));
     settings->setValue(key + QLatin1String("ComplexNumbers"), true);
     settings->setValue(key + QLatin1String("ImaginaryUnit"), QString(QChar(imaginaryUnit)));
     settings->setValue(key + QLatin1String("AngleMode"), QString(QChar(angleUnit)));
@@ -653,6 +742,7 @@ void Settings::save()
     settings->setValue(key + QLatin1String("MultipleLinesEnabled"), multipleResultLinesEnabled);
     settings->setValue(key + QLatin1String("MainComplexForm"), ComplexForm::toString(resultComplexForm));
     settings->setValue(key + QLatin1String("MainPrecision"), resultPrecision);
+    settings->setValue(key + QLatin1String("RemoveTrailingZeroes"), removeTrailingZeroes);
     settings->setValue(key + QLatin1String("ResultRoundingMode"),
         QString(QChar(resultRoundingMode)));
     settings->setValue(key + QLatin1String("UnitNegativeExponentStyle"),
@@ -706,15 +796,46 @@ void Settings::save()
     settings->setValue(key + QLatin1String("UserUnitsDockSearchText"), userUnitsDockSearchText);
     settings->setValue(key + QLatin1String("VariablesDockSearchText"), variablesDockSearchText);
     settings->setValue(key + QLatin1String("FormulaBookActivePage"), formulaBookActivePage);
+    settings->setValue(key + QLatin1String("DockColumnOrders"), dockColumnOrdersJson);
 
     key = KEY + QLatin1String("/Display/");
 
     settings->setValue(key + QLatin1String("DisplayFont"), displayFont);
     settings->setValue(key + QLatin1String("ColorSchemeName"), colorScheme);
+    settings->setValue(key + QLatin1String("SystemColorMode"), static_cast<int>(systemColorMode));
+    settings->setValue(key + QLatin1String("MenuAppearance"), static_cast<int>(menuAppearance));
+    settings->setValue(key + QLatin1String("DockAppearance"), static_cast<int>(dockAppearance));
+    settings->setValue(key + QLatin1String("StatusBarAppearance"), static_cast<int>(statusBarAppearance));
+    settings->setValue(key + QLatin1String("EditorDisplayStyle"), static_cast<int>(editorDisplayStyle));
+    settings->setValue(key + QLatin1String("KeypadAppearance"), static_cast<int>(keypadAppearance));
     settings->setValue(key + QLatin1String("CustomColorSchemeJson"), customColorSchemeJson);
 
 
     delete settings;
+}
+
+bool Settings::resetToDefaults()
+{
+    QSettings* settings = createQSettings(QStringLiteral("SpeedCrunch"));
+    if (!settings)
+        return false;
+
+    // The open sessions are work in progress, so keep their layout while
+    // removing preferences, including keys left behind by older versions.
+    settings->remove(QStringLiteral("SpeedCrunch"));
+    settings->setValue(QStringLiteral("SpeedCrunch/Layout/SessionLayoutJson"), sessionLayoutJson);
+    settings->sync();
+    const bool success = settings->status() == QSettings::NoError;
+    delete settings;
+    if (!success)
+        return false;
+
+    // Use the same defaults as a fresh installation instead of keeping a
+    // second list here. Save the number format to avoid a first-run prompt.
+    load();
+    hasNumberFormatStyleSetting = true;
+    save();
+    return true;
 }
 
 void Settings::saveSessionLayoutJson()
@@ -948,6 +1069,8 @@ QSettings* createQSettings(const QString& KEY)
         migrateSettings_legacyTo1200(settings, KEY);
         break;
     }
-    settings->setValue("ConfigVersion", ConfigVersion);
+    // Loading a current file should not mark it dirty and flush it on close.
+    if (ver != ConfigVersion)
+        settings->setValue("ConfigVersion", ConfigVersion);
     return settings;
 }

@@ -6,6 +6,7 @@
 #define GUI_FUNCTIONSWIDGET_H
 
 #include <QList>
+#include <QStringList>
 #include <QWidget>
 
 class QEvent;
@@ -19,7 +20,12 @@ class FunctionsWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit FunctionsWidget(QWidget* parent = 0);
+    struct InitialState {
+        QString domain;
+        QString searchText;
+    };
+
+    explicit FunctionsWidget(QWidget* parent = nullptr, const InitialState& state = {});
     ~FunctionsWidget();
 
     const QTreeWidgetItem* currentItem() const;
@@ -28,6 +34,7 @@ public:
     void setSearchText(const QString& text);
     QString selectedDomain() const;
     void setSelectedDomain(const QString& domain);
+    void restoreState(const QString& domain, const QString& searchText);
 
 signals:
     void functionSelected(const QString&);
@@ -43,6 +50,11 @@ protected slots:
 private:
     Q_DISABLE_COPY(FunctionsWidget)
 
+    enum class ListUpdate { DeferPopulation, Populate };
+
+    void translateControls(ListUpdate mode);
+    void updateControlLabelWidths();
+
     QTimer* m_filterTimer;
     QComboBox* m_domain;
     QLabel* m_domainLabel;
@@ -51,6 +63,7 @@ private:
     QLabel* m_noMatchLabel;
     QLineEdit* m_searchFilter;
     QLabel* m_searchLabel;
+    QStringList m_populatedInputs;
 };
 
 #endif // GUI_FUNCTIONSWIDGET_H

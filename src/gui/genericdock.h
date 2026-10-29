@@ -5,19 +5,23 @@
 #ifndef GUI_GENERICDOCK_H
 #define GUI_GENERICDOCK_H
 
+#include "gui/dockwidget.h"
+
 #include <QCoreApplication>
-#include <QDockWidget>
+#include <utility>
 
 
-template <class Widget> class GenericDock : public QDockWidget {
+template <class Widget> class GenericDock : public DockWidget {
     // Can't have Q_OBJECT in templates. That means no signals, slots, or properties in this class.
 
 public:
-    explicit GenericDock(const char* i18nContext, const char* name, QWidget* parent = nullptr)
-        : QDockWidget(parent),
+    template <typename... Args>
+    explicit GenericDock(const char* i18nContext, const char* name, QWidget* parent = nullptr,
+                         Args&&... args)
+        : DockWidget(parent),
           m_name(name),
           m_i18nContext(i18nContext),
-          m_widget(new Widget(this))
+          m_widget(new Widget(this, std::forward<Args>(args)...))
     {
         setWidget(m_widget);
         setMinimumWidth(200);

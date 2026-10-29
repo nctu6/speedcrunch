@@ -1,5 +1,4 @@
 CMakeLists.txt.user
-src/speedcrunch.pro.user
 /.idea
 cmake-build-debug
 build/
@@ -8,9 +7,5 @@ src/build*/
 **/.DS_Store
 doc/src/_build-*/.doctrees/
 doc/build_html_embedded/*/.doctrees/
-src/tests/.qmake.stash
-src/tests/*.o
-src/tests/moc_*
-src/tests/Makefile
-src/tests/testevaluator.app
+src/resources/locale/*.qm
 Testing/

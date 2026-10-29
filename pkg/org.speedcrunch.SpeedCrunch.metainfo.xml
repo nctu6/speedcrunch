@@ -5,6 +5,10 @@
   <project_license>GPL-2.0+</project_license>
   <update_contact>speedcrunch@googlegroups.com</update_contact>
   <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#c4a7e7</color>
+    <color type="primary" scheme_preference="dark">#6b527f</color>
+  </branding>
   <developer id="org.speedcrunch">
     <name>The SpeedCrunch Developers</name>
   </developer>
@@ -59,55 +63,55 @@
   <name xml:lang="zh_CN">SpeedCrunch</name>
   <name xml:lang="zh_TW">SpeedCrunch</name>
   
-  <summary>A high-precision scientific calculator</summary>
-  <summary xml:lang="ar">آلة حاسبة علمية عالية الدقة</summary>
-  <summary xml:lang="bg">Научен калкулатор с висока точност</summary>
-  <summary xml:lang="bn">উচ্চ-নির্ভুল বৈজ্ঞানিক ক্যালকুলেটর</summary>
-  <summary xml:lang="ca">Una calculadora científica d'alta precisió</summary>
-  <summary xml:lang="cs">Vysoce přesná vědecká kalkulačka</summary>
-  <summary xml:lang="da">En videnskabelig lommeregner med høj præcision</summary>
-  <summary xml:lang="de">Ein hochpräziser wissenschaftlicher Taschenrechner</summary>
-  <summary xml:lang="el">Επιστημονική αριθμομηχανή υψηλής ακρίβειας</summary>
-  <summary xml:lang="en_GB">A high-precision scientific calculator</summary>
-  <summary xml:lang="en_US">A high-precision scientific calculator</summary>
-  <summary xml:lang="es">Una calculadora científica de alta precisión</summary>
-  <summary xml:lang="es_ES">Una calculadora científica de alta precisión</summary>
-  <summary xml:lang="et">Kõrgtäpne teaduslik kalkulaator</summary>
-  <summary xml:lang="eu">Zehaztasun handiko kalkulagailu zientifikoa</summary>
-  <summary xml:lang="fa">ماشین‌حساب علمی با دقت بالا</summary>
-  <summary xml:lang="fi">Erittäin tarkka tieteellinen laskin</summary>
-  <summary xml:lang="fr">Une calculatrice scientifique de haute précision</summary>
-  <summary xml:lang="gl">Unha calculadora científica de alta precisión</summary>
-  <summary xml:lang="he">מחשבון מדעי בדיוק גבוה</summary>
-  <summary xml:lang="hi">उच्च-सटीकता वाला वैज्ञानिक कैलकुलेटर</summary>
-  <summary xml:lang="hu">Egy nagy pontosságú tudományos számológép</summary>
-  <summary xml:lang="id">Kalkulator ilmiah presisi tinggi</summary>
-  <summary xml:lang="it">Una calcolatrice scientifica ad alta precisione</summary>
-  <summary xml:lang="ja">高精度の科学計算機</summary>
-  <summary xml:lang="ko">고정밀 공학용 계산기</summary>
-  <summary xml:lang="lt">Labai tikslus mokslinis skaičiuotuvas</summary>
-  <summary xml:lang="lv">Augstas precizitātes zinātniskais kalkulators</summary>
-  <summary xml:lang="ms">Kalkulator saintifik berketepatan tinggi</summary>
-  <summary xml:lang="nb">En vitenskapelig kalkulator med høy presisjon</summary>
-  <summary xml:lang="nl">Een wetenschappelijke rekenmachine met hoge precisie</summary>
-  <summary xml:lang="pl">Wysokoprecyzyjny kalkulator naukowy</summary>
-  <summary xml:lang="pt_BR">Calculadora científica de alta precisão</summary>
-  <summary xml:lang="pt_PT">Uma calculadora científica de alta precisão</summary>
-  <summary xml:lang="ro">Un calculator științific de înaltă precizie</summary>
-  <summary xml:lang="ru">Научный инженерный калькулятор</summary>
-  <summary xml:lang="sk">Vysokopresná vedecká kalkulačka</summary>
-  <summary xml:lang="sl">Visokonatančen znanstveni kalkulator</summary>
-  <summary xml:lang="sv">En vetenskaplig miniräknare med hög precision</summary>
-  <summary xml:lang="sw">Kikokotoo cha kisayansi chenye usahihi wa juu</summary>
-  <summary xml:lang="ta">உயர் துல்லியமான அறிவியல் கணிப்பான்</summary>
-  <summary xml:lang="te">అధిక ఖచ్చితత్వం గల శాస్త్రీయ కాలిక్యులేటర్</summary>
-  <summary xml:lang="th">เครื่องคิดเลขวิทยาศาสตร์ความแม่นยำสูง</summary>
-  <summary xml:lang="tr">Yüksek hassasiyetli bilimsel hesap makinesi</summary>
-  <summary xml:lang="uk">Високоточний науковий калькулятор</summary>
-  <summary xml:lang="uz_Latn">Yuqori aniqlikdagi ilmiy kalkulyator</summary>
-  <summary xml:lang="vi">Máy tính khoa học có độ chính xác cao</summary>
-  <summary xml:lang="zh_CN">高精度科学计算器</summary>
-  <summary xml:lang="zh_TW">高精度科學計算器</summary>
+  <summary>High-precision calculator</summary>
+  <summary xml:lang="ar">آلة حاسبة عالية الدقة</summary>
+  <summary xml:lang="bg">Калкулатор с висока точност</summary>
+  <summary xml:lang="bn">উচ্চ নির্ভুলতার ক্যালকুলেটর</summary>
+  <summary xml:lang="ca">Calculadora d'alta precisió</summary>
+  <summary xml:lang="cs">Vysoce přesná kalkulačka</summary>
+  <summary xml:lang="da">Lommeregner med høj præcision</summary>
+  <summary xml:lang="de">Hochpräziser Taschenrechner</summary>
+  <summary xml:lang="el">Αριθμομηχανή υψηλής ακρίβειας</summary>
+  <summary xml:lang="en_GB">High-precision calculator</summary>
+  <summary xml:lang="en_US">High-precision calculator</summary>
+  <summary xml:lang="es">Calculadora de alta precisión</summary>
+  <summary xml:lang="es_ES">Calculadora de alta precisión</summary>
+  <summary xml:lang="et">Kõrgtäpne kalkulaator</summary>
+  <summary xml:lang="eu">Doitasun handiko kalkulagailua</summary>
+  <summary xml:lang="fa">ماشین‌حساب با دقت بالا</summary>
+  <summary xml:lang="fi">Erittäin tarkka laskin</summary>
+  <summary xml:lang="fr">Calculatrice de haute précision</summary>
+  <summary xml:lang="gl">Calculadora de alta precisión</summary>
+  <summary xml:lang="he">מחשבון בדיוק גבוה</summary>
+  <summary xml:lang="hi">उच्च सटीकता वाला कैलकुलेटर</summary>
+  <summary xml:lang="hu">Nagy pontosságú számológép</summary>
+  <summary xml:lang="id">Kalkulator presisi tinggi</summary>
+  <summary xml:lang="it">Calcolatrice ad alta precisione</summary>
+  <summary xml:lang="ja">高精度電卓</summary>
+  <summary xml:lang="ko">고정밀 계산기</summary>
+  <summary xml:lang="lt">Didelio tikslumo skaičiuotuvas</summary>
+  <summary xml:lang="lv">Augstas precizitātes kalkulators</summary>
+  <summary xml:lang="ms">Kalkulator berketepatan tinggi</summary>
+  <summary xml:lang="nb">Kalkulator med høy presisjon</summary>
+  <summary xml:lang="nl">Rekenmachine met hoge precisie</summary>
+  <summary xml:lang="pl">Kalkulator o wysokiej precyzji</summary>
+  <summary xml:lang="pt_BR">Calculadora de alta precisão</summary>
+  <summary xml:lang="pt_PT">Calculadora de alta precisão</summary>
+  <summary xml:lang="ro">Calculator de înaltă precizie</summary>
+  <summary xml:lang="ru">Высокоточный калькулятор</summary>
+  <summary xml:lang="sk">Vysokopresná kalkulačka</summary>
+  <summary xml:lang="sl">Visokonatančen kalkulator</summary>
+  <summary xml:lang="sv">Miniräknare med hög precision</summary>
+  <summary xml:lang="sw">Kikokotoo chenye usahihi wa juu</summary>
+  <summary xml:lang="ta">உயர் துல்லியக் கணிப்பான்</summary>
+  <summary xml:lang="te">అధిక ఖచ్చితత్వం గల కాలిక్యులేటర్</summary>
+  <summary xml:lang="th">เครื่องคิดเลขความแม่นยำสูง</summary>
+  <summary xml:lang="tr">Yüksek hassasiyetli hesap makinesi</summary>
+  <summary xml:lang="uk">Високоточний калькулятор</summary>
+  <summary xml:lang="uz_Latn">Yuqori aniqlikdagi kalkulyator</summary>
+  <summary xml:lang="vi">Máy tính có độ chính xác cao</summary>
+  <summary xml:lang="zh_CN">高精度计算器</summary>
+  <summary xml:lang="zh_TW">高精度計算器</summary>
   <description>
     <p>SpeedCrunch is a fast, high-precision scientific calculator. It features a syntax-highlighted scrollable display and is designed to be fully used via keyboard.</p>
     <p xml:lang="ar">SpeedCrunch آلة حاسبة علمية سريعة وعالية الدقة. تتميز بعرض قابل للتمرير مع إبراز بناء الجملة، وهي مصممة ليُستخدم البرنامج بالكامل عبر لوحة المفاتيح.</p>

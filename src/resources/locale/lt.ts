@@ -4,53 +4,53 @@
 <context>
     <name>AboutBox</name>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="19"/>
-        <location filename="../../gui/aboutbox.cpp" line="142"/>
+        <location filename="../../gui/aboutbox.cpp" line="20"/>
+        <location filename="../../gui/aboutbox.cpp" line="147"/>
         <source>About SpeedCrunch</source>
         <translation>Apie SpeedCrunch</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="32"/>
+        <location filename="../../gui/aboutbox.cpp" line="37"/>
         <source>Core developers</source>
         <translation>Pagrindiniai kūrėjai</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="40"/>
+        <location filename="../../gui/aboutbox.cpp" line="45"/>
         <source>Original author</source>
         <translation>Pradinis autorius</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="134"/>
+        <location filename="../../gui/aboutbox.cpp" line="139"/>
         <source>Close</source>
         <translation>Užverti</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="41"/>
+        <location filename="../../gui/aboutbox.cpp" line="46"/>
         <source>Math engine</source>
         <translation>Matematikos modulis</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="30"/>
+        <location filename="../../gui/aboutbox.cpp" line="35"/>
         <source>Main author | Logo | Maintainer</source>
         <translation>Pagrindinis autorius | Logotipas | Prižiūrėtojas</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="43"/>
+        <location filename="../../gui/aboutbox.cpp" line="48"/>
         <source>Thanks</source>
         <translation>Padėkos</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="111"/>
+        <location filename="../../gui/aboutbox.cpp" line="116"/>
         <source>Copyright (C) 2004-2026 The SpeedCrunch developers</source>
         <translation>Autorių teisės (C) 2004-2026 SpeedCrunch kūrėjai</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="115"/>
+        <location filename="../../gui/aboutbox.cpp" line="120"/>
         <source>This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version</source>
         <translation>Ši programa yra laisva programinė įranga; jūs galite ją platinti ir/arba modifikuoti remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios Viešosios Licencijos sąlygomis; arba licencijos 2 versija, arba (savo nuožiūra) bet kuria vėlesne versija.</translation>
     </message>
     <message>
-        <location filename="../../gui/aboutbox.cpp" line="121"/>
+        <location filename="../../gui/aboutbox.cpp" line="126"/>
         <source>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</source>
         <translation>Ši programa platinama, tikintis, kad ji bus naudinga, tačiau BE JOKIŲ GARANTIJŲ; netgi be numanomos PARDAVIMO ar TINKAMUMO TAM TIKRAM TIKSLUI garantijos. Išsamiau apie tai, žiūrėkite GNU Bendrojoje Viešojoje Licencijoje.</translation>
     </message>
@@ -58,22 +58,22 @@
 <context>
     <name>BitFieldWidget</name>
     <message>
-        <location filename="../../gui/bitfieldwidget.cpp" line="643"/>
+        <location filename="../../gui/bitfieldwidget.cpp" line="675"/>
         <source>Reset bits to zero</source>
         <translation>Atstatyti bitus į nulį</translation>
     </message>
     <message>
-        <location filename="../../gui/bitfieldwidget.cpp" line="645"/>
+        <location filename="../../gui/bitfieldwidget.cpp" line="677"/>
         <source>Invert bits</source>
         <translation>Invertuoti bitus</translation>
     </message>
     <message>
-        <location filename="../../gui/bitfieldwidget.cpp" line="647"/>
+        <location filename="../../gui/bitfieldwidget.cpp" line="679"/>
         <source>Shift bits left</source>
         <translation>Pastumti bitus į kairę</translation>
     </message>
     <message>
-        <location filename="../../gui/bitfieldwidget.cpp" line="649"/>
+        <location filename="../../gui/bitfieldwidget.cpp" line="681"/>
         <source>Shift bits right</source>
         <translation>Pastumti bitus į dešinę</translation>
     </message>
@@ -81,324 +81,324 @@
 <context>
     <name>Book</name>
     <message>
-        <location filename="../../core/book.cpp" line="53"/>
-        <location filename="../../core/book.cpp" line="76"/>
+        <location filename="../../core/book.cpp" line="55"/>
+        <location filename="../../core/book.cpp" line="78"/>
         <source>Index</source>
         <translation>Rodyklė</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="77"/>
+        <location filename="../../core/book.cpp" line="79"/>
         <source>Algebra</source>
         <translation>Algebra</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="78"/>
-        <location filename="../../core/book.cpp" line="106"/>
+        <location filename="../../core/book.cpp" line="80"/>
+        <location filename="../../core/book.cpp" line="108"/>
         <source>Quadratic Equation</source>
         <translation>Kvadratinė lygtis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="79"/>
-        <location filename="../../core/book.cpp" line="118"/>
+        <location filename="../../core/book.cpp" line="81"/>
+        <location filename="../../core/book.cpp" line="120"/>
         <source>Logarithmic Base Conversion</source>
         <translation>Logaritmo pagrindo keitimas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="80"/>
+        <location filename="../../core/book.cpp" line="82"/>
         <source>Geometry</source>
         <translation>Geometrija</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="81"/>
-        <location filename="../../core/book.cpp" line="208"/>
+        <location filename="../../core/book.cpp" line="83"/>
+        <location filename="../../core/book.cpp" line="210"/>
         <source>Circle</source>
         <translation>Apskritimas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="82"/>
-        <location filename="../../core/book.cpp" line="283"/>
+        <location filename="../../core/book.cpp" line="84"/>
+        <location filename="../../core/book.cpp" line="285"/>
         <source>Sector</source>
         <translation>Sektorius</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="83"/>
-        <location filename="../../core/book.cpp" line="301"/>
+        <location filename="../../core/book.cpp" line="85"/>
+        <location filename="../../core/book.cpp" line="303"/>
         <source>Sphere</source>
         <translation>Sfera</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="84"/>
-        <location filename="../../core/book.cpp" line="246"/>
+        <location filename="../../core/book.cpp" line="86"/>
+        <location filename="../../core/book.cpp" line="248"/>
         <source>Cube</source>
         <translation>Kubas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="85"/>
-        <location filename="../../core/book.cpp" line="227"/>
+        <location filename="../../core/book.cpp" line="87"/>
+        <location filename="../../core/book.cpp" line="229"/>
         <source>Cone</source>
         <translation>Kūgis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="86"/>
-        <location filename="../../core/book.cpp" line="266"/>
+        <location filename="../../core/book.cpp" line="88"/>
+        <location filename="../../core/book.cpp" line="268"/>
         <source>Cylinder</source>
         <translation>Cilindras</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="87"/>
+        <location filename="../../core/book.cpp" line="89"/>
         <source>Electronics</source>
         <translation>Elektronika</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="88"/>
-        <location filename="../../core/book.cpp" line="128"/>
+        <location filename="../../core/book.cpp" line="90"/>
+        <location filename="../../core/book.cpp" line="130"/>
         <source>Ohm&apos;s Law</source>
         <translation>Omo dėsnis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="89"/>
-        <location filename="../../core/book.cpp" line="145"/>
+        <location filename="../../core/book.cpp" line="91"/>
+        <location filename="../../core/book.cpp" line="147"/>
         <source>Power</source>
         <translation>Galia</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="90"/>
-        <location filename="../../core/book.cpp" line="169"/>
+        <location filename="../../core/book.cpp" line="92"/>
+        <location filename="../../core/book.cpp" line="171"/>
         <source>Reactance</source>
         <translation>Reaktyvioji varža</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="91"/>
-        <location filename="../../core/book.cpp" line="191"/>
+        <location filename="../../core/book.cpp" line="93"/>
+        <location filename="../../core/book.cpp" line="193"/>
         <source>Resonance</source>
         <translation>Rezonansas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="92"/>
-        <location filename="../../core/book.cpp" line="320"/>
+        <location filename="../../core/book.cpp" line="94"/>
+        <location filename="../../core/book.cpp" line="322"/>
         <source>Radio Frequency</source>
         <translation>Radijo dažnis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="93"/>
+        <location filename="../../core/book.cpp" line="95"/>
         <source>Antennas</source>
         <translation>Antenos</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="94"/>
-        <location filename="../../core/book.cpp" line="335"/>
+        <location filename="../../core/book.cpp" line="96"/>
+        <location filename="../../core/book.cpp" line="337"/>
         <source>Characteristic Impedance (coax)</source>
         <translation>Būdingoji pilnutinė varža (bendraašis kabelis)</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="95"/>
-        <location filename="../../core/book.cpp" line="350"/>
+        <location filename="../../core/book.cpp" line="97"/>
+        <location filename="../../core/book.cpp" line="352"/>
         <source>Velocity of Propagation (coax)</source>
         <translation>Sklidimo greitis (bendraašis kabelis)</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="96"/>
-        <location filename="../../core/book.cpp" line="367"/>
+        <location filename="../../core/book.cpp" line="98"/>
+        <location filename="../../core/book.cpp" line="369"/>
         <source>Standing Wave Ratio &amp; Return Loss</source>
         <translation>Stovinčiosios bangos koeficientas ir grįžtamieji nuostoliai</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="97"/>
-        <location filename="../../core/book.cpp" line="393"/>
+        <location filename="../../core/book.cpp" line="99"/>
+        <location filename="../../core/book.cpp" line="395"/>
         <source>Free Space Wavelength</source>
         <translation>Laisvaerdvės bangos ilgis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="133"/>
-        <location filename="../../core/book.cpp" line="159"/>
+        <location filename="../../core/book.cpp" line="135"/>
+        <location filename="../../core/book.cpp" line="161"/>
         <source>resistance</source>
         <translation>varža</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="134"/>
-        <location filename="../../core/book.cpp" line="158"/>
+        <location filename="../../core/book.cpp" line="136"/>
+        <location filename="../../core/book.cpp" line="160"/>
         <source>voltage</source>
         <translation>elektrinė įtampa</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="135"/>
-        <location filename="../../core/book.cpp" line="157"/>
+        <location filename="../../core/book.cpp" line="137"/>
+        <location filename="../../core/book.cpp" line="159"/>
         <source>current</source>
         <translation>srovė</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="156"/>
+        <location filename="../../core/book.cpp" line="158"/>
         <source>power</source>
         <translation>galia</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="177"/>
+        <location filename="../../core/book.cpp" line="179"/>
         <source>inductive reactance</source>
         <translation>induktyvioji varža</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="178"/>
+        <location filename="../../core/book.cpp" line="180"/>
         <source>capacitive reactance</source>
         <translation>talpioji varža</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="179"/>
-        <location filename="../../core/book.cpp" line="197"/>
+        <location filename="../../core/book.cpp" line="181"/>
+        <location filename="../../core/book.cpp" line="199"/>
         <source>inductance</source>
         <translation>induktyvumas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="180"/>
-        <location filename="../../core/book.cpp" line="198"/>
+        <location filename="../../core/book.cpp" line="182"/>
+        <location filename="../../core/book.cpp" line="200"/>
         <source>capacitance</source>
         <translation>elektrinė talpa</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="181"/>
+        <location filename="../../core/book.cpp" line="183"/>
         <source>frequency</source>
         <translation>dažnis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="196"/>
+        <location filename="../../core/book.cpp" line="198"/>
         <source>resonance frequency</source>
         <translation>rezonanso dažnis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="214"/>
-        <location filename="../../core/book.cpp" line="271"/>
-        <location filename="../../core/book.cpp" line="288"/>
-        <location filename="../../core/book.cpp" line="307"/>
+        <location filename="../../core/book.cpp" line="216"/>
+        <location filename="../../core/book.cpp" line="273"/>
+        <location filename="../../core/book.cpp" line="290"/>
+        <location filename="../../core/book.cpp" line="309"/>
         <source>area</source>
         <translation>plotas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="215"/>
+        <location filename="../../core/book.cpp" line="217"/>
         <source>perimeter</source>
         <translation>perimetras (ilgis)</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="216"/>
-        <location filename="../../core/book.cpp" line="310"/>
+        <location filename="../../core/book.cpp" line="218"/>
+        <location filename="../../core/book.cpp" line="312"/>
         <source>diameter</source>
         <translation>diametras (skersmuo)</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="217"/>
-        <location filename="../../core/book.cpp" line="234"/>
-        <location filename="../../core/book.cpp" line="272"/>
-        <location filename="../../core/book.cpp" line="290"/>
-        <location filename="../../core/book.cpp" line="309"/>
+        <location filename="../../core/book.cpp" line="219"/>
+        <location filename="../../core/book.cpp" line="236"/>
+        <location filename="../../core/book.cpp" line="274"/>
+        <location filename="../../core/book.cpp" line="292"/>
+        <location filename="../../core/book.cpp" line="311"/>
         <source>radius</source>
         <translation>spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="232"/>
-        <location filename="../../core/book.cpp" line="252"/>
-        <location filename="../../core/book.cpp" line="270"/>
-        <location filename="../../core/book.cpp" line="308"/>
+        <location filename="../../core/book.cpp" line="234"/>
+        <location filename="../../core/book.cpp" line="254"/>
+        <location filename="../../core/book.cpp" line="272"/>
+        <location filename="../../core/book.cpp" line="310"/>
         <source>volume</source>
         <translation>tūris</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="233"/>
-        <location filename="../../core/book.cpp" line="253"/>
+        <location filename="../../core/book.cpp" line="235"/>
+        <location filename="../../core/book.cpp" line="255"/>
         <source>surface area</source>
         <translation>paviršiaus plotas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="235"/>
-        <location filename="../../core/book.cpp" line="273"/>
+        <location filename="../../core/book.cpp" line="237"/>
+        <location filename="../../core/book.cpp" line="275"/>
         <source>height</source>
         <translation>aukštis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="236"/>
+        <location filename="../../core/book.cpp" line="238"/>
         <source>slant height</source>
         <translation>sudaromoji</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="254"/>
+        <location filename="../../core/book.cpp" line="256"/>
         <source>face diagonal</source>
         <translation>sienos įstrižainė</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="255"/>
+        <location filename="../../core/book.cpp" line="257"/>
         <source>space diagonal</source>
         <translation>erdvinė įstrižainė</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="256"/>
+        <location filename="../../core/book.cpp" line="258"/>
         <source>edge length</source>
         <translation>briaunos ilgis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="289"/>
+        <location filename="../../core/book.cpp" line="291"/>
         <source>arc length</source>
         <translation>lanko ilgis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="291"/>
+        <location filename="../../core/book.cpp" line="293"/>
         <source>central angle (degrees)</source>
         <translation>centrinis kampas (laipsniai)</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="377"/>
+        <location filename="../../core/book.cpp" line="379"/>
         <source>input power</source>
         <translation>įėjimo galia</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="378"/>
+        <location filename="../../core/book.cpp" line="380"/>
         <source>reflected power</source>
         <translation>atspindėtoji galia</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="379"/>
+        <location filename="../../core/book.cpp" line="381"/>
         <source>transmitted power</source>
         <translation>perduodamoji galia</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="380"/>
+        <location filename="../../core/book.cpp" line="382"/>
         <source>return loss</source>
         <translation>grįžtamieji nuostoliai</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="338"/>
-        <location filename="../../core/book.cpp" line="357"/>
+        <location filename="../../core/book.cpp" line="340"/>
+        <location filename="../../core/book.cpp" line="359"/>
         <source>dielectric constant</source>
         <translation>dielektrinė skvarba</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="339"/>
+        <location filename="../../core/book.cpp" line="341"/>
         <source>outer conductor&apos;s inner diameter</source>
         <translation>išorinio konduktoriaus vidinis skersmuo</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="340"/>
+        <location filename="../../core/book.cpp" line="342"/>
         <source>inner conductor&apos;s outer diameter</source>
         <translation>vidinio konduktoriaus išorinis skersmuo</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="356"/>
+        <location filename="../../core/book.cpp" line="358"/>
         <source>speed of light</source>
         <translation>šviesos greitis</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="381"/>
+        <location filename="../../core/book.cpp" line="383"/>
         <source>reflection coefficient</source>
         <translation>atspindžio koeficientas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="382"/>
+        <location filename="../../core/book.cpp" line="384"/>
         <source>standing wave ratio</source>
         <translation>stovinčiosios bangos koeficientas</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="383"/>
+        <location filename="../../core/book.cpp" line="385"/>
         <source>normalized impedance</source>
         <translation>normuotoji pilnutinė varža</translation>
     </message>
     <message>
-        <location filename="../../core/book.cpp" line="399"/>
+        <location filename="../../core/book.cpp" line="401"/>
         <source>frequency (Hz)</source>
         <translation>dažnis (Hz)</translation>
     </message>
@@ -406,7 +406,7 @@
 <context>
     <name>BookDock</name>
     <message>
-        <location filename="../../gui/bookdock.cpp" line="150"/>
+        <location filename="../../gui/bookdock.cpp" line="156"/>
         <source>Formula Book</source>
         <translation>Formulių knyga</translation>
     </message>
@@ -414,2132 +414,2136 @@
 <context>
     <name>ConstantCompletion</name>
     <message>
-        <location filename="../../gui/editor.cpp" line="4730"/>
-        <location filename="../../gui/editor.cpp" line="4740"/>
-        <location filename="../../gui/editor.cpp" line="4855"/>
-        <source>All</source>
-        <translation>Visos</translation>
+        <location filename="../../gui/editor.cpp" line="5034"/>
+        <location filename="../../gui/editor.cpp" line="5035"/>
+        <source>Search constants</source>
+        <translation>Ieškoti konstantų</translation>
+    </message>
+    <message>
+        <location filename="../../gui/editor.cpp" line="5052"/>
+        <source>No match found</source>
+        <translation>Nerasta atitikmens</translation>
     </message>
 </context>
 <context>
     <name>Constants</name>
     <message>
-        <location filename="../../core/constants.cpp" line="36"/>
+        <location filename="../../core/constants.cpp" line="38"/>
         <source>Mathematics</source>
         <translation>Matematika</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="38"/>
+        <location filename="../../core/constants.cpp" line="40"/>
         <source>Physics (CODATA 2022)</source>
         <translation>Fizika (CODATA 2022)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="40"/>
+        <location filename="../../core/constants.cpp" line="42"/>
         <source>Chemistry (IUPAC - CIAAW 2021)</source>
         <translation>Chemija (IUPAC - CIAAW 2021)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="45"/>
+        <location filename="../../core/constants.cpp" line="47"/>
         <source>Uncategorized</source>
         <translation>Nekategorizuota</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="53"/>
+        <location filename="../../core/constants.cpp" line="55"/>
         <source>Universal</source>
         <translation>Universalios</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="57"/>
+        <location filename="../../core/constants.cpp" line="59"/>
         <source>Physicochemical</source>
         <translation>Fizikocheminiai</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="59"/>
+        <location filename="../../core/constants.cpp" line="61"/>
         <source>Atomic &amp; Nuclear — General</source>
         <translation>Atominiai ir branduoliniai — bendrieji</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="61"/>
+        <location filename="../../core/constants.cpp" line="63"/>
         <source>Atomic &amp; Nuclear — Electroweak</source>
         <translation>Atominiai ir branduoliniai — elektrosilpnieji</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="63"/>
+        <location filename="../../core/constants.cpp" line="65"/>
         <source>Atomic &amp; Nuclear — Electron</source>
         <translation>Atominiai ir branduoliniai — elektronas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="65"/>
+        <location filename="../../core/constants.cpp" line="67"/>
         <source>Atomic &amp; Nuclear — Muon</source>
         <translation>Atominiai ir branduoliniai — miuonas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="67"/>
+        <location filename="../../core/constants.cpp" line="69"/>
         <source>Atomic &amp; Nuclear — Tau</source>
         <translation>Atominiai ir branduoliniai — tau</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="69"/>
+        <location filename="../../core/constants.cpp" line="71"/>
         <source>Atomic &amp; Nuclear — Proton</source>
         <translation>Atominiai ir branduoliniai — protonas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="71"/>
+        <location filename="../../core/constants.cpp" line="73"/>
         <source>Atomic &amp; Nuclear — Neutron</source>
         <translation>Atominiai ir branduoliniai — neutronas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="73"/>
+        <location filename="../../core/constants.cpp" line="75"/>
         <source>Atomic &amp; Nuclear — Deuteron</source>
         <translation>Atominiai ir branduoliniai — deuteronas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="75"/>
+        <location filename="../../core/constants.cpp" line="77"/>
         <source>Atomic &amp; Nuclear — Triton</source>
         <translation>Atominiai ir branduoliniai — tritonas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="77"/>
+        <location filename="../../core/constants.cpp" line="79"/>
         <source>Atomic &amp; Nuclear — Helion</source>
         <translation>Atominiai ir branduoliniai — helionas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="79"/>
+        <location filename="../../core/constants.cpp" line="81"/>
         <source>Atomic &amp; Nuclear — Alpha particle</source>
         <translation>Atominiai ir branduoliniai — alfa dalelė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="81"/>
+        <location filename="../../core/constants.cpp" line="83"/>
         <source>Atomic &amp; Nuclear — Atomic units</source>
         <translation>Atominiai ir branduoliniai — atominiai vienetai</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="83"/>
+        <location filename="../../core/constants.cpp" line="85"/>
         <source>Atomic &amp; Nuclear — Energy conversion relationships</source>
         <translation>Atominiai ir branduoliniai — energijos konvertavimo ryšiai</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="85"/>
+        <location filename="../../core/constants.cpp" line="87"/>
         <source>Atomic &amp; Nuclear — X-ray units</source>
         <translation>Atominiai ir branduoliniai — rentgeno vienetai</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="87"/>
+        <location filename="../../core/constants.cpp" line="89"/>
         <source>Atomic &amp; Nuclear — Magnetic shielding corrections</source>
         <translation>Atominiai ir branduoliniai — magnetinio ekranavimo pataisos</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="89"/>
+        <location filename="../../core/constants.cpp" line="91"/>
         <source>Masses</source>
         <translation>Masės</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="91"/>
+        <location filename="../../core/constants.cpp" line="93"/>
         <source>Lifetimes</source>
         <translation>Gyvavimo trukmės</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="93"/>
+        <location filename="../../core/constants.cpp" line="95"/>
         <source>Molar Masses</source>
         <translation>Molinės masės</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="95"/>
+        <location filename="../../core/constants.cpp" line="97"/>
         <source>Electronegativity</source>
         <translation>Elektroneigiamumas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="97"/>
+        <location filename="../../core/constants.cpp" line="99"/>
         <source>Ionization Energy</source>
         <translation>Jonizacijos energija</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="99"/>
+        <location filename="../../core/constants.cpp" line="101"/>
         <source>Nominal Constants (IAU 2015)</source>
         <translation>Nominaliosios konstantos (IAU 2015)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="101"/>
+        <location filename="../../core/constants.cpp" line="103"/>
         <source>Current Best Estimates (IAU NSFA 2026-04)</source>
         <translation>Dabartiniai geriausi įverčiai (IAU NSFA 2026-04)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="152"/>
+        <location filename="../../core/constants.cpp" line="155"/>
         <source>characteristic impedance of vacuum (Z₀)</source>
         <translation>vakuumo banginė varža (Z₀)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="153"/>
+        <location filename="../../core/constants.cpp" line="156"/>
         <source>reduced Planck constant (ℏ)</source>
         <translation>redukuotoji Planko konstanta (ℏ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="154"/>
+        <location filename="../../core/constants.cpp" line="157"/>
         <source>vacuum electric permittivity (ϵ₀)</source>
         <translation>vakuumo elektrinė skvarba (ϵ₀)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="155"/>
+        <location filename="../../core/constants.cpp" line="158"/>
         <source>Newtonian constant of gravitation (G)</source>
         <translation>Niutono gravitacijos konstanta (G)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="156"/>
+        <location filename="../../core/constants.cpp" line="159"/>
         <source>vacuum magnetic permeability (μ₀)</source>
         <translation>vakuumo magnetinė skvarba (μ₀)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="157"/>
+        <location filename="../../core/constants.cpp" line="160"/>
         <source>Planck constant (h)</source>
         <translation>Planko konstanta (h)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="158"/>
+        <location filename="../../core/constants.cpp" line="161"/>
         <source>speed of light in vacuum (c)</source>
         <translation>šviesos greitis vakuume (c)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="159"/>
+        <location filename="../../core/constants.cpp" line="162"/>
         <source>standard acceleration of gravity (gₙ)</source>
         <translation>standartinis laisvojo kritimo pagreitis (gₙ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="160"/>
+        <location filename="../../core/constants.cpp" line="163"/>
         <source>Newtonian constant of gravitation over h-bar c</source>
         <translation>Niutono gravitacijos konstanta per h su brūkšniu c</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="161"/>
+        <location filename="../../core/constants.cpp" line="164"/>
         <source>Planck length</source>
         <translation>Planko ilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="162"/>
+        <location filename="../../core/constants.cpp" line="165"/>
         <source>Planck constant in eV/Hz (h)</source>
         <translation>Planko konstanta vienetais eV/Hz (h)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="163"/>
+        <location filename="../../core/constants.cpp" line="166"/>
         <source>Planck mass</source>
         <translation>Planko masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="164"/>
+        <location filename="../../core/constants.cpp" line="167"/>
         <source>Planck mass energy equivalent in GeV</source>
         <translation>Planko masės energijos ekvivalentas vienetais GeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="165"/>
+        <location filename="../../core/constants.cpp" line="168"/>
         <source>Planck temperature</source>
         <translation>Planko temperatūra</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="166"/>
+        <location filename="../../core/constants.cpp" line="169"/>
         <source>Planck time</source>
         <translation>Planko laikas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="167"/>
+        <location filename="../../core/constants.cpp" line="170"/>
         <source>reduced Planck constant in eV·s (ℏ)</source>
         <translation>redukuotoji Planko konstanta vienetais eV·s (ℏ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="168"/>
+        <location filename="../../core/constants.cpp" line="171"/>
         <source>reduced Planck constant times c in MeV·fm</source>
         <translation>redukuotoji Planko konstanta kart c vienetais MeV·fm</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="171"/>
+        <location filename="../../core/constants.cpp" line="174"/>
         <source>Bohr magneton</source>
         <translation>Boro magnetonas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="172"/>
+        <location filename="../../core/constants.cpp" line="175"/>
         <source>conductance quantum (G₀)</source>
         <translation>laidumo kvantas (G₀)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="173"/>
+        <location filename="../../core/constants.cpp" line="176"/>
         <source>Coulomb constant (kₑ)</source>
         <translation>Kulono konstanta (kₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="174"/>
+        <location filename="../../core/constants.cpp" line="177"/>
         <source>elementary charge (e)</source>
         <translation>elementarusis krūvis (e)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="175"/>
+        <location filename="../../core/constants.cpp" line="178"/>
         <source>elementary charge over h-bar</source>
         <translation>elementarusis krūvis per h su brūkšniu</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="176"/>
+        <location filename="../../core/constants.cpp" line="179"/>
         <source>conventional value of Josephson constant</source>
         <translation>sutartinė vertė: Josephson konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="177"/>
+        <location filename="../../core/constants.cpp" line="180"/>
         <source>Josephson constant</source>
         <translation>Josephson konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="178"/>
+        <location filename="../../core/constants.cpp" line="181"/>
         <source>conventional value of ampere-90</source>
         <translation>sutartinė ampero-90 vertė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="179"/>
+        <location filename="../../core/constants.cpp" line="182"/>
         <source>conventional value of coulomb-90</source>
         <translation>sutartinė kulono-90 vertė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="180"/>
+        <location filename="../../core/constants.cpp" line="183"/>
         <source>conventional value of farad-90</source>
         <translation>sutartinė farado-90 vertė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="181"/>
+        <location filename="../../core/constants.cpp" line="184"/>
         <source>conventional value of henry-90</source>
         <translation>sutartinė henrio-90 vertė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="182"/>
+        <location filename="../../core/constants.cpp" line="185"/>
         <source>conventional value of ohm-90</source>
         <translation>sutartinė omo-90 vertė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="183"/>
+        <location filename="../../core/constants.cpp" line="186"/>
         <source>conventional value of volt-90</source>
         <translation>sutartinė volto-90 vertė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="184"/>
+        <location filename="../../core/constants.cpp" line="187"/>
         <source>conventional value of watt-90</source>
         <translation>sutartinė vato-90 vertė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="185"/>
+        <location filename="../../core/constants.cpp" line="188"/>
         <source>magnetic flux quantum (Φ₀)</source>
         <translation>magnetinio srauto kvantas (Φ₀)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="186"/>
+        <location filename="../../core/constants.cpp" line="189"/>
         <source>nuclear magneton</source>
         <translation>branduolinis magnetonas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="187"/>
+        <location filename="../../core/constants.cpp" line="190"/>
         <source>inverse of conductance quantum</source>
         <translation>atvirkštinė vertė: laidumo kvantas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="188"/>
+        <location filename="../../core/constants.cpp" line="191"/>
         <source>conventional value of von Klitzing constant</source>
         <translation>sutartinė vertė: von Klitzingo konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="189"/>
+        <location filename="../../core/constants.cpp" line="192"/>
         <source>von Klitzing constant</source>
         <translation>von Klitzingo konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="190"/>
+        <location filename="../../core/constants.cpp" line="193"/>
         <source>atomic unit of magnetic dipole moment</source>
         <translation>atominis vienetas: magnetinio dipolio momentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="191"/>
+        <location filename="../../core/constants.cpp" line="194"/>
         <source>atomic unit of magnetic flux density</source>
         <translation>atominis vienetas: magnetinio srauto tankis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="192"/>
+        <location filename="../../core/constants.cpp" line="195"/>
         <source>Bohr magneton in eV/T</source>
         <translation>Boro magnetonas vienetais eV/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="193"/>
+        <location filename="../../core/constants.cpp" line="196"/>
         <source>Bohr magneton in Hz/T</source>
         <translation>Boro magnetonas vienetais Hz/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="194"/>
+        <location filename="../../core/constants.cpp" line="197"/>
         <source>Bohr magneton in inverse meter per tesla</source>
         <translation>Boro magnetonas vienetais atvirkštinis metras vienai teslai</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="195"/>
+        <location filename="../../core/constants.cpp" line="198"/>
         <source>Bohr magneton in K/T</source>
         <translation>Boro magnetonas vienetais K/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="196"/>
+        <location filename="../../core/constants.cpp" line="199"/>
         <source>nuclear magneton in eV/T</source>
         <translation>branduolinis magnetonas vienetais eV/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="197"/>
+        <location filename="../../core/constants.cpp" line="200"/>
         <source>nuclear magneton in inverse meter per tesla</source>
         <translation>branduolinis magnetonas vienetais atvirkštinis metras vienai teslai</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="198"/>
+        <location filename="../../core/constants.cpp" line="201"/>
         <source>nuclear magneton in K/T</source>
         <translation>branduolinis magnetonas vienetais K/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="199"/>
+        <location filename="../../core/constants.cpp" line="202"/>
         <source>nuclear magneton in MHz/T</source>
         <translation>branduolinis magnetonas vienetais MHz/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="202"/>
+        <location filename="../../core/constants.cpp" line="205"/>
         <source>Bohr radius (a₀)</source>
         <translation>Boro spindulys (a₀)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="203"/>
+        <location filename="../../core/constants.cpp" line="206"/>
         <source>fine-structure constant (α)</source>
         <translation>smulkiosios sandaros konstanta (α)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="204"/>
+        <location filename="../../core/constants.cpp" line="207"/>
         <source>Hartree energy (Eₕ)</source>
         <translation>Hartrio energija (Eₕ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="205"/>
+        <location filename="../../core/constants.cpp" line="208"/>
         <source>Hartree energy in eV</source>
         <translation>Hartrio energija vienetais eV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="206"/>
+        <location filename="../../core/constants.cpp" line="209"/>
         <source>quantum of circulation</source>
         <translation>cirkuliacijos kvantas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="207"/>
+        <location filename="../../core/constants.cpp" line="210"/>
         <source>quantum of circulation times 2</source>
         <translation>cirkuliacijos kvantas kart 2</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="208"/>
+        <location filename="../../core/constants.cpp" line="211"/>
         <source>Rydberg constant (R∞)</source>
         <translation>Rydbergo konstanta (R∞)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="209"/>
+        <location filename="../../core/constants.cpp" line="212"/>
         <source>atomic mass unit-hartree relationship</source>
         <translation>atominės masės vienetas-hartree ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="210"/>
+        <location filename="../../core/constants.cpp" line="213"/>
         <source>atomic mass unit-hertz relationship</source>
         <translation>atominės masės vienetas-hercas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="211"/>
+        <location filename="../../core/constants.cpp" line="214"/>
         <source>atomic mass unit-inverse meter relationship</source>
         <translation>atominės masės vienetas-atvirkštinis metras ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="212"/>
+        <location filename="../../core/constants.cpp" line="215"/>
         <source>atomic mass unit-joule relationship</source>
         <translation>atominės masės vienetas-džaulis ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="213"/>
+        <location filename="../../core/constants.cpp" line="216"/>
         <source>atomic mass unit-kelvin relationship</source>
         <translation>atominės masės vienetas-kelvinas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="214"/>
+        <location filename="../../core/constants.cpp" line="217"/>
         <source>atomic mass unit-kilogram relationship</source>
         <translation>atominės masės vienetas-kilogramas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="215"/>
+        <location filename="../../core/constants.cpp" line="218"/>
         <source>atomic unit of 1st hyperpolarizability</source>
         <translation>pirmojo hiperpoliarizuojamumo atominis vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="216"/>
+        <location filename="../../core/constants.cpp" line="219"/>
         <source>atomic unit of 2nd hyperpolarizability</source>
         <translation>antrojo hiperpoliarizuojamumo atominis vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="217"/>
+        <location filename="../../core/constants.cpp" line="220"/>
         <source>atomic unit of charge (e)</source>
         <translation>krūvio atominis vienetas (e)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="218"/>
+        <location filename="../../core/constants.cpp" line="221"/>
         <source>atomic unit of charge density</source>
         <translation>atominis vienetas: krūvio tankis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="219"/>
+        <location filename="../../core/constants.cpp" line="222"/>
         <source>atomic unit of current</source>
         <translation>atominis vienetas: srovė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="220"/>
+        <location filename="../../core/constants.cpp" line="223"/>
         <source>atomic unit of electric dipole moment</source>
         <translation>atominis vienetas: elektrinio dipolio momentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="221"/>
+        <location filename="../../core/constants.cpp" line="224"/>
         <source>atomic unit of electric field</source>
         <translation>atominis vienetas: elektrinis laukas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="222"/>
+        <location filename="../../core/constants.cpp" line="225"/>
         <source>atomic unit of electric field gradient</source>
         <translation>atominis vienetas: elektrinio lauko gradientas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="223"/>
+        <location filename="../../core/constants.cpp" line="226"/>
         <source>atomic unit of electric polarizability</source>
         <translation>atominis vienetas: elektrinis poliarizuojamumas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="224"/>
+        <location filename="../../core/constants.cpp" line="227"/>
         <source>atomic unit of electric potential</source>
         <translation>atominis vienetas: elektrinis potencialas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="225"/>
+        <location filename="../../core/constants.cpp" line="228"/>
         <source>atomic unit of electric quadrupole moment</source>
         <translation>atominis vienetas: elektrinio kvadrupolio momentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="226"/>
+        <location filename="../../core/constants.cpp" line="229"/>
         <source>atomic unit of action</source>
         <translation>atominis vienetas: veiksmas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="227"/>
+        <location filename="../../core/constants.cpp" line="230"/>
         <source>atomic unit of energy</source>
         <translation>atominis vienetas: energija</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="228"/>
+        <location filename="../../core/constants.cpp" line="231"/>
         <source>atomic unit of force</source>
         <translation>atominis vienetas: jėga</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="229"/>
+        <location filename="../../core/constants.cpp" line="232"/>
         <source>atomic unit of length</source>
         <translation>atominis vienetas: ilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="230"/>
+        <location filename="../../core/constants.cpp" line="233"/>
         <source>hertz-atomic mass unit relationship</source>
         <translation>hercas-atominės masės vienetas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="231"/>
+        <location filename="../../core/constants.cpp" line="234"/>
         <source>hertz-electron volt relationship</source>
         <translation>hercas-elektronvoltas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="232"/>
+        <location filename="../../core/constants.cpp" line="235"/>
         <source>hertz-hartree relationship</source>
         <translation>hercas-hartree ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="233"/>
+        <location filename="../../core/constants.cpp" line="236"/>
         <source>hertz-inverse meter relationship</source>
         <translation>hercas-atvirkštinis metras ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="234"/>
+        <location filename="../../core/constants.cpp" line="237"/>
         <source>hertz-joule relationship</source>
         <translation>hercas-džaulis ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="235"/>
+        <location filename="../../core/constants.cpp" line="238"/>
         <source>hertz-kelvin relationship</source>
         <translation>hercas-kelvinas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="236"/>
+        <location filename="../../core/constants.cpp" line="239"/>
         <source>hertz-kilogram relationship</source>
         <translation>hercas-kilogramas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="237"/>
+        <location filename="../../core/constants.cpp" line="240"/>
         <source>hyperfine transition frequency of Cs-133</source>
         <translation>Cs-133 hipersmulkiojo perėjimo dažnis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="238"/>
+        <location filename="../../core/constants.cpp" line="241"/>
         <source>inverse fine-structure constant (α⁻¹)</source>
         <translation>inverse smulkiosios sandaros konstanta (α⁻¹)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="239"/>
+        <location filename="../../core/constants.cpp" line="242"/>
         <source>inverse meter-atomic mass unit relationship</source>
         <translation>atvirkštinis metras-atominės masės vienetas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="240"/>
+        <location filename="../../core/constants.cpp" line="243"/>
         <source>inverse meter-electron volt relationship</source>
         <translation>atvirkštinis metras-elektronvoltas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="241"/>
+        <location filename="../../core/constants.cpp" line="244"/>
         <source>inverse meter-hartree relationship</source>
         <translation>atvirkštinis metras-hartree ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="242"/>
+        <location filename="../../core/constants.cpp" line="245"/>
         <source>inverse meter-hertz relationship</source>
         <translation>atvirkštinis metras-hercas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="243"/>
+        <location filename="../../core/constants.cpp" line="246"/>
         <source>inverse meter-joule relationship</source>
         <translation>atvirkštinis metras-džaulis ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="244"/>
+        <location filename="../../core/constants.cpp" line="247"/>
         <source>inverse meter-kelvin relationship</source>
         <translation>atvirkštinis metras-kelvinas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="245"/>
+        <location filename="../../core/constants.cpp" line="248"/>
         <source>inverse meter-kilogram relationship</source>
         <translation>atvirkštinis metras-kilogramas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="246"/>
+        <location filename="../../core/constants.cpp" line="249"/>
         <source>joule-atomic mass unit relationship</source>
         <translation>džaulis-atominės masės vienetas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="247"/>
+        <location filename="../../core/constants.cpp" line="250"/>
         <source>joule-electron volt relationship</source>
         <translation>džaulis-elektronvoltas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="248"/>
+        <location filename="../../core/constants.cpp" line="251"/>
         <source>joule-hertz relationship</source>
         <translation>džaulis-hercas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="249"/>
+        <location filename="../../core/constants.cpp" line="252"/>
         <source>joule-hartree relationship</source>
         <translation>džaulis-hartree ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="250"/>
+        <location filename="../../core/constants.cpp" line="253"/>
         <source>joule-inverse meter relationship</source>
         <translation>džaulis-atvirkštinis metras ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="251"/>
+        <location filename="../../core/constants.cpp" line="254"/>
         <source>joule-kelvin relationship</source>
         <translation>džaulis-kelvinas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="252"/>
+        <location filename="../../core/constants.cpp" line="255"/>
         <source>joule-kilogram relationship</source>
         <translation>džaulis-kilogramas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="253"/>
+        <location filename="../../core/constants.cpp" line="256"/>
         <source>kelvin-atomic mass unit relationship</source>
         <translation>kelvinas-atominės masės vienetas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="254"/>
+        <location filename="../../core/constants.cpp" line="257"/>
         <source>kelvin-electron volt relationship</source>
         <translation>kelvinas-elektronvoltas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="255"/>
+        <location filename="../../core/constants.cpp" line="258"/>
         <source>kelvin-hertz relationship</source>
         <translation>kelvinas-hercas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="256"/>
+        <location filename="../../core/constants.cpp" line="259"/>
         <source>kelvin-hartree relationship</source>
         <translation>kelvinas-hartree ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="257"/>
+        <location filename="../../core/constants.cpp" line="260"/>
         <source>kelvin-inverse meter relationship</source>
         <translation>kelvinas-atvirkštinis metras ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="258"/>
+        <location filename="../../core/constants.cpp" line="261"/>
         <source>kelvin-joule relationship</source>
         <translation>kelvinas-džaulis ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="259"/>
+        <location filename="../../core/constants.cpp" line="262"/>
         <source>kelvin-kilogram relationship</source>
         <translation>kelvinas-kilogramas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="260"/>
+        <location filename="../../core/constants.cpp" line="263"/>
         <source>kilogram-atomic mass unit relationship</source>
         <translation>kilogramas-atominės masės vienetas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="261"/>
+        <location filename="../../core/constants.cpp" line="264"/>
         <source>kilogram-electron volt relationship</source>
         <translation>kilogramas-elektronvoltas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="262"/>
+        <location filename="../../core/constants.cpp" line="265"/>
         <source>kilogram-hertz relationship</source>
         <translation>kilogramas-hercas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="263"/>
+        <location filename="../../core/constants.cpp" line="266"/>
         <source>kilogram-hartree relationship</source>
         <translation>kilogramas-hartree ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="264"/>
+        <location filename="../../core/constants.cpp" line="267"/>
         <source>kilogram-inverse meter relationship</source>
         <translation>kilogramas-atvirkštinis metras ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="265"/>
+        <location filename="../../core/constants.cpp" line="268"/>
         <source>kilogram-joule relationship</source>
         <translation>kilogramas-džaulis ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="266"/>
+        <location filename="../../core/constants.cpp" line="269"/>
         <source>kilogram-kelvin relationship</source>
         <translation>kilogramas-kelvinas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="267"/>
+        <location filename="../../core/constants.cpp" line="270"/>
         <source>lattice parameter of silicon (a)</source>
         <translation>silicio gardelės parametras (a)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="268"/>
+        <location filename="../../core/constants.cpp" line="271"/>
         <source>luminous efficacy</source>
         <translation>šviesinis efektyvumas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="269"/>
+        <location filename="../../core/constants.cpp" line="272"/>
         <source>natural unit of energy</source>
         <translation>natūralusis vienetas: energija</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="270"/>
+        <location filename="../../core/constants.cpp" line="273"/>
         <source>natural unit of energy in MeV</source>
         <translation>natūralusis vienetas: energija vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="271"/>
+        <location filename="../../core/constants.cpp" line="274"/>
         <source>natural unit of action (ℏ)</source>
         <translation>natūralusis vienetas: veiksmas (ℏ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="272"/>
+        <location filename="../../core/constants.cpp" line="275"/>
         <source>natural unit of action in eV·s</source>
         <translation>natūralusis vienetas: veiksmas vienetais eV·s</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="273"/>
+        <location filename="../../core/constants.cpp" line="276"/>
         <source>natural unit of length</source>
         <translation>natūralusis vienetas: ilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="274"/>
+        <location filename="../../core/constants.cpp" line="277"/>
         <source>natural unit of mass</source>
         <translation>natūralusis masės vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="275"/>
+        <location filename="../../core/constants.cpp" line="278"/>
         <source>natural unit of momentum</source>
         <translation>natūralusis vienetas: judesio kiekis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="276"/>
+        <location filename="../../core/constants.cpp" line="279"/>
         <source>natural unit of momentum in MeV/c</source>
         <translation>natūralusis vienetas: judesio kiekis vienetais MeV/c</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="277"/>
+        <location filename="../../core/constants.cpp" line="280"/>
         <source>natural unit of time</source>
         <translation>natūralusis laiko vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="278"/>
+        <location filename="../../core/constants.cpp" line="281"/>
         <source>natural unit of velocity</source>
         <translation>natūralusis vienetas: greitis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="279"/>
+        <location filename="../../core/constants.cpp" line="282"/>
         <source>Rydberg constant times c in Hz</source>
         <translation>Rydbergo konstanta kart c vienetais Hz</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="280"/>
+        <location filename="../../core/constants.cpp" line="283"/>
         <source>Rydberg constant times hc in eV</source>
         <translation>Rydbergo konstanta kart hc vienetais eV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="281"/>
+        <location filename="../../core/constants.cpp" line="284"/>
         <source>Rydberg constant times hc in J</source>
         <translation>Rydbergo konstanta kart hc vienetais J</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="284"/>
+        <location filename="../../core/constants.cpp" line="287"/>
         <source>Fermi coupling constant</source>
         <translation>Fermio sąveikos konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="285"/>
+        <location filename="../../core/constants.cpp" line="288"/>
         <source>weak mixing angle</source>
         <translation>silpnojo maišymosi kampas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="286"/>
+        <location filename="../../core/constants.cpp" line="289"/>
         <source>W to Z mass ratio</source>
         <translation>W ir Z masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="289"/>
+        <location filename="../../core/constants.cpp" line="292"/>
         <source>Thomson cross section (σₑ)</source>
         <translation>Tomsono skerspjūvis (σₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="290"/>
+        <location filename="../../core/constants.cpp" line="293"/>
         <source>electron mass (mₑ)</source>
         <translation>elektrono masė (mₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="291"/>
+        <location filename="../../core/constants.cpp" line="294"/>
         <source>electron mass in u</source>
         <translation>elektrono masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="292"/>
+        <location filename="../../core/constants.cpp" line="295"/>
         <source>electron mass energy equivalent (mₑ·c²)</source>
         <translation>elektrono masės energijos ekvivalentas (mₑ·c²)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="293"/>
+        <location filename="../../core/constants.cpp" line="296"/>
         <source>electron mass energy equivalent in MeV</source>
         <translation>elektrono masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="295"/>
+        <location filename="../../core/constants.cpp" line="298"/>
         <source>reduced Compton wavelength</source>
         <translation>redukuotasis Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="296"/>
+        <location filename="../../core/constants.cpp" line="299"/>
         <source>classical electron radius (rₑ)</source>
         <translation>classical elektronas radius (rₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="297"/>
+        <location filename="../../core/constants.cpp" line="300"/>
         <source>electron charge to mass quotient</source>
         <translation>elektrono krūvio ir masės santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="298"/>
+        <location filename="../../core/constants.cpp" line="301"/>
         <source>electron-deuteron magnetic moment ratio</source>
         <translation>elektronas-deuteronas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="299"/>
+        <location filename="../../core/constants.cpp" line="302"/>
         <source>electron-deuteron mass ratio</source>
         <translation>elektronas-deuteronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="300"/>
+        <location filename="../../core/constants.cpp" line="303"/>
         <source>electron g factor (gₑ)</source>
         <translation>elektronas g faktorius (gₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="301"/>
+        <location filename="../../core/constants.cpp" line="304"/>
         <source>electron gyromagnetic ratio (γₑ)</source>
         <translation>elektronas giromagnetinis santykis (γₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="302"/>
+        <location filename="../../core/constants.cpp" line="305"/>
         <source>electron gyromagnetic ratio in MHz/T</source>
         <translation>elektronas giromagnetinis santykis vienetais MHz/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="303"/>
+        <location filename="../../core/constants.cpp" line="306"/>
         <source>electron-helion mass ratio</source>
         <translation>elektronas-helionas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="304"/>
+        <location filename="../../core/constants.cpp" line="307"/>
         <source>electron magnetic moment (μₑ)</source>
         <translation>elektronas magnetinis momentas (μₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="305"/>
+        <location filename="../../core/constants.cpp" line="308"/>
         <source>electron magnetic moment anomaly (aₑ)</source>
         <translation>elektronas magnetinis momentas anomaly (aₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="306"/>
+        <location filename="../../core/constants.cpp" line="309"/>
         <source>electron magnetic moment to Bohr magneton ratio</source>
         <translation>elektrono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="307"/>
+        <location filename="../../core/constants.cpp" line="310"/>
         <source>electron magnetic moment to nuclear magneton ratio</source>
         <translation>elektrono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="308"/>
+        <location filename="../../core/constants.cpp" line="311"/>
         <source>electron molar mass (Mₑ)</source>
         <translation>elektronas molinė masė (Mₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="309"/>
+        <location filename="../../core/constants.cpp" line="312"/>
         <source>electron-muon magnetic moment ratio</source>
         <translation>elektronas-miuonas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="310"/>
+        <location filename="../../core/constants.cpp" line="313"/>
         <source>electron-muon mass ratio</source>
         <translation>elektronas-miuonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="311"/>
+        <location filename="../../core/constants.cpp" line="314"/>
         <source>electron-neutron magnetic moment ratio</source>
         <translation>elektronas-neutronas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="312"/>
+        <location filename="../../core/constants.cpp" line="315"/>
         <source>electron-neutron mass ratio</source>
         <translation>elektronas-neutronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="313"/>
+        <location filename="../../core/constants.cpp" line="316"/>
         <source>electron-proton magnetic moment ratio</source>
         <translation>elektronas-protonas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="314"/>
+        <location filename="../../core/constants.cpp" line="317"/>
         <source>electron-proton mass ratio</source>
         <translation>elektronas-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="315"/>
+        <location filename="../../core/constants.cpp" line="318"/>
         <source>electron relative atomic mass (Ar(e))</source>
         <translation>elektronas santykinė atominė masė (Ar(e))</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="316"/>
+        <location filename="../../core/constants.cpp" line="319"/>
         <source>electron-tau mass ratio</source>
         <translation>elektronas-tau masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="317"/>
+        <location filename="../../core/constants.cpp" line="320"/>
         <source>electron to alpha particle mass ratio</source>
         <translation>elektrono ir alfa dalelės masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="318"/>
+        <location filename="../../core/constants.cpp" line="321"/>
         <source>electron to shielded helion magnetic moment ratio</source>
         <translation>elektrono ir ekranuoto heliono magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="319"/>
+        <location filename="../../core/constants.cpp" line="322"/>
         <source>electron to shielded proton magnetic moment ratio</source>
         <translation>elektrono ir ekranuoto protono magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="320"/>
+        <location filename="../../core/constants.cpp" line="323"/>
         <source>electron-triton mass ratio</source>
         <translation>elektronas-tritonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="321"/>
+        <location filename="../../core/constants.cpp" line="324"/>
         <source>electron volt-atomic mass unit relationship</source>
         <translation>elektronvoltas-atominės masės vienetas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="322"/>
+        <location filename="../../core/constants.cpp" line="325"/>
         <source>electron volt-hartree relationship</source>
         <translation>elektronvoltas-hartree ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="323"/>
+        <location filename="../../core/constants.cpp" line="326"/>
         <source>electron volt-hertz relationship</source>
         <translation>elektronvoltas-hercas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="324"/>
+        <location filename="../../core/constants.cpp" line="327"/>
         <source>electron volt-inverse meter relationship</source>
         <translation>elektronvoltas-atvirkštinis metras ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="325"/>
+        <location filename="../../core/constants.cpp" line="328"/>
         <source>electron volt-joule relationship</source>
         <translation>elektronvoltas-džaulis ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="326"/>
+        <location filename="../../core/constants.cpp" line="329"/>
         <source>electron volt-kelvin relationship</source>
         <translation>elektronvoltas-kelvinas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="327"/>
+        <location filename="../../core/constants.cpp" line="330"/>
         <source>electron volt-kilogram relationship</source>
         <translation>elektronvoltas-kilogramas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="328"/>
+        <location filename="../../core/constants.cpp" line="331"/>
         <source>hartree-atomic mass unit relationship</source>
         <translation>hartree-atominės masės vienetas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="329"/>
+        <location filename="../../core/constants.cpp" line="332"/>
         <source>hartree-electron volt relationship</source>
         <translation>hartree-elektronvoltas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="332"/>
+        <location filename="../../core/constants.cpp" line="335"/>
         <source>muon Compton wavelength</source>
         <translation>miuonas Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="333"/>
+        <location filename="../../core/constants.cpp" line="336"/>
         <source>muon-electron mass ratio</source>
         <translation>miuonas-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="334"/>
+        <location filename="../../core/constants.cpp" line="337"/>
         <source>muon g factor</source>
         <translation>miuonas g faktorius</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="335"/>
+        <location filename="../../core/constants.cpp" line="338"/>
         <source>muon magnetic moment</source>
         <translation>miuonas magnetinis momentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="336"/>
+        <location filename="../../core/constants.cpp" line="339"/>
         <source>muon magnetic moment anomaly</source>
         <translation>miuonas magnetinis momentas anomaly</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="337"/>
+        <location filename="../../core/constants.cpp" line="340"/>
         <source>muon magnetic moment to Bohr magneton ratio</source>
         <translation>miuono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="338"/>
+        <location filename="../../core/constants.cpp" line="341"/>
         <source>muon magnetic moment to nuclear magneton ratio</source>
         <translation>miuono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="339"/>
+        <location filename="../../core/constants.cpp" line="342"/>
         <source>muon mass</source>
         <translation>miuono masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="340"/>
+        <location filename="../../core/constants.cpp" line="343"/>
         <source>muon mass energy equivalent</source>
         <translation>miuono masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="341"/>
+        <location filename="../../core/constants.cpp" line="344"/>
         <source>muon mass energy equivalent in MeV</source>
         <translation>miuono masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="342"/>
+        <location filename="../../core/constants.cpp" line="345"/>
         <source>muon mass in u</source>
         <translation>miuono masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="343"/>
+        <location filename="../../core/constants.cpp" line="346"/>
         <source>muon molar mass</source>
         <translation>miuonas molinė masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="344"/>
+        <location filename="../../core/constants.cpp" line="347"/>
         <source>muon-neutron mass ratio</source>
         <translation>miuonas-neutronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="345"/>
+        <location filename="../../core/constants.cpp" line="348"/>
         <source>muon-proton magnetic moment ratio</source>
         <translation>miuonas-protonas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="346"/>
+        <location filename="../../core/constants.cpp" line="349"/>
         <source>muon-proton mass ratio</source>
         <translation>miuonas-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="347"/>
+        <location filename="../../core/constants.cpp" line="350"/>
         <source>muon-tau mass ratio</source>
         <translation>miuonas-tau masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="348"/>
+        <location filename="../../core/constants.cpp" line="351"/>
         <source>reduced muon Compton wavelength</source>
         <translation>redukuotasis miuonas Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="351"/>
+        <location filename="../../core/constants.cpp" line="354"/>
         <source>reduced tau Compton wavelength</source>
         <translation>redukuotasis tau Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="352"/>
+        <location filename="../../core/constants.cpp" line="355"/>
         <source>tau Compton wavelength</source>
         <translation>tau Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="353"/>
+        <location filename="../../core/constants.cpp" line="356"/>
         <source>tau-electron mass ratio</source>
         <translation>tau-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="354"/>
+        <location filename="../../core/constants.cpp" line="357"/>
         <source>tau mass</source>
         <translation>tau dalelės masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="355"/>
+        <location filename="../../core/constants.cpp" line="358"/>
         <source>tau mass energy equivalent</source>
         <translation>tau dalelės masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="356"/>
+        <location filename="../../core/constants.cpp" line="359"/>
         <source>tau mass in u</source>
         <translation>tau dalelės masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="357"/>
+        <location filename="../../core/constants.cpp" line="360"/>
         <source>tau molar mass</source>
         <translation>tau molinė masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="358"/>
+        <location filename="../../core/constants.cpp" line="361"/>
         <source>tau-muon mass ratio</source>
         <translation>tau-miuonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="359"/>
+        <location filename="../../core/constants.cpp" line="362"/>
         <source>tau-neutron mass ratio</source>
         <translation>tau-neutronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="360"/>
+        <location filename="../../core/constants.cpp" line="363"/>
         <source>tau-proton mass ratio</source>
         <translation>tau-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="363"/>
+        <location filename="../../core/constants.cpp" line="366"/>
         <source>proton charge to mass quotient</source>
         <translation>protono krūvio ir masės santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="364"/>
+        <location filename="../../core/constants.cpp" line="367"/>
         <source>proton Compton wavelength</source>
         <translation>protonas Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="365"/>
+        <location filename="../../core/constants.cpp" line="368"/>
         <source>proton-electron mass ratio</source>
         <translation>protonas-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="366"/>
+        <location filename="../../core/constants.cpp" line="369"/>
         <source>proton g factor (gₚ)</source>
         <translation>protonas g faktorius (gₚ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="367"/>
+        <location filename="../../core/constants.cpp" line="370"/>
         <source>proton gyromagnetic ratio (γₚ)</source>
         <translation>protonas giromagnetinis santykis (γₚ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="368"/>
+        <location filename="../../core/constants.cpp" line="371"/>
         <source>proton gyromagnetic ratio in MHz/T</source>
         <translation>protonas giromagnetinis santykis vienetais MHz/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="369"/>
+        <location filename="../../core/constants.cpp" line="372"/>
         <source>proton magnetic moment (μₚ)</source>
         <translation>protonas magnetinis momentas (μₚ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="370"/>
+        <location filename="../../core/constants.cpp" line="373"/>
         <source>proton magnetic moment to Bohr magneton ratio</source>
         <translation>protono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="371"/>
+        <location filename="../../core/constants.cpp" line="374"/>
         <source>proton magnetic moment to nuclear magneton ratio</source>
         <translation>protono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="372"/>
+        <location filename="../../core/constants.cpp" line="375"/>
         <source>proton magnetic shielding correction</source>
         <translation>protonas magnetic ekranavimas correction</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="373"/>
+        <location filename="../../core/constants.cpp" line="376"/>
         <source>proton mass (mₚ)</source>
         <translation>protono masė (mₚ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="374"/>
+        <location filename="../../core/constants.cpp" line="377"/>
         <source>proton mass energy equivalent</source>
         <translation>protono masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="375"/>
+        <location filename="../../core/constants.cpp" line="378"/>
         <source>proton mass energy equivalent in MeV</source>
         <translation>protono masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="376"/>
+        <location filename="../../core/constants.cpp" line="379"/>
         <source>proton mass in u</source>
         <translation>protono masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="377"/>
+        <location filename="../../core/constants.cpp" line="380"/>
         <source>proton molar mass (Mₚ)</source>
         <translation>protonas molinė masė (Mₚ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="378"/>
+        <location filename="../../core/constants.cpp" line="381"/>
         <source>proton-muon mass ratio</source>
         <translation>protonas-miuonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="379"/>
+        <location filename="../../core/constants.cpp" line="382"/>
         <source>proton-neutron magnetic moment ratio</source>
         <translation>protonas-neutronas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="380"/>
+        <location filename="../../core/constants.cpp" line="383"/>
         <source>proton-neutron mass ratio</source>
         <translation>protonas-neutronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="381"/>
+        <location filename="../../core/constants.cpp" line="384"/>
         <source>proton relative atomic mass (Ar(p))</source>
         <translation>protonas santykinė atominė masė (Ar(p))</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="382"/>
+        <location filename="../../core/constants.cpp" line="385"/>
         <source>proton rms charge radius</source>
         <translation>protonas vidutinis kvadratinis krūvio spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="383"/>
+        <location filename="../../core/constants.cpp" line="386"/>
         <source>proton-tau mass ratio</source>
         <translation>protonas-tau masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="384"/>
+        <location filename="../../core/constants.cpp" line="387"/>
         <source>reduced proton Compton wavelength</source>
         <translation>redukuotasis protonas Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="385"/>
+        <location filename="../../core/constants.cpp" line="388"/>
         <source>shielded proton gyromagnetic ratio</source>
         <translation>ekranuotas protonas giromagnetinis santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="386"/>
+        <location filename="../../core/constants.cpp" line="389"/>
         <source>shielded proton gyromagnetic ratio in MHz/T</source>
         <translation>ekranuotas protonas giromagnetinis santykis vienetais MHz/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="387"/>
+        <location filename="../../core/constants.cpp" line="390"/>
         <source>shielded proton magnetic moment</source>
         <translation>ekranuotas protonas magnetinis momentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="388"/>
+        <location filename="../../core/constants.cpp" line="391"/>
         <source>shielded proton magnetic moment to Bohr magneton ratio</source>
         <translation>ekranuoto protono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="389"/>
+        <location filename="../../core/constants.cpp" line="392"/>
         <source>shielded proton magnetic moment to nuclear magneton ratio</source>
         <translation>ekranuoto protono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="392"/>
+        <location filename="../../core/constants.cpp" line="395"/>
         <source>neutron Compton wavelength</source>
         <translation>neutronas Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="393"/>
+        <location filename="../../core/constants.cpp" line="396"/>
         <source>neutron-electron magnetic moment ratio</source>
         <translation>neutronas-elektronas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="394"/>
+        <location filename="../../core/constants.cpp" line="397"/>
         <source>neutron-electron mass ratio</source>
         <translation>neutronas-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="395"/>
+        <location filename="../../core/constants.cpp" line="398"/>
         <source>neutron g factor (gₙ)</source>
         <translation>neutronas g faktorius (gₙ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="396"/>
+        <location filename="../../core/constants.cpp" line="399"/>
         <source>neutron gyromagnetic ratio (γₙ)</source>
         <translation>neutronas giromagnetinis santykis (γₙ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="397"/>
+        <location filename="../../core/constants.cpp" line="400"/>
         <source>neutron gyromagnetic ratio in MHz/T</source>
         <translation>neutronas giromagnetinis santykis vienetais MHz/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="398"/>
+        <location filename="../../core/constants.cpp" line="401"/>
         <source>neutron magnetic moment (μₙ)</source>
         <translation>neutronas magnetinis momentas (μₙ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="399"/>
+        <location filename="../../core/constants.cpp" line="402"/>
         <source>neutron magnetic moment to Bohr magneton ratio</source>
         <translation>neutrono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="400"/>
+        <location filename="../../core/constants.cpp" line="403"/>
         <source>neutron magnetic moment to nuclear magneton ratio</source>
         <translation>neutrono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="401"/>
+        <location filename="../../core/constants.cpp" line="404"/>
         <source>neutron mass (mₙ)</source>
         <translation>neutrono masė (mₙ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="402"/>
+        <location filename="../../core/constants.cpp" line="405"/>
         <source>neutron mass energy equivalent</source>
         <translation>neutrono masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="403"/>
+        <location filename="../../core/constants.cpp" line="406"/>
         <source>neutron mass energy equivalent in MeV</source>
         <translation>neutrono masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="404"/>
+        <location filename="../../core/constants.cpp" line="407"/>
         <source>neutron mass in u</source>
         <translation>neutrono masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="405"/>
+        <location filename="../../core/constants.cpp" line="408"/>
         <source>neutron molar mass (Mₙ)</source>
         <translation>neutronas molinė masė (Mₙ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="406"/>
+        <location filename="../../core/constants.cpp" line="409"/>
         <source>neutron-muon mass ratio</source>
         <translation>neutronas-miuonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="407"/>
+        <location filename="../../core/constants.cpp" line="410"/>
         <source>neutron-proton magnetic moment ratio</source>
         <translation>neutronas-protonas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="408"/>
+        <location filename="../../core/constants.cpp" line="411"/>
         <source>neutron-proton mass difference</source>
         <translation>neutronas-protonas masių skirtumas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="409"/>
+        <location filename="../../core/constants.cpp" line="412"/>
         <source>neutron-proton mass difference energy equivalent</source>
         <translation>neutrono ir protono masių skirtumo energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="410"/>
+        <location filename="../../core/constants.cpp" line="413"/>
         <source>neutron-proton mass difference energy equivalent in MeV</source>
         <translation>neutrono ir protono masių skirtumo energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="411"/>
+        <location filename="../../core/constants.cpp" line="414"/>
         <source>neutron-proton mass difference in u</source>
         <translation>neutronas-protonas masių skirtumas vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="412"/>
+        <location filename="../../core/constants.cpp" line="415"/>
         <source>neutron-proton mass ratio</source>
         <translation>neutronas-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="413"/>
+        <location filename="../../core/constants.cpp" line="416"/>
         <source>neutron relative atomic mass (Ar(n))</source>
         <translation>neutronas santykinė atominė masė (Ar(n))</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="414"/>
+        <location filename="../../core/constants.cpp" line="417"/>
         <source>neutron-tau mass ratio</source>
         <translation>neutronas-tau masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="415"/>
+        <location filename="../../core/constants.cpp" line="418"/>
         <source>neutron to shielded proton magnetic moment ratio</source>
         <translation>neutrono ir ekranuoto protono magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="416"/>
+        <location filename="../../core/constants.cpp" line="419"/>
         <source>reduced neutron Compton wavelength</source>
         <translation>redukuotasis neutronas Compton waveilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="419"/>
+        <location filename="../../core/constants.cpp" line="422"/>
         <source>deuteron-electron magnetic moment ratio</source>
         <translation>deuteronas-elektronas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="420"/>
+        <location filename="../../core/constants.cpp" line="423"/>
         <source>deuteron-electron mass ratio</source>
         <translation>deuteronas-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="421"/>
+        <location filename="../../core/constants.cpp" line="424"/>
         <source>deuteron g factor</source>
         <translation>deuteronas g faktorius</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="422"/>
+        <location filename="../../core/constants.cpp" line="425"/>
         <source>deuteron magnetic moment</source>
         <translation>deuteronas magnetinis momentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="423"/>
+        <location filename="../../core/constants.cpp" line="426"/>
         <source>deuteron magnetic moment to Bohr magneton ratio</source>
         <translation>deuterono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="424"/>
+        <location filename="../../core/constants.cpp" line="427"/>
         <source>deuteron magnetic moment to nuclear magneton ratio</source>
         <translation>deuterono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="425"/>
+        <location filename="../../core/constants.cpp" line="428"/>
         <source>deuteron mass</source>
         <translation>deuterono masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="426"/>
+        <location filename="../../core/constants.cpp" line="429"/>
         <source>deuteron mass energy equivalent</source>
         <translation>deuterono masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="427"/>
+        <location filename="../../core/constants.cpp" line="430"/>
         <source>deuteron mass energy equivalent in MeV</source>
         <translation>deuterono masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="428"/>
+        <location filename="../../core/constants.cpp" line="431"/>
         <source>deuteron mass in u</source>
         <translation>deuterono masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="429"/>
+        <location filename="../../core/constants.cpp" line="432"/>
         <source>deuteron molar mass</source>
         <translation>deuteronas molinė masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="430"/>
+        <location filename="../../core/constants.cpp" line="433"/>
         <source>deuteron-neutron magnetic moment ratio</source>
         <translation>deuteronas-neutronas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="431"/>
+        <location filename="../../core/constants.cpp" line="434"/>
         <source>deuteron-proton magnetic moment ratio</source>
         <translation>deuteronas-protonas magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="432"/>
+        <location filename="../../core/constants.cpp" line="435"/>
         <source>deuteron-proton mass ratio</source>
         <translation>deuteronas-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="433"/>
+        <location filename="../../core/constants.cpp" line="436"/>
         <source>deuteron relative atomic mass (Ar(d))</source>
         <translation>deuteronas santykinė atominė masė (Ar(d))</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="434"/>
+        <location filename="../../core/constants.cpp" line="437"/>
         <source>deuteron rms charge radius</source>
         <translation>deuteronas vidutinis kvadratinis krūvio spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="437"/>
+        <location filename="../../core/constants.cpp" line="440"/>
         <source>triton-electron mass ratio</source>
         <translation>tritonas-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="438"/>
+        <location filename="../../core/constants.cpp" line="441"/>
         <source>triton g factor (gₜ)</source>
         <translation>tritonas g faktorius (gₜ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="439"/>
+        <location filename="../../core/constants.cpp" line="442"/>
         <source>triton magnetic moment (μₜ)</source>
         <translation>tritonas magnetinis momentas (μₜ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="440"/>
+        <location filename="../../core/constants.cpp" line="443"/>
         <source>triton magnetic moment to Bohr magneton ratio</source>
         <translation>tritono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="441"/>
+        <location filename="../../core/constants.cpp" line="444"/>
         <source>triton magnetic moment to nuclear magneton ratio</source>
         <translation>tritono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="442"/>
+        <location filename="../../core/constants.cpp" line="445"/>
         <source>triton mass (mₜ)</source>
         <translation>tritono masė (mₜ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="443"/>
+        <location filename="../../core/constants.cpp" line="446"/>
         <source>triton mass energy equivalent</source>
         <translation>tritono masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="444"/>
+        <location filename="../../core/constants.cpp" line="447"/>
         <source>triton mass energy equivalent in MeV</source>
         <translation>tritono masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="445"/>
+        <location filename="../../core/constants.cpp" line="448"/>
         <source>triton mass in u</source>
         <translation>tritono masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="446"/>
+        <location filename="../../core/constants.cpp" line="449"/>
         <source>triton molar mass (Mₜ)</source>
         <translation>tritonas molinė masė (Mₜ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="447"/>
+        <location filename="../../core/constants.cpp" line="450"/>
         <source>triton-proton mass ratio</source>
         <translation>tritonas-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="448"/>
+        <location filename="../../core/constants.cpp" line="451"/>
         <source>triton relative atomic mass (Ar(t))</source>
         <translation>tritonas santykinė atominė masė (Ar(t))</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="449"/>
+        <location filename="../../core/constants.cpp" line="452"/>
         <source>triton to proton magnetic moment ratio</source>
         <translation>tritono ir protono magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="452"/>
+        <location filename="../../core/constants.cpp" line="455"/>
         <source>helion-electron mass ratio</source>
         <translation>helionas-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="453"/>
+        <location filename="../../core/constants.cpp" line="456"/>
         <source>helion g factor (gₕ)</source>
         <translation>helionas g faktorius (gₕ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="454"/>
+        <location filename="../../core/constants.cpp" line="457"/>
         <source>helion magnetic moment (μₕ)</source>
         <translation>helionas magnetinis momentas (μₕ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="455"/>
+        <location filename="../../core/constants.cpp" line="458"/>
         <source>helion magnetic moment to Bohr magneton ratio</source>
         <translation>heliono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="456"/>
+        <location filename="../../core/constants.cpp" line="459"/>
         <source>helion magnetic moment to nuclear magneton ratio</source>
         <translation>heliono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="457"/>
+        <location filename="../../core/constants.cpp" line="460"/>
         <source>helion mass (mₕ)</source>
         <translation>heliono masė (mₕ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="458"/>
+        <location filename="../../core/constants.cpp" line="461"/>
         <source>helion mass energy equivalent</source>
         <translation>heliono masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="459"/>
+        <location filename="../../core/constants.cpp" line="462"/>
         <source>helion mass energy equivalent in MeV</source>
         <translation>heliono masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="460"/>
+        <location filename="../../core/constants.cpp" line="463"/>
         <source>helion mass in u</source>
         <translation>heliono masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="461"/>
+        <location filename="../../core/constants.cpp" line="464"/>
         <source>helion molar mass (Mₕ)</source>
         <translation>helionas molinė masė (Mₕ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="462"/>
+        <location filename="../../core/constants.cpp" line="465"/>
         <source>helion-proton mass ratio</source>
         <translation>helionas-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="463"/>
+        <location filename="../../core/constants.cpp" line="466"/>
         <source>helion relative atomic mass (Ar(h))</source>
         <translation>helionas santykinė atominė masė (Ar(h))</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="464"/>
+        <location filename="../../core/constants.cpp" line="467"/>
         <source>helion shielding shift</source>
         <translation>helionas ekranavimas shift</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="465"/>
+        <location filename="../../core/constants.cpp" line="468"/>
         <source>shielded helion gyromagnetic ratio</source>
         <translation>ekranuotas helionas giromagnetinis santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="466"/>
+        <location filename="../../core/constants.cpp" line="469"/>
         <source>shielded helion gyromagnetic ratio in MHz/T</source>
         <translation>ekranuotas helionas giromagnetinis santykis vienetais MHz/T</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="467"/>
+        <location filename="../../core/constants.cpp" line="470"/>
         <source>shielded helion magnetic moment</source>
         <translation>ekranuotas helionas magnetinis momentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="468"/>
+        <location filename="../../core/constants.cpp" line="471"/>
         <source>shielded helion magnetic moment to Bohr magneton ratio</source>
         <translation>ekranuoto heliono magnetinio momento ir Boro magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="469"/>
+        <location filename="../../core/constants.cpp" line="472"/>
         <source>shielded helion magnetic moment to nuclear magneton ratio</source>
         <translation>ekranuoto heliono magnetinio momento ir branduolinio magnetono santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="470"/>
+        <location filename="../../core/constants.cpp" line="473"/>
         <source>shielded helion to proton magnetic moment ratio</source>
         <translation>ekranuoto heliono ir protono magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="471"/>
+        <location filename="../../core/constants.cpp" line="474"/>
         <source>shielded helion to shielded proton magnetic moment ratio</source>
         <translation>ekranuoto heliono ir ekranuoto protono magnetinių momentų santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="474"/>
+        <location filename="../../core/constants.cpp" line="477"/>
         <source>alpha particle mass</source>
         <translation>alfa dalelės masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="475"/>
+        <location filename="../../core/constants.cpp" line="478"/>
         <source>alpha particle mass in u</source>
         <translation>alfa dalelės masė vienetais u</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="476"/>
+        <location filename="../../core/constants.cpp" line="479"/>
         <source>alpha particle mass energy equivalent</source>
         <translation>alfa dalelės masės energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="477"/>
+        <location filename="../../core/constants.cpp" line="480"/>
         <source>alpha particle mass energy equivalent in MeV</source>
         <translation>alfa dalelės masės energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="478"/>
+        <location filename="../../core/constants.cpp" line="481"/>
         <source>alpha particle-electron mass ratio</source>
         <translation>alfa dalelė-elektronas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="479"/>
+        <location filename="../../core/constants.cpp" line="482"/>
         <source>alpha particle-proton mass ratio</source>
         <translation>alfa dalelė-protonas masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="480"/>
+        <location filename="../../core/constants.cpp" line="483"/>
         <source>alpha particle rms charge radius</source>
         <translation>alfa dalelė vidutinis kvadratinis krūvio spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="481"/>
+        <location filename="../../core/constants.cpp" line="484"/>
         <source>alpha particle molar mass</source>
         <translation>alfa dalelė molinė masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="482"/>
+        <location filename="../../core/constants.cpp" line="485"/>
         <source>alpha particle relative atomic mass (Ar(α))</source>
         <translation>alfa dalelė santykinė atominė masė (Ar(α))</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="485"/>
+        <location filename="../../core/constants.cpp" line="488"/>
         <source>atomic mass constant (mᵤ)</source>
         <translation>atominės masės konstanta (mᵤ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="486"/>
+        <location filename="../../core/constants.cpp" line="489"/>
         <source>Avogadro constant</source>
         <translation>Avogadro konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="487"/>
+        <location filename="../../core/constants.cpp" line="490"/>
         <source>Boltzmann constant (k)</source>
         <translation>Bolcmano konstanta (k)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="488"/>
+        <location filename="../../core/constants.cpp" line="491"/>
         <source>Boltzmann constant in eV/K</source>
         <translation>Bolcmano konstanta vienetais eV/K</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="489"/>
+        <location filename="../../core/constants.cpp" line="492"/>
         <source>Boltzmann constant in Hz/K</source>
         <translation>Bolcmano konstanta vienetais Hz/K</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="490"/>
+        <location filename="../../core/constants.cpp" line="493"/>
         <source>Boltzmann constant in inverse meter per kelvin</source>
         <translation>Bolcmano konstanta vienetais atvirkštinis metras kelvinui</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="491"/>
+        <location filename="../../core/constants.cpp" line="494"/>
         <source>electron volt (eV)</source>
         <translation>elektronvoltas (eV)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="492"/>
+        <location filename="../../core/constants.cpp" line="495"/>
         <source>Faraday constant (F)</source>
         <translation>Faradėjaus konstanta (F)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="493"/>
+        <location filename="../../core/constants.cpp" line="496"/>
         <source>first radiation constant (c₁)</source>
         <translation>first spinduliuotės konstanta (c₁)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="494"/>
+        <location filename="../../core/constants.cpp" line="497"/>
         <source>first radiation constant for spectral radiance</source>
         <translation>pirmoji spinduliuotės konstanta spektriniam spindžiui</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="495"/>
+        <location filename="../../core/constants.cpp" line="498"/>
         <source>molar gas constant (R)</source>
         <translation>molinė dujų konstanta (R)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="496"/>
+        <location filename="../../core/constants.cpp" line="499"/>
         <source>Loschmidt constant (n₀, 273.15 K, 100 kPa)</source>
         <translation>Lošmidto konstanta (n₀, 273.15 K, 100 kPa)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="497"/>
+        <location filename="../../core/constants.cpp" line="500"/>
         <source>Loschmidt constant (n₀, 273.15 K, 101.325 kPa)</source>
         <translation>Lošmidto konstanta (n₀, 273.15 K, 101.325 kPa)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="498"/>
+        <location filename="../../core/constants.cpp" line="501"/>
         <source>molar Planck constant</source>
         <translation>molinė Planko konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="499"/>
+        <location filename="../../core/constants.cpp" line="502"/>
         <source>second radiation constant (c₂)</source>
         <translation>second spinduliuotės konstanta (c₂)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="500"/>
+        <location filename="../../core/constants.cpp" line="503"/>
         <source>Stefan-Boltzmann constant (σ)</source>
         <translation>Stefan-Bolcmano konstanta (σ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="501"/>
+        <location filename="../../core/constants.cpp" line="504"/>
         <source>lattice spacing of ideal Si (d₂₂₀)</source>
         <translation>idealaus Si gardelės tarpas (d₂₂₀)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="502"/>
+        <location filename="../../core/constants.cpp" line="505"/>
         <source>atomic mass constant energy equivalent</source>
         <translation>atominės masės konstantos energijos ekvivalentas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="503"/>
+        <location filename="../../core/constants.cpp" line="506"/>
         <source>atomic mass constant energy equivalent in MeV</source>
         <translation>atominės masės konstantos energijos ekvivalentas vienetais MeV</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="504"/>
+        <location filename="../../core/constants.cpp" line="507"/>
         <source>atomic mass unit-electron volt relationship</source>
         <translation>atominės masės vienetas-elektronvoltas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="505"/>
+        <location filename="../../core/constants.cpp" line="508"/>
         <source>molar mass constant (Mᵤ)</source>
         <translation>molinė masė konstanta (Mᵤ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="506"/>
+        <location filename="../../core/constants.cpp" line="509"/>
         <source>molar mass of carbon-12</source>
         <translation>anglies-12 molinė masė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="507"/>
+        <location filename="../../core/constants.cpp" line="510"/>
         <source>molar volume of ideal gas (273.15 K, 100 kPa)</source>
         <translation>idealiųjų dujų molinis tūris (273,15 K, 100 kPa)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="508"/>
+        <location filename="../../core/constants.cpp" line="511"/>
         <source>molar volume of ideal gas (273.15 K, 101.325 kPa)</source>
         <translation>idealiųjų dujų molinis tūris (273,15 K, 101,325 kPa)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="509"/>
+        <location filename="../../core/constants.cpp" line="512"/>
         <source>molar volume of silicon</source>
         <translation>silicio molinis tūris</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="510"/>
+        <location filename="../../core/constants.cpp" line="513"/>
         <source>Sackur-Tetrode constant (1 K, 100 kPa)</source>
         <translation>Sackur-Tetrode konstanta (1 K, 100 kPa)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="511"/>
+        <location filename="../../core/constants.cpp" line="514"/>
         <source>Sackur-Tetrode constant (1 K, 101.325 kPa)</source>
         <translation>Sackur-Tetrode konstanta (1 K, 101.325 kPa)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="512"/>
+        <location filename="../../core/constants.cpp" line="515"/>
         <source>Wien frequency displacement law constant</source>
         <translation>Wien frequency displacement law konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="513"/>
+        <location filename="../../core/constants.cpp" line="516"/>
         <source>Wien wavelength displacement law constant</source>
         <translation>Wien waveilgis displacement law konstanta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="514"/>
+        <location filename="../../core/constants.cpp" line="517"/>
         <source>standard atmosphere (atm)</source>
         <translation>standartinė atmosfera (atm)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="515"/>
+        <location filename="../../core/constants.cpp" line="518"/>
         <source>standard-state pressure (p°)</source>
         <translation>standartinės būsenos slėgis (p°)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="518"/>
+        <location filename="../../core/constants.cpp" line="521"/>
         <source>Angstrom star (Å*)</source>
         <translation>Angstremo žvaigždutė (Å*)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="519"/>
+        <location filename="../../core/constants.cpp" line="522"/>
         <source>Copper x unit</source>
         <translation>vario x vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="520"/>
+        <location filename="../../core/constants.cpp" line="523"/>
         <source>Molybdenum x unit</source>
         <translation>molibdeno x vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="523"/>
+        <location filename="../../core/constants.cpp" line="526"/>
         <source>atomic unit of magnetizability</source>
         <translation>atominis vienetas: magnetizuojamumas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="524"/>
+        <location filename="../../core/constants.cpp" line="527"/>
         <source>atomic unit of mass (mₑ)</source>
         <translation>masės atominis vienetas (mₑ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="525"/>
+        <location filename="../../core/constants.cpp" line="528"/>
         <source>atomic unit of momentum</source>
         <translation>atominis vienetas: judesio kiekis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="526"/>
+        <location filename="../../core/constants.cpp" line="529"/>
         <source>atomic unit of permittivity</source>
         <translation>atominis vienetas: skvarba</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="527"/>
+        <location filename="../../core/constants.cpp" line="530"/>
         <source>atomic unit of time</source>
         <translation>laiko atominis vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="528"/>
+        <location filename="../../core/constants.cpp" line="531"/>
         <source>atomic unit of velocity</source>
         <translation>atominis vienetas: greitis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="531"/>
+        <location filename="../../core/constants.cpp" line="534"/>
         <source>hartree-hertz relationship</source>
         <translation>hartree-hercas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="532"/>
+        <location filename="../../core/constants.cpp" line="535"/>
         <source>hartree-inverse meter relationship</source>
         <translation>hartree-atvirkštinis metras ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="533"/>
+        <location filename="../../core/constants.cpp" line="536"/>
         <source>hartree-joule relationship</source>
         <translation>hartree-džaulis ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="534"/>
+        <location filename="../../core/constants.cpp" line="537"/>
         <source>hartree-kelvin relationship</source>
         <translation>hartree-kelvinas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="535"/>
+        <location filename="../../core/constants.cpp" line="538"/>
         <source>hartree-kilogram relationship</source>
         <translation>hartree-kilogramas ryšys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="538"/>
+        <location filename="../../core/constants.cpp" line="541"/>
         <source>shielding difference of d and p in HD</source>
         <translation>d ir p ekranavimo skirtumas HD</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="539"/>
+        <location filename="../../core/constants.cpp" line="542"/>
         <source>shielding difference of t and p in HT</source>
         <translation>t ir p ekranavimo skirtumas HT</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="543"/>
+        <location filename="../../core/constants.cpp" line="546"/>
         <source>pi (π)</source>
         <translation>pi (π)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="544"/>
+        <location filename="../../core/constants.cpp" line="547"/>
         <source>Euler&apos;s number (e)</source>
         <translation>Eulerio skaičius (e)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="545"/>
+        <location filename="../../core/constants.cpp" line="548"/>
         <source>golden ratio (φ)</source>
         <translation>aukso pjūvis (φ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="546"/>
+        <location filename="../../core/constants.cpp" line="549"/>
         <source>Euler-Mascheroni constant (γ)</source>
         <translation>Euler-Mascheroni konstanta (γ)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="550"/>
+        <location filename="../../core/constants.cpp" line="553"/>
         <source>nominal solar radius</source>
         <translation>nominalusis Saulės radius</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="551"/>
+        <location filename="../../core/constants.cpp" line="554"/>
         <source>nominal solar total irradiance</source>
         <translation>nominalusis Saulės total irradiance</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="552"/>
+        <location filename="../../core/constants.cpp" line="555"/>
         <source>nominal solar luminosity</source>
         <translation>nominalusis Saulės luminosity</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="553"/>
+        <location filename="../../core/constants.cpp" line="556"/>
         <source>nominal solar effective temperature</source>
         <translation>nominalusis Saulės effective temperature</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="554"/>
+        <location filename="../../core/constants.cpp" line="557"/>
         <source>nominal solar mass parameter</source>
         <translation>nominalusis Saulės masės parametras</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="555"/>
+        <location filename="../../core/constants.cpp" line="558"/>
         <source>nominal terrestrial equatorial radius</source>
         <translation>nominalusis Žemės pusiaujo spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="556"/>
+        <location filename="../../core/constants.cpp" line="559"/>
         <source>nominal terrestrial polar radius</source>
         <translation>nominalusis Žemės ašigalinis spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="557"/>
+        <location filename="../../core/constants.cpp" line="560"/>
         <source>nominal terrestrial mass parameter</source>
         <translation>nominalusis Žemės masės parametras</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="558"/>
+        <location filename="../../core/constants.cpp" line="561"/>
         <source>nominal jovian equatorial radius</source>
         <translation>nominalusis Jupiterio pusiaujo spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="559"/>
+        <location filename="../../core/constants.cpp" line="562"/>
         <source>nominal jovian polar radius</source>
         <translation>nominalusis Jupiterio ašigalinis spindulys</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="560"/>
+        <location filename="../../core/constants.cpp" line="563"/>
         <source>nominal jovian mass parameter</source>
         <translation>nominalusis Jupiterio masės parametras</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="562"/>
+        <location filename="../../core/constants.cpp" line="565"/>
         <source>average value of one minus the rate of TCG relative to TCB</source>
         <translation>vidutinė vieneto minus TCG spartos TCB atžvilgiu reikšmė</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="563"/>
+        <location filename="../../core/constants.cpp" line="566"/>
         <source>solar mass parameter (TCB-compatible)</source>
         <translation>solar masės parametras (TCB-compatible)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="564"/>
+        <location filename="../../core/constants.cpp" line="567"/>
         <source>solar mass parameter (TDB-compatible)</source>
         <translation>solar masės parametras (TDB-compatible)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="565"/>
+        <location filename="../../core/constants.cpp" line="568"/>
         <source>equatorial radius of the Earth (TT-compatible)</source>
         <translation>Žemės pusiaujo spindulys (suderinamas su TT)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="566"/>
+        <location filename="../../core/constants.cpp" line="569"/>
         <source>dynamical form factor of the Earth</source>
         <translation>Žemės dinaminis formos faktorius</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="567"/>
+        <location filename="../../core/constants.cpp" line="570"/>
         <source>time rate of change in the dynamical form factor of the Earth</source>
         <translation>Žemės dinaminio formos faktoriaus kitimo laike sparta</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="568"/>
+        <location filename="../../core/constants.cpp" line="571"/>
         <source>geocentric gravitational constant (TCB-compatible)</source>
         <translation>geocentric gravitational konstanta (TCB-compatible)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="569"/>
+        <location filename="../../core/constants.cpp" line="572"/>
         <source>geocentric gravitational constant (TT-compatible)</source>
         <translation>geocentric gravitational konstanta (TT-compatible)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="570"/>
+        <location filename="../../core/constants.cpp" line="573"/>
         <source>geocentric gravitational constant (TDB-compatible)</source>
         <translation>geocentric gravitational konstanta (TDB-compatible)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="571"/>
+        <location filename="../../core/constants.cpp" line="574"/>
         <source>potential of the geoid</source>
         <translation>geoido potencialas</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="572"/>
+        <location filename="../../core/constants.cpp" line="575"/>
         <source>nominal mean angular velocity of the Earth (TT-compatible)</source>
         <translation>nominalusis vidutinis Žemės kampinis greitis (suderinamas su TT)</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="573"/>
+        <location filename="../../core/constants.cpp" line="576"/>
         <source>ratio mass of the Moon to the Earth</source>
         <translation>Mėnulio ir Žemės masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="574"/>
+        <location filename="../../core/constants.cpp" line="577"/>
         <source>ratio of the mass of the Sun to Mercury</source>
         <translation>Saulės ir Merkurijaus masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="575"/>
+        <location filename="../../core/constants.cpp" line="578"/>
         <source>ratio of the mass of the Sun to Venus</source>
         <translation>Saulės ir Veneros masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="576"/>
+        <location filename="../../core/constants.cpp" line="579"/>
         <source>ratio of the mass of the Sun to Mars</source>
         <translation>Saulės ir Marso masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="577"/>
+        <location filename="../../core/constants.cpp" line="580"/>
         <source>ratio of the mass of the Sun to Jupiter</source>
         <translation>Saulės ir Jupiterio masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="578"/>
+        <location filename="../../core/constants.cpp" line="581"/>
         <source>ratio of the mass of the Sun to Saturn</source>
         <translation>Saulės ir Saturno masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="579"/>
+        <location filename="../../core/constants.cpp" line="582"/>
         <source>ratio of the mass of the Sun to Uranus</source>
         <translation>Saulės ir Urano masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="580"/>
+        <location filename="../../core/constants.cpp" line="583"/>
         <source>ratio of the mass of the Sun to Neptune</source>
         <translation>Saulės ir Neptūno masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="581"/>
+        <location filename="../../core/constants.cpp" line="584"/>
         <source>ratio of the mass of the Sun to (134340) Pluto</source>
         <translation>Saulės ir (134340) Plutono masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="582"/>
+        <location filename="../../core/constants.cpp" line="585"/>
         <source>ratio of the mass of the Sun to (136199) Eris</source>
         <translation>Saulės ir (136199) Eridės masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="583"/>
+        <location filename="../../core/constants.cpp" line="586"/>
         <source>ratio of the mass of (1) Ceres to the Sun</source>
         <translation>(1) Cereros ir Saulės masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="584"/>
+        <location filename="../../core/constants.cpp" line="587"/>
         <source>ratio of the mass of (2) Pallas to the Sun</source>
         <translation>(2) Paladės ir Saulės masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="585"/>
+        <location filename="../../core/constants.cpp" line="588"/>
         <source>ratio of the mass of (4) Vesta to the Sun</source>
         <translation>(4) Vestos ir Saulės masių santykis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="586"/>
+        <location filename="../../core/constants.cpp" line="589"/>
         <source>mean obliquity of the ecliptic at J2000.0</source>
         <translation>vidutinis ekliptikos posvyris at J2000.0</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="55"/>
+        <location filename="../../core/constants.cpp" line="57"/>
         <source>Electromagnetic</source>
         <translation>Elektromagnetinės</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="294"/>
+        <location filename="../../core/constants.cpp" line="297"/>
         <source>Compton wavelength</source>
         <translation>Komptono bangos ilgis</translation>
     </message>
     <message>
-        <location filename="../../core/constants.cpp" line="42"/>
+        <location filename="../../core/constants.cpp" line="44"/>
         <source>Astronomy</source>
         <translation>Astronomija</translation>
     </message>
@@ -2547,47 +2551,46 @@
 <context>
     <name>ConstantsWidget</name>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="245"/>
+        <location filename="../../gui/constantswidget.cpp" line="231"/>
         <source>Domain</source>
         <translation>Sritis</translation>
     </message>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="246"/>
+        <location filename="../../gui/constantswidget.cpp" line="232"/>
         <source>Subdomain</source>
         <translation>Posritis</translation>
     </message>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="248"/>
+        <location filename="../../gui/constantswidget.cpp" line="234"/>
         <source>No match found</source>
         <translation>Nerasta atitikmens</translation>
     </message>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="251"/>
+        <location filename="../../gui/constantswidget.cpp" line="237"/>
         <source>Name</source>
         <translation>Pavadinimas</translation>
     </message>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="252"/>
+        <location filename="../../gui/constantswidget.cpp" line="238"/>
         <source>Value</source>
         <translation>Reikšmė</translation>
     </message>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="253"/>
+        <location filename="../../gui/constantswidget.cpp" line="239"/>
         <source>Unit</source>
         <translation>Vienetas</translation>
     </message>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="247"/>
+        <location filename="../../gui/constantswidget.cpp" line="233"/>
         <source>Search</source>
         <translation>Paieška</translation>
     </message>
     <message>
-        <location filename="../../gui/constantswidget.cpp" line="298"/>
-        <location filename="../../gui/constantswidget.cpp" line="300"/>
-        <location filename="../../gui/constantswidget.cpp" line="379"/>
-        <location filename="../../gui/constantswidget.cpp" line="419"/>
-        <location filename="../../gui/constantswidget.cpp" line="420"/>
-        <location filename="../../gui/constantswidget.cpp" line="429"/>
+        <location filename="../../gui/constantswidget.cpp" line="260"/>
+        <location filename="../../gui/constantswidget.cpp" line="396"/>
+        <location filename="../../gui/constantswidget.cpp" line="438"/>
+        <location filename="../../gui/constantswidget.cpp" line="439"/>
+        <location filename="../../gui/constantswidget.cpp" line="449"/>
         <source>All</source>
         <translation>Visos</translation>
     </message>
@@ -2661,572 +2664,585 @@
     </message>
 </context>
 <context>
+    <name>DiagnosticsDialog</name>
+    <message>
+        <location filename="../../gui/diagnosticsdialog.cpp" line="267"/>
+        <source>App Diagnostics</source>
+        <translation>Programos diagnostika</translation>
+    </message>
+    <message>
+        <location filename="../../gui/diagnosticsdialog.cpp" line="276"/>
+        <source>Copy to Clipboard</source>
+        <translation>Kopijuoti į iškarpinę</translation>
+    </message>
+</context>
+<context>
     <name>Editor</name>
     <message>
-        <location filename="../../gui/editor.cpp" line="1930"/>
+        <location filename="../../gui/editor.cpp" line="1992"/>
         <source>Unit</source>
         <translation>Vienetas</translation>
     </message>
     <message>
-        <location filename="../../gui/editor.cpp" line="1934"/>
+        <location filename="../../gui/editor.cpp" line="1996"/>
         <source>User unit</source>
         <translation>Naudotojo vienetas</translation>
     </message>
     <message>
-        <location filename="../../gui/editor.cpp" line="1989"/>
+        <location filename="../../gui/editor.cpp" line="2051"/>
         <source>User function</source>
         <translation>Naudotojo funkcija</translation>
     </message>
     <message>
-        <location filename="../../gui/editor.cpp" line="2116"/>
+        <location filename="../../gui/editor.cpp" line="2178"/>
         <source>Argument</source>
         <translation>Argumentas</translation>
     </message>
     <message>
-        <location filename="../../gui/editor.cpp" line="2292"/>
-        <location filename="../../gui/editor.cpp" line="2326"/>
+        <location filename="../../gui/editor.cpp" line="2358"/>
+        <location filename="../../gui/editor.cpp" line="2387"/>
         <source>Current result:&lt;br/&gt;%1</source>
         <translation>Dabartinis rezultatas:&lt;br/&gt;%1</translation>
     </message>
     <message>
-        <location filename="../../gui/editor.cpp" line="2398"/>
-        <location filename="../../gui/editor.cpp" line="2426"/>
+        <location filename="../../gui/editor.cpp" line="2455"/>
+        <location filename="../../gui/editor.cpp" line="2479"/>
         <source>Selection result:&lt;br/&gt;%1</source>
         <translation>Pažymėjimo rezultatas:&lt;br/&gt;%1</translation>
     </message>
     <message>
-        <location filename="../../gui/editor.cpp" line="2392"/>
-        <location filename="../../gui/editor.cpp" line="2420"/>
+        <location filename="../../gui/editor.cpp" line="2449"/>
+        <location filename="../../gui/editor.cpp" line="2473"/>
         <source>Selection result: n/a</source>
         <translation>Žymėjimo rezultatas: n/d</translation>
     </message>
     <message>
-        <location filename="../../gui/editor.cpp" line="2433"/>
+        <location filename="../../gui/editor.cpp" line="2486"/>
         <source>Selection result: %1</source>
         <translation>Pažymėjimo rezultatas: %1</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="539"/>
+        <location filename="../../core/units.cpp" line="541"/>
         <source>second</source>
         <translation>sekundė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="540"/>
+        <location filename="../../core/units.cpp" line="542"/>
         <source>metre</source>
         <translation>metras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="541"/>
+        <location filename="../../core/units.cpp" line="543"/>
         <source>kilogram</source>
         <translation>kilogramas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="544"/>
+        <location filename="../../core/units.cpp" line="546"/>
         <source>mole</source>
         <translation>molis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="547"/>
+        <location filename="../../core/units.cpp" line="549"/>
         <source>radian</source>
         <translation>radianas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="548"/>
+        <location filename="../../core/units.cpp" line="550"/>
         <source>steradian</source>
         <translation>steradianas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="562"/>
+        <location filename="../../core/units.cpp" line="564"/>
         <source>degree Celsius</source>
         <translation>Celsijaus laipsnis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="569"/>
+        <location filename="../../core/units.cpp" line="571"/>
         <source>cubic metre</source>
         <translation>kubinis metras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="570"/>
+        <location filename="../../core/units.cpp" line="572"/>
         <source>cubic millimetre</source>
         <translation>kubinis milimetras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="571"/>
+        <location filename="../../core/units.cpp" line="573"/>
         <source>cubic centimetre</source>
         <translation>kubinis centimetras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="572"/>
+        <location filename="../../core/units.cpp" line="574"/>
         <source>cubic decimetre</source>
         <translation>kubinis decimetras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="573"/>
+        <location filename="../../core/units.cpp" line="575"/>
         <source>cubic kilometre</source>
         <translation>kubinis kilometras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="574"/>
+        <location filename="../../core/units.cpp" line="576"/>
         <source>square millimetre</source>
         <translation>kvadratinis milimetras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="575"/>
+        <location filename="../../core/units.cpp" line="577"/>
         <source>square kilometre</source>
         <translation>kvadratinis kilometras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="576"/>
+        <location filename="../../core/units.cpp" line="578"/>
         <source>square metre</source>
         <translation>kvadratinis metras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="578"/>
+        <location filename="../../core/units.cpp" line="580"/>
         <source>minute</source>
         <translation>minutė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="579"/>
+        <location filename="../../core/units.cpp" line="581"/>
         <source>hour</source>
         <translation>valanda</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="580"/>
+        <location filename="../../core/units.cpp" line="582"/>
         <source>day</source>
         <translation>diena</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="581"/>
+        <location filename="../../core/units.cpp" line="583"/>
         <source>astronomical unit</source>
         <translation>astronominis vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="582"/>
+        <location filename="../../core/units.cpp" line="584"/>
         <source>degree</source>
         <translation>laipsnis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="583"/>
+        <location filename="../../core/units.cpp" line="585"/>
         <source>arcminute</source>
         <translation>kampinė minutė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="584"/>
+        <location filename="../../core/units.cpp" line="586"/>
         <source>arcsecond</source>
         <translation>kampinė sekundė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="585"/>
+        <location filename="../../core/units.cpp" line="587"/>
         <source>milliarcsecond</source>
         <translation>kampinė milisekundė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="586"/>
+        <location filename="../../core/units.cpp" line="588"/>
         <source>microarcsecond</source>
         <translation>kampinė mikrosekundė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="587"/>
+        <location filename="../../core/units.cpp" line="589"/>
         <source>hectare</source>
         <translation>hektaras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="588"/>
+        <location filename="../../core/units.cpp" line="590"/>
         <source>litre</source>
         <translation>litras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="589"/>
+        <location filename="../../core/units.cpp" line="591"/>
         <source>tonne</source>
         <translation>tona</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="590"/>
+        <location filename="../../core/units.cpp" line="592"/>
         <source>Dalton</source>
         <translation>daltonas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="591"/>
+        <location filename="../../core/units.cpp" line="593"/>
         <source>electronvolt</source>
         <translation>elektronvoltas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="594"/>
+        <location filename="../../core/units.cpp" line="596"/>
         <source>Angstrom</source>
         <translation>angstromas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="595"/>
+        <location filename="../../core/units.cpp" line="597"/>
         <source>atmosphere</source>
         <translation>atmosfera</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="596"/>
+        <location filename="../../core/units.cpp" line="598"/>
         <source>atomic mass unit</source>
         <translation>atominės masės vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="599"/>
+        <location filename="../../core/units.cpp" line="601"/>
         <source>British thermal unit</source>
         <translation>britų šiluminis vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="601"/>
+        <location filename="../../core/units.cpp" line="603"/>
         <source>calorie</source>
         <translation>kalorija</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="602"/>
+        <location filename="../../core/units.cpp" line="604"/>
         <source>carat</source>
         <translation>karatas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="603"/>
+        <location filename="../../core/units.cpp" line="605"/>
         <source>cup</source>
         <translation>puodelis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="604"/>
+        <location filename="../../core/units.cpp" line="606"/>
         <source>cup (Imperial)</source>
         <translation>puodelis (imperinis)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="605"/>
+        <location filename="../../core/units.cpp" line="607"/>
         <source>cup (Japanese)</source>
         <translation>puodelis (japoniškas)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="606"/>
+        <location filename="../../core/units.cpp" line="608"/>
         <source>cup (US)</source>
         <translation>puodelis (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="607"/>
+        <location filename="../../core/units.cpp" line="609"/>
         <source>degree Fahrenheit</source>
         <translation>Farenheito laipsnis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="608"/>
+        <location filename="../../core/units.cpp" line="610"/>
         <source>fathom</source>
         <translation>fatomas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="609"/>
+        <location filename="../../core/units.cpp" line="611"/>
         <source>fluid ounce (Imperial)</source>
         <translation>skysčio uncija (imperinė)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="610"/>
+        <location filename="../../core/units.cpp" line="612"/>
         <source>fluid ounce (US)</source>
         <translation>skysčio uncija (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="611"/>
+        <location filename="../../core/units.cpp" line="613"/>
         <source>fluid dram (Imperial)</source>
         <translation>skysčio drachma (imperinė)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="612"/>
+        <location filename="../../core/units.cpp" line="614"/>
         <source>fluid dram (US)</source>
         <translation>skysčio drachma (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="613"/>
+        <location filename="../../core/units.cpp" line="615"/>
         <source>foot</source>
         <translation>pėda</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="614"/>
+        <location filename="../../core/units.cpp" line="616"/>
         <source>square foot</source>
         <translation>kvadratinė pėda</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="615"/>
+        <location filename="../../core/units.cpp" line="617"/>
         <source>cubic foot</source>
         <translation>kubinė pėda</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="617"/>
+        <location filename="../../core/units.cpp" line="619"/>
         <source>gallon (Imperial)</source>
         <translation>galonas (imperinis)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="618"/>
+        <location filename="../../core/units.cpp" line="620"/>
         <source>gallon (US)</source>
         <translation>galonas (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="619"/>
+        <location filename="../../core/units.cpp" line="621"/>
         <source>gill (Imperial)</source>
         <translation>gilis (imperinis)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="620"/>
+        <location filename="../../core/units.cpp" line="622"/>
         <source>gill (US)</source>
         <translation>gilis (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="621"/>
+        <location filename="../../core/units.cpp" line="623"/>
         <source>gradian</source>
         <translation>gradas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="622"/>
+        <location filename="../../core/units.cpp" line="624"/>
         <source>grain</source>
         <translation>granas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="623"/>
+        <location filename="../../core/units.cpp" line="625"/>
         <source>gram</source>
         <translation>gramas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="624"/>
+        <location filename="../../core/units.cpp" line="626"/>
         <source>Hartley</source>
         <translation>hartlis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="625"/>
+        <location filename="../../core/units.cpp" line="627"/>
         <source>Hartree energy unit</source>
         <translation>Hartrio energijos vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="626"/>
+        <location filename="../../core/units.cpp" line="628"/>
         <source>horsepower</source>
         <translation>arklio galia</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="627"/>
+        <location filename="../../core/units.cpp" line="629"/>
         <source>inch</source>
         <translation>colis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="628"/>
+        <location filename="../../core/units.cpp" line="630"/>
         <source>square inch</source>
         <translation>kvadratinis colis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="629"/>
+        <location filename="../../core/units.cpp" line="631"/>
         <source>cubic inch</source>
         <translation>kubinis colis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="630"/>
+        <location filename="../../core/units.cpp" line="632"/>
         <source>karat</source>
         <translation>karatas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="631"/>
+        <location filename="../../core/units.cpp" line="633"/>
         <source>knot</source>
         <translation>mazgas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="632"/>
+        <location filename="../../core/units.cpp" line="634"/>
         <source>lightminute</source>
         <translation>šviesos minutė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="633"/>
+        <location filename="../../core/units.cpp" line="635"/>
         <source>lightsecond</source>
         <translation>šviesos sekundė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="634"/>
+        <location filename="../../core/units.cpp" line="636"/>
         <source>lightyear</source>
         <translation>šviesmetis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="635"/>
+        <location filename="../../core/units.cpp" line="637"/>
         <source>long ton</source>
         <translation>ilgoji tona</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="636"/>
+        <location filename="../../core/units.cpp" line="638"/>
         <source>mile</source>
         <translation>mylia</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="637"/>
+        <location filename="../../core/units.cpp" line="639"/>
         <source>square mile</source>
         <translation>kvadratinė mylia</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="638"/>
+        <location filename="../../core/units.cpp" line="640"/>
         <source>cubic mile</source>
         <translation>kubinė mylia</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="639"/>
+        <location filename="../../core/units.cpp" line="641"/>
         <source>mile per hour</source>
         <translation>mylia per valandą</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="640"/>
+        <location filename="../../core/units.cpp" line="642"/>
         <source>kilometre per hour</source>
         <translation>kilometras per valandą</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="642"/>
+        <location filename="../../core/units.cpp" line="644"/>
         <source>nautical mile</source>
         <translation>jūrmylė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="643"/>
+        <location filename="../../core/units.cpp" line="645"/>
         <source>ounce</source>
         <translation>uncija</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="644"/>
+        <location filename="../../core/units.cpp" line="646"/>
         <source>parsec</source>
         <translation>parsekas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="645"/>
+        <location filename="../../core/units.cpp" line="647"/>
         <source>pint (Imperial)</source>
         <translation>pinta (imperinė)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="646"/>
+        <location filename="../../core/units.cpp" line="648"/>
         <source>pint (US)</source>
         <translation>pinta (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="647"/>
+        <location filename="../../core/units.cpp" line="649"/>
         <source>pound</source>
         <translation>svaras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="648"/>
+        <location filename="../../core/units.cpp" line="650"/>
         <source>pounds per square inch</source>
         <translation>svarai kvadratiniam coliui</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="649"/>
+        <location filename="../../core/units.cpp" line="651"/>
         <source>quart (Imperial)</source>
         <translation>kvorta (imperinė)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="650"/>
+        <location filename="../../core/units.cpp" line="652"/>
         <source>quart (US)</source>
         <translation>kvorta (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="651"/>
+        <location filename="../../core/units.cpp" line="653"/>
         <source>oil barrel</source>
         <translation>naftos barelis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="652"/>
+        <location filename="../../core/units.cpp" line="654"/>
         <source>beer barrel (US)</source>
         <translation>alaus barelis (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="654"/>
+        <location filename="../../core/units.cpp" line="656"/>
         <source>square yard</source>
         <translation>kvadratinis jardas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="655"/>
+        <location filename="../../core/units.cpp" line="657"/>
         <source>cubic yard</source>
         <translation>kubinis jardas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="656"/>
+        <location filename="../../core/units.cpp" line="658"/>
         <source>short ton</source>
         <translation>trumpoji tona</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="658"/>
+        <location filename="../../core/units.cpp" line="660"/>
         <source>tablespoon</source>
         <translation>valgomasis šaukštas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="659"/>
+        <location filename="../../core/units.cpp" line="661"/>
         <source>tablespoon (Australian)</source>
         <translation>valgomasis šaukštas (australiškas)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="660"/>
+        <location filename="../../core/units.cpp" line="662"/>
         <source>tablespoon (Imperial)</source>
         <translation>valgomasis šaukštas (imperinis)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="661"/>
+        <location filename="../../core/units.cpp" line="663"/>
         <source>tablespoon (US)</source>
         <translation>valgomasis šaukštas (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="662"/>
+        <location filename="../../core/units.cpp" line="664"/>
         <source>dessert spoon</source>
         <translation>desertinis šaukštas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="663"/>
+        <location filename="../../core/units.cpp" line="665"/>
         <source>teaspoon</source>
         <translation>arbatinis šaukštelis</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="664"/>
+        <location filename="../../core/units.cpp" line="666"/>
         <source>teaspoon (Imperial)</source>
         <translation>arbatinis šaukštelis (imperinis)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="665"/>
+        <location filename="../../core/units.cpp" line="667"/>
         <source>teaspoon (US)</source>
         <translation>arbatinis šaukštelis (JAV)</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="667"/>
+        <location filename="../../core/units.cpp" line="669"/>
         <source>turn</source>
         <translation>apsisukimas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="668"/>
+        <location filename="../../core/units.cpp" line="670"/>
         <source>revolution</source>
         <translation>apsisukimas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="669"/>
+        <location filename="../../core/units.cpp" line="671"/>
         <source>revolution per minute</source>
         <translation>apsisukimai per minutę</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="670"/>
+        <location filename="../../core/units.cpp" line="672"/>
         <source>week</source>
         <translation>savaitė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="671"/>
+        <location filename="../../core/units.cpp" line="673"/>
         <source>kilowatt hour</source>
         <translation>kilovatvalandė</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="672"/>
+        <location filename="../../core/units.cpp" line="674"/>
         <source>millimetre of mercury</source>
         <translation>gyvsidabrio milimetras</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="674"/>
+        <location filename="../../core/units.cpp" line="676"/>
         <source>yard</source>
         <translation>jardas</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="675"/>
+        <location filename="../../core/units.cpp" line="677"/>
         <source>Julian century</source>
         <translation>Julijaus amžius</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="676"/>
+        <location filename="../../core/units.cpp" line="678"/>
         <source>Julian year</source>
         <translation>Julijaus metai</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="677"/>
+        <location filename="../../core/units.cpp" line="679"/>
         <source>sidereal year</source>
         <translation>žvaigždiniai metai</translation>
     </message>
     <message>
-        <location filename="../../core/units.cpp" line="678"/>
+        <location filename="../../core/units.cpp" line="680"/>
         <source>tropical year</source>
         <translation>tropiniai metai</translation>
     </message>
@@ -3234,210 +3250,210 @@
 <context>
     <name>Evaluator</name>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7004"/>
-        <location filename="../../core/evaluator.cpp" line="7229"/>
-        <location filename="../../core/evaluator.cpp" line="7244"/>
-        <location filename="../../core/evaluator.cpp" line="7255"/>
-        <location filename="../../core/evaluator.cpp" line="7267"/>
-        <location filename="../../core/evaluator.cpp" line="7281"/>
-        <location filename="../../core/evaluator.cpp" line="7295"/>
-        <location filename="../../core/evaluator.cpp" line="7306"/>
-        <location filename="../../core/evaluator.cpp" line="7330"/>
-        <location filename="../../core/evaluator.cpp" line="7341"/>
-        <location filename="../../core/evaluator.cpp" line="7353"/>
-        <location filename="../../core/evaluator.cpp" line="7364"/>
-        <location filename="../../core/evaluator.cpp" line="7374"/>
-        <location filename="../../core/evaluator.cpp" line="7384"/>
-        <location filename="../../core/evaluator.cpp" line="7395"/>
+        <location filename="../../core/evaluator.cpp" line="7026"/>
+        <location filename="../../core/evaluator.cpp" line="7251"/>
+        <location filename="../../core/evaluator.cpp" line="7266"/>
+        <location filename="../../core/evaluator.cpp" line="7277"/>
+        <location filename="../../core/evaluator.cpp" line="7289"/>
+        <location filename="../../core/evaluator.cpp" line="7303"/>
+        <location filename="../../core/evaluator.cpp" line="7317"/>
+        <location filename="../../core/evaluator.cpp" line="7328"/>
+        <location filename="../../core/evaluator.cpp" line="7352"/>
+        <location filename="../../core/evaluator.cpp" line="7363"/>
+        <location filename="../../core/evaluator.cpp" line="7375"/>
+        <location filename="../../core/evaluator.cpp" line="7386"/>
+        <location filename="../../core/evaluator.cpp" line="7396"/>
         <location filename="../../core/evaluator.cpp" line="7406"/>
         <location filename="../../core/evaluator.cpp" line="7417"/>
         <location filename="../../core/evaluator.cpp" line="7428"/>
         <location filename="../../core/evaluator.cpp" line="7439"/>
-        <location filename="../../core/evaluator.cpp" line="7480"/>
-        <location filename="../../core/evaluator.cpp" line="7613"/>
-        <location filename="../../core/evaluator.cpp" line="7631"/>
-        <location filename="../../core/evaluator.cpp" line="7672"/>
-        <location filename="../../core/evaluator.cpp" line="7685"/>
-        <location filename="../../core/evaluator.cpp" line="7801"/>
+        <location filename="../../core/evaluator.cpp" line="7450"/>
+        <location filename="../../core/evaluator.cpp" line="7461"/>
+        <location filename="../../core/evaluator.cpp" line="7502"/>
+        <location filename="../../core/evaluator.cpp" line="7635"/>
+        <location filename="../../core/evaluator.cpp" line="7653"/>
+        <location filename="../../core/evaluator.cpp" line="7694"/>
+        <location filename="../../core/evaluator.cpp" line="7707"/>
+        <location filename="../../core/evaluator.cpp" line="7823"/>
         <source>invalid expression</source>
         <translation>neteisingas reiškinys</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="750"/>
-        <location filename="../../core/evaluator.cpp" line="824"/>
+        <location filename="../../core/evaluator.cpp" line="739"/>
+        <location filename="../../core/evaluator.cpp" line="816"/>
         <source>division by zero</source>
         <translation>dalinimas iš nulio</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="765"/>
+        <location filename="../../core/evaluator.cpp" line="754"/>
         <source>too time consuming - computation was rejected</source>
         <translation>operacija reikalauja per daug laiko - skaičiavimas atmestas</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="772"/>
-        <location filename="../../core/evaluator.cpp" line="841"/>
-        <location filename="../../core/evaluator.cpp" line="7086"/>
+        <location filename="../../core/evaluator.cpp" line="761"/>
+        <location filename="../../core/evaluator.cpp" line="833"/>
+        <location filename="../../core/evaluator.cpp" line="7108"/>
         <source>dimension mismatch - quantities with different dimensions cannot be compared, added, etc.</source>
         <translation>matmenų neatitikimas - skirtingų matmenų kiekiai negali būti lyginami, pridedami ir t.t.</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="777"/>
+        <location filename="../../core/evaluator.cpp" line="766"/>
         <source>invalid dimension - operation might require dimensionless arguments</source>
         <translation>neteisingas matmuo - operacija gali reikalauti argumentų be matmenų</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="784"/>
-        <location filename="../../core/evaluator.cpp" line="827"/>
+        <location filename="../../core/evaluator.cpp" line="776"/>
+        <location filename="../../core/evaluator.cpp" line="819"/>
         <source>Computation aborted - encountered numerical instability</source>
         <translation>Skaičiavimas nutrauktas - susidurta su skaitiniu nesubalansuotumu</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="837"/>
+        <location filename="../../core/evaluator.cpp" line="829"/>
         <source>invalid dimension - function might require dimensionless arguments</source>
         <translation>neteisingas matmuo - funkcija gali reikalauti argumentų be matmenų</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="852"/>
+        <location filename="../../core/evaluator.cpp" line="844"/>
         <source>error</source>
         <translation>klaida</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7502"/>
-        <location filename="../../core/evaluator.cpp" line="7972"/>
+        <location filename="../../core/evaluator.cpp" line="7524"/>
+        <location filename="../../core/evaluator.cpp" line="7994"/>
         <source>unit must not be zero</source>
         <translation>vienetas privalo būti ne nulis</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7506"/>
+        <location filename="../../core/evaluator.cpp" line="7528"/>
         <source>Conversion failed - dimension mismatch</source>
         <translation>Konvertuoti nepavyko - matmenys nesutampa</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7588"/>
-        <location filename="../../core/evaluator.cpp" line="7626"/>
+        <location filename="../../core/evaluator.cpp" line="7610"/>
+        <location filename="../../core/evaluator.cpp" line="7648"/>
         <source>unknown function or variable</source>
         <translation>nežinoma funkcija arba kintamasis</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7819"/>
+        <location filename="../../core/evaluator.cpp" line="7841"/>
         <source>recursion not supported</source>
         <translation>rekursija nepalaikoma</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="739"/>
+        <location filename="../../core/evaluator.cpp" line="728"/>
         <source>cannot operate on a NaN</source>
         <translation>negalima atlikti operacijos su NaN</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="742"/>
-        <location filename="../../core/evaluator.cpp" line="813"/>
+        <location filename="../../core/evaluator.cpp" line="731"/>
+        <location filename="../../core/evaluator.cpp" line="805"/>
         <source>underflow - tiny result is out of SpeedCrunch&apos;s number range</source>
         <translation>atvirkštinis perpildymas - mažytis rezultatas yra už programos SpeedCrunch skaičių ribų</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="746"/>
-        <location filename="../../core/evaluator.cpp" line="809"/>
+        <location filename="../../core/evaluator.cpp" line="735"/>
+        <location filename="../../core/evaluator.cpp" line="801"/>
         <source>overflow - huge result is out of SpeedCrunch&apos;s number range</source>
         <translation>perpildymas - milžiniškas rezultatas yra už programos SpeedCrunch skaičių ribų</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="754"/>
-        <location filename="../../core/evaluator.cpp" line="817"/>
+        <location filename="../../core/evaluator.cpp" line="743"/>
+        <location filename="../../core/evaluator.cpp" line="809"/>
         <source>overflow - logic result exceeds maximum of 256 bits</source>
         <translation>perpilda - loginis rezultatas viršija didžiausią 256 bitų ribą</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="760"/>
+        <location filename="../../core/evaluator.cpp" line="749"/>
         <source>overflow - integer result exceeds maximum limit for integers</source>
         <translation>perpilda - sveikasis rezultatas viršija didžiausią sveikųjų skaičių ribą</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="781"/>
+        <location filename="../../core/evaluator.cpp" line="773"/>
         <source>operation is not defined for these arguments</source>
         <translation>operacija šiems argumentams neapibrėžta</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="803"/>
-        <location filename="../../core/evaluator.cpp" line="7666"/>
-        <location filename="../../core/evaluator.cpp" line="7679"/>
-        <location filename="../../core/evaluator.cpp" line="7705"/>
-        <location filename="../../core/evaluator.cpp" line="7813"/>
+        <location filename="../../core/evaluator.cpp" line="795"/>
+        <location filename="../../core/evaluator.cpp" line="7688"/>
+        <location filename="../../core/evaluator.cpp" line="7701"/>
+        <location filename="../../core/evaluator.cpp" line="7727"/>
+        <location filename="../../core/evaluator.cpp" line="7835"/>
         <source>wrong number of arguments</source>
         <translation>neteisingas argumentų skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="806"/>
+        <location filename="../../core/evaluator.cpp" line="798"/>
         <source>does not take NaN as an argument</source>
         <translation>NaN negali būti argumentas</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="821"/>
+        <location filename="../../core/evaluator.cpp" line="813"/>
         <source>result out of range</source>
         <translation>rezultatas viršija ribas</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="831"/>
-        <location filename="../../core/evaluator.cpp" line="7694"/>
-        <location filename="../../core/evaluator.cpp" line="7710"/>
+        <location filename="../../core/evaluator.cpp" line="823"/>
+        <location filename="../../core/evaluator.cpp" line="7716"/>
+        <location filename="../../core/evaluator.cpp" line="7732"/>
         <source>undefined for argument domain</source>
         <translation>neapibrėžta šiai argumento apibrėžimo sričiai</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="834"/>
+        <location filename="../../core/evaluator.cpp" line="826"/>
         <source>computation too expensive</source>
         <translation>skaičiavimas pernelyg brangus</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="849"/>
+        <location filename="../../core/evaluator.cpp" line="841"/>
         <source>internal error, please report a bug</source>
         <translation>vidinė klaida, prašome apie ją pranešti</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="6171"/>
-        <location filename="../../core/evaluator.cpp" line="7097"/>
+        <location filename="../../core/evaluator.cpp" line="6189"/>
+        <location filename="../../core/evaluator.cpp" line="7119"/>
         <source>syntax error</source>
         <translation>sintaksės klaida</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7498"/>
+        <location filename="../../core/evaluator.cpp" line="7520"/>
         <source>conversion target must be a unit</source>
         <translation>konvertavimo tikslas turi būti vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7604"/>
+        <location filename="../../core/evaluator.cpp" line="7626"/>
         <source>unknown unit</source>
         <translation>nežinomas vienetas</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7891"/>
-        <location filename="../../core/evaluator.cpp" line="7931"/>
+        <location filename="../../core/evaluator.cpp" line="7913"/>
+        <location filename="../../core/evaluator.cpp" line="7953"/>
         <source>%1 is a reserved name, please choose another</source>
         <translation>%1 yra rezervuotas pavadinimas, prašome pasirinkti kitą</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7898"/>
-        <location filename="../../core/evaluator.cpp" line="7903"/>
-        <location filename="../../core/evaluator.cpp" line="7908"/>
+        <location filename="../../core/evaluator.cpp" line="7920"/>
+        <location filename="../../core/evaluator.cpp" line="7925"/>
+        <location filename="../../core/evaluator.cpp" line="7930"/>
         <source>%1 is a global user definition and cannot be overridden in this session.</source>
         <translation>%1 yra globalus naudotojo apibrėžimas ir šiame seanse negali būti perrašytas.</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7915"/>
+        <location filename="../../core/evaluator.cpp" line="7937"/>
         <source>%1 is a variable name, please choose another or delete the variable</source>
         <translation>%1 yra kintamojo pavadinimas, prašome pasirinkti kitą arba ištrinti kintamąjį</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7925"/>
+        <location filename="../../core/evaluator.cpp" line="7947"/>
         <source>argument %1 is used more than once</source>
         <translation>argumentas %1 yra panaudotas daugiau negu vieną kartą</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7967"/>
+        <location filename="../../core/evaluator.cpp" line="7989"/>
         <source>%1 is a built-in unit name, please choose another</source>
         <translation>%1 yra įtaisytasis vieneto pavadinimas, pasirinkite kitą</translation>
     </message>
     <message>
-        <location filename="../../core/evaluator.cpp" line="7980"/>
+        <location filename="../../core/evaluator.cpp" line="8002"/>
         <source>%1 is a user function name, please choose another or delete the function</source>
         <translation>%1 yra funkcijos pavadinimas, prašome pasirinkti kitą arba ištrinti funkciją</translation>
     </message>
@@ -3445,934 +3461,939 @@
 <context>
     <name>FunctionRepo</name>
     <message>
-        <location filename="../../core/functions.cpp" line="2391"/>
+        <location filename="../../core/functions.cpp" line="2402"/>
         <source>max; trials; probability</source>
         <translation>maks.; bandymai; tikimybė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2392"/>
-        <location filename="../../core/functions.cpp" line="2394"/>
+        <location filename="../../core/functions.cpp" line="2403"/>
+        <location filename="../../core/functions.cpp" line="2405"/>
         <source>trials; probability</source>
         <translation>bandymai; tikimybė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2393"/>
+        <location filename="../../core/functions.cpp" line="2404"/>
         <source>hits; trials; probability</source>
         <translation>sėkmės; bandymai; tikimybė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2397"/>
+        <location filename="../../core/functions.cpp" line="2408"/>
         <source>max; total; hits; trials</source>
         <translation>maks.; visuma; sėkmės; bandymai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2398"/>
-        <location filename="../../core/functions.cpp" line="2400"/>
+        <location filename="../../core/functions.cpp" line="2409"/>
+        <location filename="../../core/functions.cpp" line="2411"/>
         <source>total; hits; trials</source>
         <translation>visuma; sėkmės; bandymai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2399"/>
+        <location filename="../../core/functions.cpp" line="2410"/>
         <source>count; total; hits; trials</source>
         <translation>skaičius; visuma; sėkmės; bandymai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2401"/>
+        <location filename="../../core/functions.cpp" line="2412"/>
         <source>dividend; divisor</source>
         <translation>dalinys; daliklis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2402"/>
-        <location filename="../../core/functions.cpp" line="2403"/>
+        <location filename="../../core/functions.cpp" line="2413"/>
+        <location filename="../../core/functions.cpp" line="2414"/>
         <source>x; exponent_bits; significand_bits [; exponent_bias]</source>
         <translation>x; eksponentės_bitai; mantisės_bitai [; eksponentės_poslinkis]</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2404"/>
+        <location filename="../../core/functions.cpp" line="2415"/>
         <source>base; x</source>
         <translation>pagrindas; x</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2408"/>
-        <location filename="../../core/functions.cpp" line="2409"/>
+        <location filename="../../core/functions.cpp" line="2419"/>
+        <location filename="../../core/functions.cpp" line="2420"/>
         <source>value; modulo</source>
         <translation>reikšmė; modulis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2410"/>
+        <location filename="../../core/functions.cpp" line="2421"/>
         <source>base; exponent; modulo</source>
         <translation>pagrindas; eksponentė; modulis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2411"/>
-        <location filename="../../core/functions.cpp" line="2413"/>
+        <location filename="../../core/functions.cpp" line="2422"/>
+        <location filename="../../core/functions.cpp" line="2424"/>
         <source>events; average_events</source>
         <translation>įvykiai; vidutinis_įvykių_skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2412"/>
-        <location filename="../../core/functions.cpp" line="2414"/>
+        <location filename="../../core/functions.cpp" line="2423"/>
+        <location filename="../../core/functions.cpp" line="2425"/>
         <source>average_events</source>
         <translation>vidutinis_įvykių_skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2415"/>
-        <location filename="../../core/functions.cpp" line="2416"/>
+        <location filename="../../core/functions.cpp" line="2426"/>
+        <location filename="../../core/functions.cpp" line="2427"/>
         <source>x [; precision]</source>
         <translation>x [; tikslumas]</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2424"/>
+        <location filename="../../core/functions.cpp" line="2435"/>
         <source>Absolute Value</source>
         <translation>Aboliuti reikšmė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2425"/>
+        <location filename="../../core/functions.cpp" line="2436"/>
         <source>Absolute Deviation</source>
         <translation>Absoliutusis nuokrypis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2427"/>
+        <location filename="../../core/functions.cpp" line="2438"/>
         <source>Arc Cosine</source>
         <translation>Arkkosinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2428"/>
+        <location filename="../../core/functions.cpp" line="2439"/>
         <source>Logical AND</source>
         <translation>Loginis IR</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2429"/>
+        <location filename="../../core/functions.cpp" line="2440"/>
         <source>Area Hyperbolic Cosine</source>
         <translation>Hiperbolinis areakosinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2430"/>
+        <location filename="../../core/functions.cpp" line="2441"/>
         <source>Area Hyperbolic Sine</source>
         <translation>Hiperbolinis areasinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2431"/>
+        <location filename="../../core/functions.cpp" line="2442"/>
         <source>Area Hyperbolic Tangent</source>
         <translation>Hiperbolinis areatangentas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2432"/>
+        <location filename="../../core/functions.cpp" line="2443"/>
         <source>Arc Sine</source>
         <translation>Arksinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2433"/>
+        <location filename="../../core/functions.cpp" line="2444"/>
         <source>Arc Tangent</source>
         <translation>Arktangentas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2434"/>
+        <location filename="../../core/functions.cpp" line="2445"/>
         <source>Arc Tangent with two Arguments</source>
         <translation>Arktangentas su dviem argumentais</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2435"/>
+        <location filename="../../core/functions.cpp" line="2446"/>
         <source>Average (Arithmetic Mean)</source>
         <translation>Vidurkis (aritmetinis vidurkis)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2438"/>
+        <location filename="../../core/functions.cpp" line="2449"/>
         <source>Binomial Cumulative Distribution Function</source>
         <translation>Binominio skirstinio kaupiamoji pasiskirstymo funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2439"/>
+        <location filename="../../core/functions.cpp" line="2450"/>
         <source>Binomial Distribution Mean</source>
         <translation>Binominio skirstinio vidurkis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2440"/>
+        <location filename="../../core/functions.cpp" line="2451"/>
         <source>Binomial Probability Mass Function</source>
         <translation>Binominio skirstinio tikimybinė masės funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2441"/>
+        <location filename="../../core/functions.cpp" line="2452"/>
         <source>Binomial Distribution Variance</source>
         <translation>Binominio skirstinio dispersija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2442"/>
+        <location filename="../../core/functions.cpp" line="2453"/>
         <source>Cube Root</source>
         <translation>Kubinė šaknis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2446"/>
+        <location filename="../../core/functions.cpp" line="2457"/>
         <source>Complex Conjugate</source>
         <translation>Kompleksinis jungtinis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2447"/>
+        <location filename="../../core/functions.cpp" line="2458"/>
         <source>Cosine</source>
         <translation>Kosinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2448"/>
+        <location filename="../../core/functions.cpp" line="2459"/>
         <source>Hyperbolic Cosine</source>
         <translation>Hiperbolinis kosinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2456"/>
+        <location filename="../../core/functions.cpp" line="2467"/>
         <source>Cotangent</source>
         <translation>Kontangentas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2457"/>
+        <location filename="../../core/functions.cpp" line="2468"/>
         <source>Cosecant</source>
         <translation>Kosekantas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2458"/>
+        <location filename="../../core/functions.cpp" line="2469"/>
         <source>Convert Unix timestamp to Date</source>
         <translation>Konvertuoti Unix laiko žymą į datą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2461"/>
+        <location filename="../../core/functions.cpp" line="2472"/>
         <source>Degrees of Arc</source>
         <translation>Lanko laipsniai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2466"/>
+        <location filename="../../core/functions.cpp" line="2477"/>
         <source>Error Function</source>
         <translation>Klaidos funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2467"/>
+        <location filename="../../core/functions.cpp" line="2478"/>
         <source>Complementary Error Function</source>
         <translation>Papildomoji klaidos funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2468"/>
+        <location filename="../../core/functions.cpp" line="2479"/>
         <source>Exponential</source>
         <translation>Eksponentė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2472"/>
+        <location filename="../../core/functions.cpp" line="2483"/>
         <source>Fractional Part</source>
         <translation>Trupmeninė dalis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2473"/>
+        <location filename="../../core/functions.cpp" line="2484"/>
         <source>Extension of Factorials [= (x-1)!]</source>
         <translation>Faktorialų apibendrinimas [= (x-1)!]</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2474"/>
+        <location filename="../../core/functions.cpp" line="2485"/>
         <source>Greatest Common Divisor</source>
         <translation>Didžiausiasis bendrasis daliklis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2476"/>
+        <location filename="../../core/functions.cpp" line="2487"/>
         <source>Geometric Mean</source>
         <translation>Geometrinis vidurkis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2477"/>
+        <location filename="../../core/functions.cpp" line="2488"/>
         <source>Gradians of arc</source>
         <translation>Lanko gradianai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2480"/>
+        <location filename="../../core/functions.cpp" line="2491"/>
         <source>Hypergeometric Cumulative Distribution Function</source>
         <translation>Hipergeometrinio skirstinio kaupiamoji pasiskirstymo funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2481"/>
+        <location filename="../../core/functions.cpp" line="2492"/>
         <source>Hypergeometric Distribution Mean</source>
         <translation>Hipergeometrinio skirstinio vidurkis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2482"/>
+        <location filename="../../core/functions.cpp" line="2493"/>
         <source>Hypergeometric Probability Mass Function</source>
         <translation>Hipergeometrinio skirstinio tikimybinė masės funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2483"/>
+        <location filename="../../core/functions.cpp" line="2494"/>
         <source>Hypergeometric Distribution Variance</source>
         <translation>Hipergeometrinio skirstinio dispersija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2484"/>
+        <location filename="../../core/functions.cpp" line="2495"/>
         <source>Integer Quotient</source>
         <translation>Sveikasis dalmuo</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2485"/>
+        <location filename="../../core/functions.cpp" line="2496"/>
         <source>Integer Part</source>
         <translation>Sveikoji dalis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2486"/>
+        <location filename="../../core/functions.cpp" line="2497"/>
         <source>Imaginary Part</source>
         <translation>Menamoji dalis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2488"/>
+        <location filename="../../core/functions.cpp" line="2499"/>
         <source>Decode IEEE-754 Binary Value</source>
         <translation>Dekoduoti IEEE-754 dvejetainę reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2489"/>
+        <location filename="../../core/functions.cpp" line="2500"/>
         <source>Encode IEEE-754 Binary Value</source>
         <translation>Koduoti IEEE-754 dvejetainę reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2490"/>
+        <location filename="../../core/functions.cpp" line="2501"/>
         <source>Decode 16-bit Half-Precision Value</source>
         <translation>Dekoduoti 16 bitų pusinio tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2491"/>
+        <location filename="../../core/functions.cpp" line="2502"/>
         <source>Encode 16-bit Half-Precision Value</source>
         <translation>Koduoti 16 bitų pusinio tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2492"/>
+        <location filename="../../core/functions.cpp" line="2503"/>
         <source>Decode 32-bit Single-Precision Value</source>
         <translation>Dekoduoti 32 bitų viengubo tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2493"/>
+        <location filename="../../core/functions.cpp" line="2504"/>
         <source>Encode 32-bit Single-Precision Value</source>
         <translation>Koduoti 32 bitų viengubo tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2494"/>
+        <location filename="../../core/functions.cpp" line="2505"/>
         <source>Decode 64-bit Double-Precision Value</source>
         <translation>Dekoduoti 64 bitų dvigubo tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2495"/>
+        <location filename="../../core/functions.cpp" line="2506"/>
         <source>Encode 64-bit Double-Precision Value</source>
         <translation>Koduoti 64 bitų dvigubo tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2496"/>
+        <location filename="../../core/functions.cpp" line="2507"/>
         <source>Decode 128-bit Quad-Precision Value</source>
         <translation>Dekoduoti 128 bitų keturgubo tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2497"/>
+        <location filename="../../core/functions.cpp" line="2508"/>
         <source>Encode 128-bit Quad-Precision Value</source>
         <translation>Koduoti 128 bitų keturgubo tikslumo reikšmę</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2506"/>
+        <location filename="../../core/functions.cpp" line="2517"/>
         <source>Binary Logarithm</source>
         <translation>Dvejetainis logaritmas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2507"/>
+        <location filename="../../core/functions.cpp" line="2518"/>
         <source>Common Logarithm</source>
         <translation>Dešimtainis (paprastasis) logaritmas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2508"/>
+        <location filename="../../core/functions.cpp" line="2519"/>
         <source>Natural Logarithm</source>
         <translation>Natūralusis logaritmas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2513"/>
+        <location filename="../../core/functions.cpp" line="2524"/>
         <source>Logarithm to Arbitrary Base</source>
         <translation>Logaritmas bet kuriuo pagrindu</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2515"/>
+        <location filename="../../core/functions.cpp" line="2526"/>
         <source>Mask to a bit size</source>
         <translation>Maskuoti iki bitų skaičiaus</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2516"/>
+        <location filename="../../core/functions.cpp" line="2527"/>
         <source>Maximum</source>
         <translation>Maksimumas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2517"/>
+        <location filename="../../core/functions.cpp" line="2528"/>
         <source>Median Value (50th Percentile)</source>
         <translation>Mediana (50-asis procentilis)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2519"/>
+        <location filename="../../core/functions.cpp" line="2530"/>
         <source>Minimum</source>
         <translation>Minimumas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2524"/>
+        <location filename="../../core/functions.cpp" line="2535"/>
         <source>Modulo</source>
         <translation>Liekana pagal modulį</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2525"/>
+        <location filename="../../core/functions.cpp" line="2536"/>
         <source>Euclidean Modulo</source>
         <translation>Euklidinė liekana pagal modulį</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2526"/>
+        <location filename="../../core/functions.cpp" line="2537"/>
         <source>Modular Exponentiation</source>
         <translation>Kėlimas laipsniu pagal modulį</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2527"/>
+        <location filename="../../core/functions.cpp" line="2538"/>
         <source>Combination (Binomial Coefficient)</source>
         <translation>Derinys (binominis koeficientas)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2528"/>
+        <location filename="../../core/functions.cpp" line="2539"/>
         <source>Logical NOT</source>
         <translation>Loginis NE</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2529"/>
+        <location filename="../../core/functions.cpp" line="2540"/>
         <source>Permutation (Arrangement)</source>
         <translation>Gretinys (permutacija)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2436"/>
+        <location filename="../../core/functions.cpp" line="2447"/>
         <source>Convert to Binary Representation</source>
         <translation>Konvertuoti į dvejetainį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="33"/>
+        <location filename="../../core/functions.cpp" line="35"/>
         <source>Arithmetic</source>
         <translation>Aritmetika</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="34"/>
+        <location filename="../../core/functions.cpp" line="36"/>
         <source>Chemistry</source>
         <translation>Chemija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="35"/>
+        <location filename="../../core/functions.cpp" line="37"/>
         <source>Complex</source>
         <translation>Kompleksiniai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="36"/>
+        <location filename="../../core/functions.cpp" line="38"/>
         <source>Combinatorics</source>
         <translation>Kombinatorika</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="37"/>
+        <location filename="../../core/functions.cpp" line="39"/>
         <source>Probability</source>
         <translation>Tikimybė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="38"/>
+        <location filename="../../core/functions.cpp" line="40"/>
         <source>Statistics</source>
         <translation>Statistika</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="39"/>
+        <location filename="../../core/functions.cpp" line="41"/>
         <source>Aggregation</source>
         <translation>Agregavimas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="40"/>
+        <location filename="../../core/functions.cpp" line="42"/>
         <source>Random</source>
         <translation>Atsitiktiniai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="41"/>
+        <location filename="../../core/functions.cpp" line="43"/>
         <source>Base conversion</source>
         <translation>Pagrindo konvertavimas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="42"/>
+        <location filename="../../core/functions.cpp" line="44"/>
         <source>Number formatting</source>
         <translation>Skaičių formatavimas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="43"/>
+        <location filename="../../core/functions.cpp" line="45"/>
         <source>Integer arithmetic</source>
         <translation>Sveikųjų skaičių aritmetika</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="44"/>
+        <location filename="../../core/functions.cpp" line="46"/>
         <source>Special functions</source>
         <translation>Specialiosios funkcijos</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="45"/>
+        <location filename="../../core/functions.cpp" line="47"/>
         <source>Exponential &amp; Logarithmic</source>
         <translation>Eksponentinės ir logaritminės</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="46"/>
+        <location filename="../../core/functions.cpp" line="48"/>
         <source>Angle conversion</source>
         <translation>Kampų konvertavimas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="47"/>
+        <location filename="../../core/functions.cpp" line="49"/>
         <source>Trigonometry</source>
         <translation>Trigonometrija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="48"/>
+        <location filename="../../core/functions.cpp" line="50"/>
         <source>Bitwise</source>
         <translation>Bitinės</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="49"/>
+        <location filename="../../core/functions.cpp" line="51"/>
         <source>Floating point</source>
         <translation>Slankusis kablelis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="50"/>
+        <location filename="../../core/functions.cpp" line="52"/>
         <source>Date &amp; Time</source>
         <translation>Data ir laikas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="51"/>
+        <location filename="../../core/functions.cpp" line="53"/>
         <source>Linear algebra</source>
         <translation>Tiesinė algebra</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2395"/>
+        <location filename="../../core/functions.cpp" line="2406"/>
         <source>unix_timestamp; x hours offset to GMT</source>
         <translation>Unix_laiko_žyma; x valandų poslinkis nuo GMT</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2396"/>
+        <location filename="../../core/functions.cpp" line="2407"/>
         <source>yyyymmdd.hhmmss; x hours offset to GMT</source>
         <translation>yyyymmdd.hhmmss; x valandų poslinkis nuo GMT</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2405"/>
+        <location filename="../../core/functions.cpp" line="2416"/>
         <source>[digits]</source>
         <translation>[skaitmenys]</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2406"/>
+        <location filename="../../core/functions.cpp" line="2417"/>
         <source>max [; min]</source>
         <translation>maks. [; min.]</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2426"/>
+        <location filename="../../core/functions.cpp" line="2437"/>
         <source>List Literal</source>
         <translation>Sąrašo literalas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2437"/>
+        <location filename="../../core/functions.cpp" line="2448"/>
         <source>Convert to Padded Binary Representation</source>
         <translation>Konvertuoti į papildytą dvejetainį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2443"/>
+        <location filename="../../core/functions.cpp" line="2454"/>
         <source>Round Toward +∞ (Ceiling)</source>
         <translation>Apvalinti link +∞ (lubos)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2444"/>
+        <location filename="../../core/functions.cpp" line="2455"/>
         <source>Cosine plus Imaginary Sine</source>
         <translation>Kosinusas ir menamasis sinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2445"/>
+        <location filename="../../core/functions.cpp" line="2456"/>
         <source>Convert to Cis Complex Form</source>
         <translation>Konvertuoti į cis kompleksinę formą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2449"/>
+        <location filename="../../core/functions.cpp" line="2460"/>
         <source>Matrix Column Count</source>
         <translation>Matricos stulpelių skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2450"/>
+        <location filename="../../core/functions.cpp" line="2461"/>
         <source>Population Correlation Matrix (n)</source>
         <translation>Populiacijos koreliacijos matrica (n)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2451"/>
+        <location filename="../../core/functions.cpp" line="2462"/>
         <source>Sample Correlation Matrix (n-1)</source>
         <translation>Imties koreliacijos matrica (n-1)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2452"/>
+        <location filename="../../core/functions.cpp" line="2463"/>
         <source>Count</source>
         <translation>Skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2453"/>
+        <location filename="../../core/functions.cpp" line="2464"/>
         <source>Population Covariance Matrix (n)</source>
         <translation>Populiacijos kovariacijos matrica (n)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2454"/>
+        <location filename="../../core/functions.cpp" line="2465"/>
         <source>Sample Covariance Matrix (n-1)</source>
         <translation>Imties kovariacijos matrica (n-1)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2455"/>
+        <location filename="../../core/functions.cpp" line="2466"/>
         <source>Cross Product</source>
         <translation>Vektorinis sandauga</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2459"/>
+        <location filename="../../core/functions.cpp" line="2470"/>
         <source>Convert Date to Unix timestamp</source>
         <translation>Konvertuoti datą į Unix laiko žymą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2460"/>
+        <location filename="../../core/functions.cpp" line="2471"/>
         <source>Convert to Decimal Representation</source>
         <translation>Konvertuoti į dešimtainį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2462"/>
+        <location filename="../../core/functions.cpp" line="2473"/>
         <source>Determinant</source>
         <translation>Determinantas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2463"/>
+        <location filename="../../core/functions.cpp" line="2474"/>
         <source>Convert to Sexagesimal Notation</source>
         <translation>Konvertuoti į šešiasdešimtainį žymėjimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2464"/>
+        <location filename="../../core/functions.cpp" line="2475"/>
         <source>Dot Product</source>
         <translation>Skaliarinė sandauga</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2465"/>
+        <location filename="../../core/functions.cpp" line="2476"/>
         <source>Convert to Engineering Notation</source>
         <translation>Konvertuoti į inžinerinį žymėjimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2469"/>
+        <location filename="../../core/functions.cpp" line="2480"/>
         <source>Convert to Exponential Complex Form</source>
         <translation>Konvertuoti į eksponentinę kompleksinę formą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2470"/>
+        <location filename="../../core/functions.cpp" line="2481"/>
         <source>Round Toward −∞ (Floor)</source>
         <translation>Apvalinti link −∞ (grindys)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2471"/>
+        <location filename="../../core/functions.cpp" line="2482"/>
         <source>Flatten Matrix</source>
         <translation>Išlyginti matricą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2475"/>
+        <location filename="../../core/functions.cpp" line="2486"/>
         <source>Least Common Multiple</source>
         <translation>Mažiausias bendras kartotinis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2478"/>
+        <location filename="../../core/functions.cpp" line="2489"/>
         <source>Convert to Hexadecimal Representation</source>
         <translation>Konvertuoti į šešioliktainį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2479"/>
+        <location filename="../../core/functions.cpp" line="2490"/>
         <source>Convert to Padded Hexadecimal Representation</source>
         <translation>Konvertuoti į papildytą šešioliktainį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2487"/>
+        <location filename="../../core/functions.cpp" line="2498"/>
         <source>Inverse Matrix</source>
         <translation>Atvirkštinė matrica</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2498"/>
+        <location filename="../../core/functions.cpp" line="2509"/>
         <source>Round to 16-bit Half-Precision Value</source>
         <translation>Apvalinti iki 16 bitų pusinio tikslumo reikšmės</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2499"/>
+        <location filename="../../core/functions.cpp" line="2510"/>
         <source>Round to 32-bit Single-Precision Value</source>
         <translation>Apvalinti iki 32 bitų viengubo tikslumo reikšmės</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2500"/>
+        <location filename="../../core/functions.cpp" line="2511"/>
         <source>Round to 64-bit Double-Precision Value</source>
         <translation>Apvalinti iki 64 bitų dvigubo tikslumo reikšmės</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2501"/>
+        <location filename="../../core/functions.cpp" line="2512"/>
         <source>Round to 128-bit Quad-Precision Value</source>
         <translation>Apvalinti iki 128 bitų keturgubo tikslumo reikšmės</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2502"/>
+        <location filename="../../core/functions.cpp" line="2513"/>
         <source>Residual from 16-bit Half-Precision Rounding</source>
         <translation>Likutis po 16 bitų pusinio tikslumo apvalinimo</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2503"/>
+        <location filename="../../core/functions.cpp" line="2514"/>
         <source>Residual from 32-bit Single-Precision Rounding</source>
         <translation>Likutis po 32 bitų viengubo tikslumo apvalinimo</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2504"/>
+        <location filename="../../core/functions.cpp" line="2515"/>
         <source>Residual from 64-bit Double-Precision Rounding</source>
         <translation>Likutis po 64 bitų dvigubo tikslumo apvalinimo</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2505"/>
+        <location filename="../../core/functions.cpp" line="2516"/>
         <source>Residual from 128-bit Quad-Precision Rounding</source>
         <translation>Likutis po 128 bitų keturgubo tikslumo apvalinimo</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2510"/>
+        <location filename="../../core/functions.cpp" line="2521"/>
         <source>Substance Mass</source>
         <translation>Medžiagos masė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2511"/>
+        <location filename="../../core/functions.cpp" line="2522"/>
         <source>Molarity</source>
         <translation>Moliariškumas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2512"/>
+        <location filename="../../core/functions.cpp" line="2523"/>
         <source>Molar Mass</source>
         <translation>Molinė masė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2514"/>
+        <location filename="../../core/functions.cpp" line="2525"/>
         <source>Median Absolute Deviation</source>
         <translation>Medianinis absoliutusis nuokrypis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2518"/>
+        <location filename="../../core/functions.cpp" line="2529"/>
         <source>Mean</source>
         <translation>Vidurkis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2520"/>
+        <location filename="../../core/functions.cpp" line="2531"/>
         <source>Numerical Value of Quantity</source>
         <translation>Dydžio skaitinė reikšmė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2521"/>
+        <location filename="../../core/functions.cpp" line="2532"/>
         <source>Random Decimal Number</source>
         <translation>Atsitiktinis dešimtainis skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2522"/>
+        <location filename="../../core/functions.cpp" line="2533"/>
         <source>Random Integer Number</source>
         <translation>Atsitiktinis sveikasis skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2523"/>
+        <location filename="../../core/functions.cpp" line="2534"/>
         <source>Convert to Rational Representation</source>
         <translation>Konvertuoti į racionalųjį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2530"/>
+        <location filename="../../core/functions.cpp" line="2541"/>
         <source>Convert to Octal Representation</source>
         <translation>Konvertuoti į aštuonetainį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2531"/>
+        <location filename="../../core/functions.cpp" line="2542"/>
         <source>Convert to Padded Octal Representation</source>
         <translation>Konvertuoti į papildytą aštuonetainį vaizdavimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2532"/>
+        <location filename="../../core/functions.cpp" line="2543"/>
         <source>Vector or Matrix Norm</source>
         <translation>Vektoriaus arba matricos norma</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2533"/>
+        <location filename="../../core/functions.cpp" line="2544"/>
         <source>Logical OR</source>
         <translation>Loginis ARBA</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2534"/>
+        <location filename="../../core/functions.cpp" line="2545"/>
         <source>Population Count (Hamming Weight)</source>
         <translation>Vienetų skaičius (Hamingo svoris)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2535"/>
+        <location filename="../../core/functions.cpp" line="2546"/>
         <source>Phase of Complex Number</source>
         <translation>Kompleksinio skaičiaus fazė</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2536"/>
+        <location filename="../../core/functions.cpp" line="2547"/>
         <source>Poissonian Cumulative Distribution Function</source>
         <translation>Puasono skirstinio kaupiamoji pasiskirstymo funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2537"/>
+        <location filename="../../core/functions.cpp" line="2548"/>
         <source>Poissonian Distribution Mean</source>
         <translation>Puasono skirstinio vidurkis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2538"/>
+        <location filename="../../core/functions.cpp" line="2549"/>
         <source>Poissonian Probability Mass Function</source>
         <translation>Puasono skirstinio tikimybinė masės funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2539"/>
+        <location filename="../../core/functions.cpp" line="2550"/>
         <source>Poissonian Distribution Variance</source>
         <translation>Puasono skirstinio dispersija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2540"/>
+        <location filename="../../core/functions.cpp" line="2551"/>
         <source>Convert to Phasor Complex Form</source>
         <translation>Konvertuoti į fazorinę kompleksinę formą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2545"/>
+        <location filename="../../core/functions.cpp" line="2556"/>
         <source>Convert to Rectangular Complex Form</source>
         <translation>Konvertuoti į stačiakampę kompleksinę formą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2546"/>
+        <location filename="../../core/functions.cpp" line="2557"/>
         <source>Round Half Away from Zero</source>
         <translation>Apvalinti pusę nuo nulio</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2547"/>
+        <location filename="../../core/functions.cpp" line="2558"/>
         <source>Round Half Even</source>
         <translation>Apvalinti pusę į lyginį</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2548"/>
+        <location filename="../../core/functions.cpp" line="2559"/>
+        <source>Nth Root</source>
+        <translation>N-tojo laipsnio šaknis</translation>
+    </message>
+    <message>
+        <location filename="../../core/functions.cpp" line="2560"/>
         <source>Convert to Scientific Notation</source>
         <translation>Konvertuoti į mokslinį žymėjimą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2553"/>
+        <location filename="../../core/functions.cpp" line="2565"/>
         <source>Matrix Row Count</source>
         <translation>Matricos eilučių skaičius</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2554"/>
+        <location filename="../../core/functions.cpp" line="2566"/>
         <source>List or Matrix Shape</source>
         <translation>Sąrašo arba matricos forma</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2555"/>
+        <location filename="../../core/functions.cpp" line="2567"/>
         <source>Summation</source>
         <translation>Suma</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2559"/>
+        <location filename="../../core/functions.cpp" line="2571"/>
         <source>Population Standard Deviation (n)</source>
         <translation>Populiacijos standartinis nuokrypis (n)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2560"/>
+        <location filename="../../core/functions.cpp" line="2572"/>
         <source>Sample Standard Deviation (n-1)</source>
         <translation>Imties standartinis nuokrypis (n-1)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2566"/>
+        <location filename="../../core/functions.cpp" line="2578"/>
         <source>Round Toward Zero (Truncation)</source>
         <translation>Apvalinti link nulio (trumpinimas)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2567"/>
+        <location filename="../../core/functions.cpp" line="2579"/>
         <source>Matrix Trace</source>
         <translation>Matricos pėdsakas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2568"/>
+        <location filename="../../core/functions.cpp" line="2580"/>
         <source>Transpose Matrix</source>
         <translation>Transponuoti matricą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2570"/>
+        <location filename="../../core/functions.cpp" line="2582"/>
         <source>Population Variance (n)</source>
         <translation>Populiacijos dispersija (n)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2571"/>
+        <location filename="../../core/functions.cpp" line="2583"/>
         <source>Sample Variance (n-1)</source>
         <translation>Imties dispersija (n-1)</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2541"/>
+        <location filename="../../core/functions.cpp" line="2552"/>
         <source>Product</source>
         <translation>Sandauga</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2542"/>
+        <location filename="../../core/functions.cpp" line="2553"/>
         <source>Radians</source>
         <translation>Radianai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2543"/>
+        <location filename="../../core/functions.cpp" line="2554"/>
         <source>Matrix Rank</source>
         <translation>Matricos rangas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2544"/>
+        <location filename="../../core/functions.cpp" line="2555"/>
         <source>Real Part</source>
         <translation>Realioji dalis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2549"/>
+        <location filename="../../core/functions.cpp" line="2561"/>
         <source>Secant</source>
         <translation>Sekantas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2550"/>
+        <location filename="../../core/functions.cpp" line="2562"/>
         <source>Arithmetic Shift Left</source>
         <translation>Aritmetinis postūmis kairėn</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2551"/>
+        <location filename="../../core/functions.cpp" line="2563"/>
         <source>Arithmetic Shift Right</source>
         <translation>Aritmetinis postūmis dešinėn</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2552"/>
+        <location filename="../../core/functions.cpp" line="2564"/>
         <source>Signum</source>
         <translation>Signum (ženklo) funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2556"/>
+        <location filename="../../core/functions.cpp" line="2568"/>
         <source>Sine</source>
         <translation>Sinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2557"/>
+        <location filename="../../core/functions.cpp" line="2569"/>
         <source>Hyperbolic Sine</source>
         <translation>Hiperbolinis sinusas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2558"/>
+        <location filename="../../core/functions.cpp" line="2570"/>
         <source>Square Root</source>
         <translation>Kvadratinė šaknis</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2561"/>
+        <location filename="../../core/functions.cpp" line="2573"/>
         <source>Sum</source>
         <translation>Suma</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2562"/>
+        <location filename="../../core/functions.cpp" line="2574"/>
         <source>Tangent</source>
         <translation>Tangentas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2563"/>
+        <location filename="../../core/functions.cpp" line="2575"/>
         <source>Convert to Trigonometric Complex Form</source>
         <translation>Konvertuoti į trigonometrinę kompleksinę formą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2564"/>
+        <location filename="../../core/functions.cpp" line="2576"/>
         <source>Turns</source>
         <translation>Apsisukimai</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2565"/>
+        <location filename="../../core/functions.cpp" line="2577"/>
         <source>Hyperbolic Tangent</source>
         <translation>Hiperbolinis tangentas</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2569"/>
+        <location filename="../../core/functions.cpp" line="2581"/>
         <source>Sign-extend a value</source>
         <translation>Išplėsti reikšmės ženklą</translation>
     </message>
     <message>
-        <location filename="../../core/functions.cpp" line="2572"/>
+        <location filename="../../core/functions.cpp" line="2584"/>
         <source>Logical XOR</source>
         <translation>Loginis išskirtinis ARBA</translation>
     </message>
@@ -4380,33 +4401,34 @@
 <context>
     <name>FunctionsWidget</name>
     <message>
-        <location filename="../../gui/functionswidget.cpp" line="175"/>
+        <location filename="../../gui/functionswidget.cpp" line="200"/>
         <source>Domain</source>
         <translation>Sritis</translation>
     </message>
     <message>
-        <location filename="../../gui/functionswidget.cpp" line="135"/>
-        <location filename="../../gui/functionswidget.cpp" line="178"/>
+        <location filename="../../gui/functionswidget.cpp" line="130"/>
+        <location filename="../../gui/functionswidget.cpp" line="153"/>
+        <location filename="../../gui/functionswidget.cpp" line="205"/>
         <source>All</source>
         <translation>Visi</translation>
     </message>
     <message>
-        <location filename="../../gui/functionswidget.cpp" line="170"/>
+        <location filename="../../gui/functionswidget.cpp" line="195"/>
         <source>Name</source>
         <translation>Pavadinimas</translation>
     </message>
     <message>
-        <location filename="../../gui/functionswidget.cpp" line="174"/>
+        <location filename="../../gui/functionswidget.cpp" line="199"/>
         <source>Search</source>
         <translation>Paieška</translation>
     </message>
     <message>
-        <location filename="../../gui/functionswidget.cpp" line="182"/>
+        <location filename="../../gui/functionswidget.cpp" line="211"/>
         <source>No match found</source>
         <translation>Nerasta atitikmens</translation>
     </message>
     <message>
-        <location filename="../../gui/functionswidget.cpp" line="169"/>
+        <location filename="../../gui/functionswidget.cpp" line="194"/>
         <source>Identifier</source>
         <translation>Identifikatorius</translation>
     </message>
@@ -4432,1293 +4454,1594 @@
 <context>
     <name>Keypad</name>
     <message>
-        <location filename="../../gui/keypad.cpp" line="910"/>
+        <location filename="../../gui/keypad.cpp" line="951"/>
         <source>Inverse cosine</source>
         <translation>Arkkosinusas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="911"/>
+        <location filename="../../gui/keypad.cpp" line="952"/>
         <source>The last result</source>
         <translation>Paskutinis rezultatas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="912"/>
+        <location filename="../../gui/keypad.cpp" line="953"/>
         <source>Inverse sine</source>
         <translation>Arksinusas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="913"/>
+        <location filename="../../gui/keypad.cpp" line="954"/>
         <source>Inverse tangent</source>
         <translation>Arktangentas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="914"/>
+        <location filename="../../gui/keypad.cpp" line="955"/>
         <source>Evaluate expression</source>
         <translation>Apskaičiuoti reiškinį</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="915"/>
+        <location filename="../../gui/keypad.cpp" line="956"/>
         <source>Division</source>
         <translation>Dalyba</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="916"/>
+        <location filename="../../gui/keypad.cpp" line="957"/>
         <source>Multiplication</source>
         <translation>Daugyba</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="917"/>
+        <location filename="../../gui/keypad.cpp" line="958"/>
         <source>Subtraction</source>
         <translation>Atimtis</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="918"/>
+        <location filename="../../gui/keypad.cpp" line="959"/>
         <source>Addition</source>
         <translation>Sudėtis</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="919"/>
+        <location filename="../../gui/keypad.cpp" line="960"/>
         <source>Clear expression</source>
         <translation>Išvalyti reiškinį</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="920"/>
+        <location filename="../../gui/keypad.cpp" line="961"/>
         <source>Cosine</source>
         <translation>Kosinusas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="921"/>
+        <location filename="../../gui/keypad.cpp" line="962"/>
         <source>Backspace</source>
         <translation>Naikinti atgal</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="922"/>
+        <location filename="../../gui/keypad.cpp" line="963"/>
         <source>Scientific notation</source>
         <translation>Slankiojo kablelio formatas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="923"/>
+        <location filename="../../gui/keypad.cpp" line="964"/>
         <source>Exponential</source>
         <translation>Eksponentinė funkcija</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="924"/>
+        <location filename="../../gui/keypad.cpp" line="965"/>
         <source>Factorial</source>
         <translation>Faktorialas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="925"/>
+        <location filename="../../gui/keypad.cpp" line="966"/>
         <source>Natural logarithm</source>
         <translation>Natūralusis logaritmas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="926"/>
+        <location filename="../../gui/keypad.cpp" line="967"/>
         <source>Left parenthesis</source>
         <translation>Kairysis skliaustas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="927"/>
-        <source>Cube root</source>
-        <translation>Kubinė šaknis</translation>
+        <location filename="../../gui/keypad.cpp" line="968"/>
+        <source>Nth root</source>
+        <translation>N-tojo laipsnio šaknis</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="928"/>
+        <location filename="../../gui/keypad.cpp" line="979"/>
+        <source>Argument separator</source>
+        <translation>Argumentų skirtukas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/keypad.cpp" line="980"/>
+        <source>Square</source>
+        <translation>Kvadratas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/keypad.cpp" line="969"/>
         <source>Common logarithm</source>
         <translation>Dešimtainis logaritmas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="929"/>
+        <location filename="../../gui/keypad.cpp" line="970"/>
         <source>Modulo</source>
         <translation>Liekana pagal modulį</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="930"/>
+        <location filename="../../gui/keypad.cpp" line="971"/>
         <source>Contextual percentage</source>
         <translation>Kontekstinis procentas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="931"/>
+        <location filename="../../gui/keypad.cpp" line="972"/>
         <source>Power</source>
         <translation>Laipsnis</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="932"/>
+        <location filename="../../gui/keypad.cpp" line="973"/>
         <source>Right parenthesis</source>
         <translation>Dešinysis skliaustas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="933"/>
+        <location filename="../../gui/keypad.cpp" line="974"/>
         <source>Sine</source>
         <translation>Sinusas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="934"/>
+        <location filename="../../gui/keypad.cpp" line="975"/>
         <source>Square root</source>
         <translation>Kvadratinė šaknis</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="935"/>
+        <location filename="../../gui/keypad.cpp" line="976"/>
         <source>Tangent</source>
         <translation>Tangentas</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="936"/>
+        <location filename="../../gui/keypad.cpp" line="977"/>
         <source>Pi</source>
         <translation>Pi</translation>
     </message>
     <message>
-        <location filename="../../gui/keypad.cpp" line="937"/>
+        <location filename="../../gui/keypad.cpp" line="978"/>
         <source>Decimal separator</source>
         <translation>Dešimtainis skirtukas</translation>
-    </message>
-    <message>
-        <location filename="../../gui/keypad.cpp" line="938"/>
-        <source>Assign variable x</source>
-        <translation>Priskirti kintamąjį x</translation>
-    </message>
-    <message>
-        <location filename="../../gui/keypad.cpp" line="939"/>
-        <source>The variable x</source>
-        <translation>Kintamasis x</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3742"/>
+        <location filename="../../gui/mainwindow.cpp" line="4350"/>
         <source>Radian</source>
         <translation>Radianai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3746"/>
+        <location filename="../../gui/mainwindow.cpp" line="4354"/>
         <source>Degree</source>
         <translation>Laipsniai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3743"/>
+        <location filename="../../gui/mainwindow.cpp" line="4351"/>
         <source>Gradian</source>
         <translation>Gradianas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3752"/>
+        <location filename="../../gui/mainwindow.cpp" line="4360"/>
         <source>Binary</source>
         <translation>Dvejetainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3753"/>
+        <location filename="../../gui/mainwindow.cpp" line="4361"/>
         <source>Octal</source>
         <translation>Aštuonetainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3754"/>
+        <location filename="../../gui/mainwindow.cpp" line="4362"/>
         <source>Hexadecimal</source>
         <translation>Šešioliktainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3755"/>
+        <location filename="../../gui/mainwindow.cpp" line="4363"/>
         <source>Sexagesimal</source>
         <translation>Šešiasdešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3757"/>
+        <location filename="../../gui/mainwindow.cpp" line="4365"/>
         <source>Engineering decimal</source>
         <translation>Inžinerinis dešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3758"/>
+        <location filename="../../gui/mainwindow.cpp" line="4366"/>
         <source>Scientific decimal</source>
         <translation>Mokslinis dešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3777"/>
+        <location filename="../../gui/mainwindow.cpp" line="4385"/>
         <source>&amp;Import...</source>
         <translation>&amp;Importuoti...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3783"/>
+        <location filename="../../gui/mainwindow.cpp" line="4398"/>
         <source>&amp;Quit</source>
         <translation>&amp;Išeiti</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3785"/>
+        <location filename="../../gui/mainwindow.cpp" line="4400"/>
         <source>Clear E&amp;xpression</source>
         <translation>Išvalyti reiški&amp;nį</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3786"/>
+        <location filename="../../gui/mainwindow.cpp" line="4404"/>
         <source>Clear &amp;History</source>
         <translation>Išvalyti ž&amp;urnalą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3787"/>
-        <source>Copy Last &amp;Result</source>
-        <translation>Kopijuoti paskutinį &amp;rezultatą</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3788"/>
+        <location filename="../../gui/mainwindow.cpp" line="4406"/>
         <source>&amp;Copy</source>
         <translation>K&amp;opijuoti</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3789"/>
+        <location filename="../../gui/mainwindow.cpp" line="4407"/>
         <source>&amp;Paste</source>
         <translation>Į&amp;dėti</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3790"/>
+        <location filename="../../gui/mainwindow.cpp" line="4408"/>
         <source>&amp;Select Expression</source>
         <translation>Ž&amp;ymėti reiškinį</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3791"/>
-        <source>&amp;Wrap Selection in Parentheses</source>
-        <translation>Ap&amp;gaubti žymėjimą skliaustais</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3793"/>
+        <location filename="../../gui/mainwindow.cpp" line="4411"/>
         <source>&amp;Constants</source>
         <translation>&amp;Konstantos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3794"/>
-        <source>F&amp;ull Screen Mode</source>
-        <translation>Viso ekran&amp;o veiksena</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3795"/>
+        <location filename="../../gui/mainwindow.cpp" line="4413"/>
         <source>&amp;Functions</source>
         <translation>F&amp;unkcijos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3796"/>
+        <location filename="../../gui/mainwindow.cpp" line="4414"/>
         <source>&amp;History</source>
         <translation>Žurna&amp;las</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3806"/>
+        <location filename="../../gui/mainwindow.cpp" line="4425"/>
+        <location filename="../../gui/mainwindow.cpp" line="4990"/>
         <source>&amp;Status Bar</source>
         <translation>&amp;Būsenos juosta</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3809"/>
-        <location filename="../../gui/mainwindow.cpp" line="6761"/>
+        <location filename="../../gui/mainwindow.cpp" line="4428"/>
+        <location filename="../../gui/mainwindow.cpp" line="7640"/>
         <source>Bitfield</source>
         <translation>Bitų laukas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3810"/>
+        <location filename="../../gui/mainwindow.cpp" line="4434"/>
         <source>Use&amp;r Functions</source>
         <translation>Naudo&amp;tojo funkcijos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3813"/>
+        <location filename="../../gui/mainwindow.cpp" line="4437"/>
         <source>&amp;Degree</source>
         <translation>&amp;Laipsniai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3814"/>
+        <location filename="../../gui/mainwindow.cpp" line="4438"/>
         <source>&amp;Radian</source>
         <translation>&amp;Radianai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3815"/>
+        <location filename="../../gui/mainwindow.cpp" line="4439"/>
         <source>&amp;Gradian</source>
         <translation>&amp;Gradianas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3822"/>
+        <location filename="../../gui/mainwindow.cpp" line="4441"/>
+        <source>Re&amp;volution</source>
+        <translation>A&amp;psisukimas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4443"/>
+        <source>Auto-Insert a&amp;ns</source>
+        <translation>Automatiškai įterpti a&amp;ns</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4446"/>
         <source>Automatic &amp;Completion</source>
         <translation>Automatinis &amp;užbaigimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3833"/>
+        <location filename="../../gui/mainwindow.cpp" line="4450"/>
+        <source>&amp;Built-in Functions</source>
+        <translation>&amp;Įtaisytosios funkcijos</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4451"/>
+        <source>Built-in &amp;Variables</source>
+        <translation>Į&amp;taisytieji kintamieji</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4453"/>
+        <source>User &amp;Functions</source>
+        <translation>Naudotojo &amp;funkcijos</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4454"/>
+        <source>User Va&amp;riables</source>
+        <translation>&amp;Naudotojo kintamieji</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4457"/>
+        <source>Open a Private Tab on Startup</source>
+        <translation>Paleidžiant atverti privatų skirtuką</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4458"/>
+        <source>Open and focus a new private tab whenever SpeedCrunch starts.</source>
+        <translation>Kiekvieną kartą paleidžiant SpeedCrunch atverti ir aktyvuoti naują privatų skirtuką.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4460"/>
         <source>Syntax &amp;Highlighting</source>
         <translation>Sintaksės par&amp;yškinimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3851"/>
+        <location filename="../../gui/mainwindow.cpp" line="4461"/>
+        <source>Group Digits in &amp;Input</source>
+        <translation>Grupuot&amp;i įvesties skaitmenis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4462"/>
+        <source>Automatic Input &amp;Adjustments</source>
+        <translation>&amp;Automatiniai įvesties taisymai</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4463"/>
+        <source>Automatically adjust operators, spacing, brackets, and powers, and restrict input to valid characters.</source>
+        <translation>Automatiškai taisyti operatorius, tarpus, skliaustus ir laipsnius bei leisti įvesti tik tinkamus simbolius.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4464"/>
+        <source>Group input digits using the selected number format.</source>
+        <translation>Grupuoti įvestus skaitmenis pagal pasirinktą skaičių formatą.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4465"/>
+        <source>&amp;Blinking Cursor</source>
+        <translation>&amp;Mirksintis žymeklis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4466"/>
+        <source>Blink the cursor in the expression editor.</source>
+        <translation>Įjungti žymeklio mirksėjimą reiškinių rengyklėje.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4467"/>
+        <source>&amp;Escape Clears Editor</source>
+        <translation>&amp;Escape išvalo rengyklę</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4468"/>
+        <source>Clear the focused expression editor with Escape after dismissing any popup or preview.</source>
+        <translation>Išvalyti aktyvią reiškinių rengyklę klavišu Escape, užvėrus iškylančiuosius langus ar peržiūras.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4475"/>
+        <source>Keep Expression After Evaluation</source>
+        <translation>Palikti reiškinį po skaičiavimo</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4483"/>
+        <source>Copy New Results Automatically</source>
+        <translation>Automatiškai kopijuoti naujus rezultatus</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4486"/>
         <source>&amp;Comma</source>
         <translation>&amp;Kablelis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3852"/>
+        <location filename="../../gui/mainwindow.cpp" line="4487"/>
         <source>&amp;System Default</source>
         <translation>&amp;Sistemos numatytasis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3853"/>
+        <location filename="../../gui/mainwindow.cpp" line="4488"/>
         <source>&amp;Dot</source>
         <translation>&amp;Taškas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3854"/>
+        <location filename="../../gui/mainwindow.cpp" line="4489"/>
         <source>Dot &amp;And Comma</source>
         <translation>Taškas &amp;ir kablelis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3877"/>
+        <location filename="../../gui/mainwindow.cpp" line="4504"/>
+        <source>Toward +∞ (&amp;ceil)</source>
+        <translation>Link +∞ (&amp;ceil)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4506"/>
+        <source>Toward −∞ (&amp;floor)</source>
+        <translation>Link −∞ (&amp;floor)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4513"/>
         <source>&amp;Binary</source>
         <translation>D&amp;vejetainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3874"/>
+        <location filename="../../gui/mainwindow.cpp" line="4510"/>
         <source>&amp;Engineering</source>
         <translation>&amp;Inžinerinis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3879"/>
+        <location filename="../../gui/mainwindow.cpp" line="4515"/>
         <source>&amp;Hexadecimal</source>
         <translation>Š&amp;ešioliktainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3878"/>
+        <location filename="../../gui/mainwindow.cpp" line="4514"/>
         <source>&amp;Octal</source>
         <translation>&amp;Aštuonetainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3875"/>
+        <location filename="../../gui/mainwindow.cpp" line="4511"/>
         <source>&amp;Scientific</source>
         <translation>&amp;Mokslinis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3897"/>
+        <location filename="../../gui/mainwindow.cpp" line="4544"/>
         <source>User &amp;Manual</source>
         <translation>Naudoto&amp;jo vadovas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3903"/>
+        <location filename="../../gui/mainwindow.cpp" line="4549"/>
+        <source>Issues and &amp;Feedback</source>
+        <translation>P&amp;roblemos ir atsiliepimai</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4552"/>
         <source>&amp;Donate</source>
         <translation>&amp;Paaukoti</translation>
     </message>
     <message>
+        <location filename="../../gui/mainwindow.cpp" line="4553"/>
+        <source>&amp;About SpeedCrunch</source>
+        <translation>&amp;Apie SpeedCrunch</translation>
+    </message>
+    <message>
         <location filename="../../gui/mainwindow.cpp" line="4554"/>
+        <source>App Diag&amp;nostics</source>
+        <translation>Pr&amp;ogramos diagnostika</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4971"/>
+        <source>S&amp;plit</source>
+        <translation>P&amp;adalyti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4980"/>
+        <source>Angle &amp;Mode</source>
+        <translation>Ka&amp;mpų veiksena</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4981"/>
+        <source>&amp;Complex Form</source>
+        <translation>&amp;Kompleksinė forma</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5340"/>
         <source>New Tab</source>
         <translation>Nauja kortelė</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="6866"/>
+        <location filename="../../gui/mainwindow.cpp" line="7751"/>
         <source>Constants</source>
         <translation>Konstantos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="6896"/>
+        <location filename="../../gui/mainwindow.cpp" line="7780"/>
         <source>Functions</source>
         <translation>Funkcijos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="6919"/>
+        <location filename="../../gui/mainwindow.cpp" line="7802"/>
         <source>History</source>
         <translation>Žurnalas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="6989"/>
+        <location filename="../../gui/mainwindow.cpp" line="7874"/>
         <source>User Functions</source>
         <translation>Naudotojo funkcijos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="7719"/>
-        <source>Type an expression here</source>
-        <translation>Čia įveskite reiškinį</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3893"/>
+        <location filename="../../gui/mainwindow.cpp" line="4529"/>
         <source>&amp;Font...</source>
         <translation>Šri&amp;ftas...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3895"/>
+        <location filename="../../gui/mainwindow.cpp" line="4542"/>
         <source>&amp;Language...</source>
         <translation>Ka&amp;lba...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4206"/>
+        <location filename="../../gui/mainwindow.cpp" line="4966"/>
         <source>&amp;Session</source>
         <translation>&amp;Seansas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4208"/>
+        <location filename="../../gui/mainwindow.cpp" line="4968"/>
         <source>&amp;Edit</source>
         <translation>&amp;Taisa</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4209"/>
+        <location filename="../../gui/mainwindow.cpp" line="4969"/>
         <source>&amp;View</source>
         <translation>&amp;Rodinys</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4212"/>
+        <location filename="../../gui/mainwindow.cpp" line="4973"/>
         <source>Se&amp;ttings</source>
         <translation>&amp;Nustatymai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4218"/>
+        <location filename="../../gui/mainwindow.cpp" line="4978"/>
         <source>&amp;Decimal</source>
         <translation>&amp;Dešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4210"/>
+        <location filename="../../gui/mainwindow.cpp" line="4970"/>
+        <location filename="../../gui/mainwindow.cpp" line="4991"/>
         <source>&amp;Keypad</source>
         <translation>&amp;Pagalbinė klaviatūra</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3818"/>
+        <location filename="../../gui/mainwindow.cpp" line="4442"/>
         <source>Always on &amp;Top</source>
         <translation>Visada &amp;viršuje</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3835"/>
+        <location filename="../../gui/mainwindow.cpp" line="4470"/>
         <source>Disabled</source>
         <translation>Išjungta</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3836"/>
+        <location filename="../../gui/mainwindow.cpp" line="4471"/>
         <source>Small Space</source>
         <translation>Mažas tarpas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3837"/>
+        <location filename="../../gui/mainwindow.cpp" line="4472"/>
         <source>Medium Space</source>
         <translation>Vidutinis tarpas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3838"/>
+        <location filename="../../gui/mainwindow.cpp" line="4473"/>
         <source>Large Space</source>
         <translation>Didelis tarpas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3855"/>
+        <location filename="../../gui/mainwindow.cpp" line="4490"/>
         <source>&amp;0 Digits</source>
         <translation>&amp;0 skaitmenų</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3856"/>
+        <location filename="../../gui/mainwindow.cpp" line="4491"/>
         <source>&amp;15 Digits</source>
         <translation>&amp;15 skaitmenų</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3857"/>
+        <location filename="../../gui/mainwindow.cpp" line="4492"/>
         <source>&amp;2 Digits</source>
         <translation>&amp;2 skaitmenys</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3858"/>
+        <location filename="../../gui/mainwindow.cpp" line="4493"/>
         <source>&amp;3 Digits</source>
         <translation>&amp;3 skaitmenys</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3859"/>
+        <location filename="../../gui/mainwindow.cpp" line="4494"/>
         <source>&amp;50 Digits</source>
         <translation>&amp;50 skaitmenų</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3860"/>
+        <location filename="../../gui/mainwindow.cpp" line="4495"/>
         <source>&amp;8 Digits</source>
         <translation>&amp;8 skaitmenys</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3880"/>
+        <location filename="../../gui/mainwindow.cpp" line="4516"/>
         <source>&amp;Sexagesimal</source>
         <translation>&amp;Šešiasdešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3898"/>
+        <location filename="../../gui/mainwindow.cpp" line="4530"/>
+        <source>Reset All Settings...</source>
+        <translation>Atkurti visas nuostatas...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4532"/>
+        <location filename="../../gui/mainwindow.cpp" line="4534"/>
+        <location filename="../../gui/mainwindow.cpp" line="4536"/>
+        <source>&amp;System</source>
+        <translation>&amp;Sistema</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4533"/>
+        <location filename="../../gui/mainwindow.cpp" line="4535"/>
+        <location filename="../../gui/mainwindow.cpp" line="4537"/>
+        <source>SpeedCrunch &amp;Theme</source>
+        <translation>S&amp;peedCrunch apipavidalinimas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4538"/>
+        <location filename="../../gui/mainwindow.cpp" line="4540"/>
+        <source>&amp;Classic</source>
+        <translation>&amp;Klasikinis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4539"/>
+        <location filename="../../gui/mainwindow.cpp" line="4541"/>
+        <source>&amp;Modern</source>
+        <translation>&amp;Šiuolaikinis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4545"/>
         <source>Context Help</source>
         <translation>Konteksto pagalba</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3904"/>
-        <source>About &amp;SpeedCrunch</source>
-        <translation>Apie &amp;SpeedCrunch</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4229"/>
+        <location filename="../../gui/mainwindow.cpp" line="4993"/>
         <source>&amp;Help</source>
         <translation>&amp;Pagalba</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9516"/>
-        <location filename="../../gui/mainwindow.cpp" line="9522"/>
-        <location filename="../../gui/mainwindow.cpp" line="9530"/>
-        <location filename="../../gui/mainwindow.cpp" line="9536"/>
-        <location filename="../../gui/mainwindow.cpp" line="9552"/>
-        <location filename="../../gui/mainwindow.cpp" line="9558"/>
-        <location filename="../../gui/mainwindow.cpp" line="9609"/>
-        <location filename="../../gui/mainwindow.cpp" line="9615"/>
-        <location filename="../../gui/mainwindow.cpp" line="9714"/>
-        <location filename="../../gui/mainwindow.cpp" line="10625"/>
-        <location filename="../../gui/mainwindow.cpp" line="10664"/>
+        <location filename="../../gui/mainwindow.cpp" line="10786"/>
+        <location filename="../../gui/mainwindow.cpp" line="10792"/>
+        <location filename="../../gui/mainwindow.cpp" line="10800"/>
+        <location filename="../../gui/mainwindow.cpp" line="10806"/>
+        <location filename="../../gui/mainwindow.cpp" line="10822"/>
+        <location filename="../../gui/mainwindow.cpp" line="10828"/>
+        <location filename="../../gui/mainwindow.cpp" line="10879"/>
+        <location filename="../../gui/mainwindow.cpp" line="10885"/>
+        <location filename="../../gui/mainwindow.cpp" line="10988"/>
+        <location filename="../../gui/mainwindow.cpp" line="11980"/>
+        <location filename="../../gui/mainwindow.cpp" line="12019"/>
         <source>Error</source>
         <translation>Klaida</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9516"/>
-        <location filename="../../gui/mainwindow.cpp" line="9748"/>
+        <location filename="../../gui/mainwindow.cpp" line="10786"/>
+        <location filename="../../gui/mainwindow.cpp" line="11022"/>
         <source>Can&apos;t read from file %1</source>
         <translation>Nepavyksta perskaityti iš failo %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9730"/>
-        <location filename="../../gui/mainwindow.cpp" line="9748"/>
-        <location filename="../../gui/mainwindow.cpp" line="9756"/>
-        <location filename="../../gui/mainwindow.cpp" line="9763"/>
-        <location filename="../../gui/mainwindow.cpp" line="9771"/>
-        <location filename="../../gui/mainwindow.cpp" line="9779"/>
-        <location filename="../../gui/mainwindow.cpp" line="9785"/>
-        <location filename="../../gui/mainwindow.cpp" line="9793"/>
-        <location filename="../../gui/mainwindow.cpp" line="9799"/>
-        <location filename="../../gui/mainwindow.cpp" line="9807"/>
-        <location filename="../../gui/mainwindow.cpp" line="9813"/>
-        <location filename="../../gui/mainwindow.cpp" line="9821"/>
+        <location filename="../../gui/mainwindow.cpp" line="11004"/>
+        <location filename="../../gui/mainwindow.cpp" line="11022"/>
+        <location filename="../../gui/mainwindow.cpp" line="11030"/>
+        <location filename="../../gui/mainwindow.cpp" line="11037"/>
+        <location filename="../../gui/mainwindow.cpp" line="11045"/>
+        <location filename="../../gui/mainwindow.cpp" line="11053"/>
+        <location filename="../../gui/mainwindow.cpp" line="11059"/>
+        <location filename="../../gui/mainwindow.cpp" line="11067"/>
+        <location filename="../../gui/mainwindow.cpp" line="11073"/>
+        <location filename="../../gui/mainwindow.cpp" line="11081"/>
+        <location filename="../../gui/mainwindow.cpp" line="11087"/>
+        <location filename="../../gui/mainwindow.cpp" line="11095"/>
         <source>Import Session</source>
         <translation>Importuoti seansą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2778"/>
-        <location filename="../../gui/mainwindow.cpp" line="4574"/>
+        <location filename="../../gui/mainwindow.cpp" line="3186"/>
         <source>Close Session</source>
         <translation>Užverti seansą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3664"/>
+        <location filename="../../gui/mainwindow.cpp" line="4157"/>
         <source>Angle Mode:</source>
         <translation>Kampų veiksena:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3665"/>
+        <location filename="../../gui/mainwindow.cpp" line="4158"/>
         <source>Notation:</source>
         <translation>Žymėjimas:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3666"/>
+        <location filename="../../gui/mainwindow.cpp" line="4159"/>
         <source>Precision:</source>
         <translation>Tikslumas:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3744"/>
+        <location filename="../../gui/mainwindow.cpp" line="4352"/>
         <source>Turn</source>
         <translation>Apsisukimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3745"/>
+        <location filename="../../gui/mainwindow.cpp" line="4353"/>
         <source>Revolution</source>
         <translation>Apsisukimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3756"/>
+        <location filename="../../gui/mainwindow.cpp" line="4364"/>
         <source>Fixed-point decimal</source>
         <translation>Fiksuoto kablelio dešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3759"/>
+        <location filename="../../gui/mainwindow.cpp" line="4367"/>
         <source>Rational</source>
         <translation>Racionalusis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3760"/>
+        <location filename="../../gui/mainwindow.cpp" line="4368"/>
         <source>Automatic decimal</source>
         <translation>Automatinis dešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3768"/>
-        <location filename="../../gui/mainwindow.cpp" line="13575"/>
+        <location filename="../../gui/mainwindow.cpp" line="4376"/>
+        <location filename="../../gui/mainwindow.cpp" line="15286"/>
         <source>Automatic</source>
         <translation>Automatinis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3778"/>
+        <location filename="../../gui/mainwindow.cpp" line="4386"/>
         <source>User &amp;Definitions...</source>
         <translation>Naudotojo &amp;apibrėžimai...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3779"/>
+        <location filename="../../gui/mainwindow.cpp" line="4387"/>
         <source>New &amp;Tab</source>
         <translation>Nauja &amp;kortelė</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3780"/>
+        <location filename="../../gui/mainwindow.cpp" line="4388"/>
+        <source>New &amp;Private Tab</source>
+        <translation>Naujas &amp;privatus skirtukas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4390"/>
+        <location filename="../../gui/mainwindow.cpp" line="5337"/>
+        <location filename="../../gui/mainwindow.cpp" line="12123"/>
+        <source>Keep</source>
+        <translation>Išsaugoti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4390"/>
+        <location filename="../../gui/mainwindow.cpp" line="5337"/>
+        <location filename="../../gui/mainwindow.cpp" line="12123"/>
+        <source>Make Private...</source>
+        <translation>Padaryti privatų...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4391"/>
         <source>New &amp;Window</source>
         <translation>Naujas &amp;langas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3781"/>
+        <location filename="../../gui/mainwindow.cpp" line="4392"/>
         <source>&amp;Open...</source>
         <translation>&amp;Atverti...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3782"/>
+        <location filename="../../gui/mainwindow.cpp" line="4393"/>
+        <source>&amp;Rename...</source>
+        <translation>Per&amp;vadinti...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4394"/>
+        <source>Clo&amp;ne...</source>
+        <translation>Klo&amp;nuoti...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4395"/>
+        <source>&amp;Close Tab</source>
+        <translation>&amp;Užverti skirtuką</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4396"/>
+        <source>Reopen Clo&amp;sed Tab</source>
+        <translation>Vėl atverti užvertą &amp;skirtuką</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4397"/>
         <source>Open Sessions &amp;Folder</source>
         <translation>Atverti seansų &amp;aplanką</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3798"/>
+        <location filename="../../gui/mainwindow.cpp" line="4401"/>
+        <source>&amp;Undo</source>
+        <translation>&amp;Atšaukti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4402"/>
+        <source>&amp;Redo</source>
+        <translation>G&amp;rąžinti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4403"/>
+        <source>Cu&amp;t</source>
+        <translation>Iškirp&amp;ti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4405"/>
+        <source>Copy &amp;Last Result</source>
+        <translation>Kopijuoti paskutinį rezu&amp;ltatą</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4409"/>
+        <source>&amp;Wrap in Parentheses</source>
+        <translation>A&amp;pskliausti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4412"/>
+        <source>Full Scr&amp;een Mode</source>
+        <translation>Viso &amp;ekrano veiksena</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4416"/>
         <source>&amp;Basic</source>
         <translation>&amp;Pagrindinis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3799"/>
+        <location filename="../../gui/mainwindow.cpp" line="4417"/>
         <source>&amp;Scientific (wide)</source>
         <translation>&amp;Mokslinis (platus)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3800"/>
+        <location filename="../../gui/mainwindow.cpp" line="4418"/>
         <source>Scientific (narrow)</source>
         <translation>Mokslinis (siauras)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3801"/>
-        <location filename="../../gui/mainwindow.cpp" line="3861"/>
+        <location filename="../../gui/mainwindow.cpp" line="4419"/>
+        <location filename="../../gui/mainwindow.cpp" line="4496"/>
         <source>&amp;Custom...</source>
         <translation>&amp;Pasirinktinis...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3807"/>
+        <location filename="../../gui/mainwindow.cpp" line="4426"/>
         <source>Main &amp;Menu</source>
         <translation>Pagrindinis &amp;meniu</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3808"/>
+        <location filename="../../gui/mainwindow.cpp" line="4427"/>
         <source>User &amp;Variables</source>
         <translation>Naudotojo &amp;kintamieji</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3811"/>
+        <location filename="../../gui/mainwindow.cpp" line="4429"/>
+        <source>&amp;Left</source>
+        <translation>&amp;Kairėn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4430"/>
+        <source>&amp;Right</source>
+        <translation>&amp;Dešinėn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4431"/>
+        <source>&amp;Up</source>
+        <translation>A&amp;ukštyn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4432"/>
+        <source>&amp;Down</source>
+        <translation>&amp;Žemyn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4433"/>
+        <source>Close Pa&amp;ne</source>
+        <translation>Užverti pola&amp;ngį</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4435"/>
         <source>User &amp;Units</source>
         <translation>Naudotojo &amp;vienetai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3816"/>
+        <location filename="../../gui/mainwindow.cpp" line="4440"/>
         <source>&amp;Turn</source>
         <translation>&amp;Apsisukimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3817"/>
-        <source>&amp;Revolution</source>
-        <translation>&amp;Apsisukimas</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3819"/>
-        <source>Auto-Insert &quot;ans&quot; When Starting with an Operator</source>
-        <translation>Automatiškai įterpti „ans“, kai pradedama operatoriumi</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3820"/>
-        <location filename="../../gui/mainwindow.cpp" line="3821"/>
+        <location filename="../../gui/mainwindow.cpp" line="4444"/>
+        <location filename="../../gui/mainwindow.cpp" line="4445"/>
         <source>If a new expression starts with +, -, *, or /, SpeedCrunch inserts &quot;ans&quot; first.</source>
         <translation>Jei naujas reiškinys prasideda +, -, * arba /, SpeedCrunch pirmiausia įterpia „ans“.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3823"/>
-        <source>Built-in &amp;functions</source>
-        <translation>Įtaisytosios &amp;funkcijos</translation>
+        <location filename="../../gui/mainwindow.cpp" line="4447"/>
+        <source>&amp;Accept with Enter</source>
+        <translation>&amp;Priimti klavišu Enter</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3824"/>
-        <source>Built-in &amp;variables</source>
-        <translation>Įtaisytieji &amp;kintamieji</translation>
+        <location filename="../../gui/mainwindow.cpp" line="4448"/>
+        <source>Accept the current autocomplete suggestion with Enter without first selecting it with the arrow keys.</source>
+        <translation>Priimti dabartinį automatinio užbaigimo pasiūlymą klavišu Enter, prieš tai jo nepasirinkus rodyklių klavišais.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3825"/>
+        <location filename="../../gui/mainwindow.cpp" line="4452"/>
         <source>&amp;Units</source>
         <translation>&amp;Vienetai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3826"/>
-        <source>User &amp;functions</source>
-        <translation>Naudotojo &amp;funkcijos</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3827"/>
-        <source>User &amp;variables</source>
-        <translation>Naudotojo &amp;kintamieji</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3828"/>
-        <source>Show Empty History &amp;Hint</source>
-        <translation>Rodyti tuščios istorijos &amp;užuominą</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3829"/>
-        <location filename="../../gui/mainwindow.cpp" line="3830"/>
-        <source>When history is empty, show a hint in the status area.</source>
-        <translation>Kai istorija tuščia, būsenos srityje rodyti užuominą.</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3831"/>
+        <location filename="../../gui/mainwindow.cpp" line="4455"/>
         <source>Show Live Result &amp;Preview</source>
         <translation>Rodyti tiesioginę rezultato &amp;peržiūrą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3832"/>
+        <location filename="../../gui/mainwindow.cpp" line="4456"/>
         <source>Save &amp;Window Position on Exit</source>
         <translation>Išeinant įrašyti &amp;lango padėtį</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3834"/>
+        <location filename="../../gui/mainwindow.cpp" line="4469"/>
         <source>Hover Highlighting</source>
         <translation>Paryškinimas užvedus</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3839"/>
+        <location filename="../../gui/mainwindow.cpp" line="4474"/>
         <source>Group Integer Part Only</source>
         <translation>Grupuoti tik sveikąją dalį</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3840"/>
-        <source>Keep Entered Expression After Evaluate</source>
-        <translation>Po skaičiavimo palikti įvestą reiškinį</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3841"/>
+        <location filename="../../gui/mainwindow.cpp" line="4476"/>
         <source>Number Format...</source>
         <translation>Skaičių formatas...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3842"/>
+        <location filename="../../gui/mainwindow.cpp" line="4477"/>
         <source>Notation &amp;&amp; Precision...</source>
         <translation>Žymėjimas ir tikslumas...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3843"/>
-        <location filename="../../gui/mainwindow.cpp" line="3844"/>
+        <location filename="../../gui/mainwindow.cpp" line="4478"/>
+        <location filename="../../gui/mainwindow.cpp" line="4479"/>
         <source>After pressing Enter, keep the entered expression selected in the editor.</source>
         <translation>Paspaudus Enter, palikti įvestą reiškinį pažymėtą rengyklėje.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3845"/>
+        <location filename="../../gui/mainwindow.cpp" line="4480"/>
         <source>Never</source>
         <translation>Niekada</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3846"/>
+        <location filename="../../gui/mainwindow.cpp" line="4481"/>
         <source>Always</source>
         <translation>Visada</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3847"/>
+        <location filename="../../gui/mainwindow.cpp" line="4482"/>
         <source>Only for Single-Line Expressions</source>
         <translation>Tik vienos eilutės reiškiniams</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3848"/>
-        <source>Automatically Copy New Results to Clipboard</source>
-        <translation>Automatiškai kopijuoti naujus rezultatus į iškarpinę</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3849"/>
+        <location filename="../../gui/mainwindow.cpp" line="4484"/>
         <source>Simplify Displayed Expressions</source>
         <translation>Supaprastinti rodomus reiškinius</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3850"/>
+        <location filename="../../gui/mainwindow.cpp" line="4485"/>
         <source>History Size &amp;Limit...</source>
         <translation>Istorijos dydžio &amp;riba...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3863"/>
+        <location filename="../../gui/mainwindow.cpp" line="4497"/>
+        <source>Remove Trailing &amp;Zeroes</source>
+        <translation>&amp;Šalinti galinius nulius</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4499"/>
         <source>Nearest, Half &amp;Away (round)</source>
         <translation>Artimiausias, pusė &amp;nuo nulio (round)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3865"/>
+        <location filename="../../gui/mainwindow.cpp" line="4501"/>
         <source>Nearest, Half &amp;Even (roundeven)</source>
         <translation>Artimiausias, pusė į &amp;lyginį (roundeven)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3866"/>
+        <location filename="../../gui/mainwindow.cpp" line="4502"/>
         <source>Toward &amp;Zero (trunc)</source>
         <translation>Link &amp;nulio (trunc)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3868"/>
-        <source>Toward +&amp;∞ (ceil)</source>
-        <translation>Link +&amp;∞ (ceil)</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3870"/>
-        <source>Toward −&amp;∞ (floor)</source>
-        <translation>Link −&amp;∞ (floor)</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3873"/>
+        <location filename="../../gui/mainwindow.cpp" line="4509"/>
         <source>&amp;Fixed-Point</source>
         <translation>&amp;Fiksuoto kablelio</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3876"/>
+        <location filename="../../gui/mainwindow.cpp" line="4512"/>
         <source>&amp;Rational</source>
         <translation>&amp;Racionalusis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3882"/>
+        <location filename="../../gui/mainwindow.cpp" line="4518"/>
         <source>&amp;Exponential (m·s⁻¹)</source>
         <translation>&amp;Eksponentinis (m·s⁻¹)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3884"/>
+        <location filename="../../gui/mainwindow.cpp" line="4520"/>
         <source>&amp;Fractional (m/s)</source>
         <translation>&amp;Trupmeninis (m/s)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3885"/>
+        <location filename="../../gui/mainwindow.cpp" line="4521"/>
         <source>&amp;Rectangular (a + bi)</source>
         <translation>&amp;Stačiakampis (a + bi)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3886"/>
+        <location filename="../../gui/mainwindow.cpp" line="4522"/>
         <source>Exponential (reⁱᶿ)</source>
         <translation>Eksponentinis (reⁱᶿ)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3888"/>
+        <location filename="../../gui/mainwindow.cpp" line="4524"/>
         <source>Trigonometric (r(cos θ + i·sin θ))</source>
         <translation>Trigonometrinis (r(cos θ + i·sin θ))</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3890"/>
+        <location filename="../../gui/mainwindow.cpp" line="4526"/>
         <source>Phasor (r∠θ)</source>
         <translation>Fazorius (r∠θ)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3894"/>
+        <location filename="../../gui/mainwindow.cpp" line="4531"/>
         <source>&amp;Theme...</source>
         <translation>&amp;Tema...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3899"/>
+        <location filename="../../gui/mainwindow.cpp" line="4547"/>
         <source>Check for &amp;Updates</source>
         <translation>Tikrinti, ar yra &amp;naujinimų</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3900"/>
-        <source>Issue Tracker</source>
-        <translation>Klaidų sekiklis</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="3902"/>
+        <location filename="../../gui/mainwindow.cpp" line="4551"/>
         <source>Source Code</source>
         <translation>Pirminis kodas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4211"/>
+        <location filename="../../gui/mainwindow.cpp" line="4972"/>
         <source>&amp;Zoom</source>
         <translation>&amp;Mastelis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4213"/>
+        <location filename="../../gui/mainwindow.cpp" line="4974"/>
         <source>&amp;Results</source>
         <translation>&amp;Rezultatai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4214"/>
-        <source>&amp;Symbols</source>
-        <translation>&amp;Simboliai</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4215"/>
+        <location filename="../../gui/mainwindow.cpp" line="4975"/>
         <source>Unit Notation</source>
         <translation>Vienetų žymėjimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4216"/>
+        <location filename="../../gui/mainwindow.cpp" line="4976"/>
         <source>Rounding Mode</source>
         <translation>Apvalinimo veiksena</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4217"/>
+        <location filename="../../gui/mainwindow.cpp" line="4977"/>
         <source>&amp;Notation</source>
         <translation>&amp;Žymėjimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4220"/>
-        <source>&amp;Angle Mode</source>
-        <translation>&amp;Kampų veiksena</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4221"/>
-        <source>Complex &amp;Numbers</source>
-        <translation>Kompleksiniai &amp;skaičiai</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4222"/>
-        <source>&amp;Form</source>
-        <translation>&amp;Forma</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4223"/>
+        <location filename="../../gui/mainwindow.cpp" line="4982"/>
         <source>&amp;Imaginary Unit</source>
         <translation>&amp;Menamasis vienetas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4224"/>
+        <location filename="../../gui/mainwindow.cpp" line="4983"/>
         <source>&amp;Window</source>
         <translation>&amp;Langas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4225"/>
+        <location filename="../../gui/mainwindow.cpp" line="4984"/>
         <source>&amp;Editing</source>
         <translation>&amp;Redagavimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4226"/>
+        <location filename="../../gui/mainwindow.cpp" line="4985"/>
         <source>A&amp;utocomplete</source>
         <translation>A&amp;utomatinis užbaigimas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4227"/>
+        <location filename="../../gui/mainwindow.cpp" line="4986"/>
         <source>Up/Down Arrow History</source>
         <translation>Rodyklių aukštyn/žemyn istorija</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4228"/>
+        <location filename="../../gui/mainwindow.cpp" line="4987"/>
         <source>&amp;Appearance</source>
         <translation>&amp;Išvaizda</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4235"/>
+        <location filename="../../gui/mainwindow.cpp" line="4988"/>
+        <source>&amp;Menus</source>
+        <translation>&amp;Meniu</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4989"/>
+        <source>&amp;Docks</source>
+        <translation>Prikabinami sky&amp;deliai</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4992"/>
+        <source>&amp;Input and Results</source>
+        <translation>Įvest&amp;is ir rezultatai</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="4999"/>
         <source>&amp;Disabled</source>
         <translation>&amp;Išjungta</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4237"/>
+        <location filename="../../gui/mainwindow.cpp" line="5001"/>
         <source>&amp;Disable</source>
         <translation>&amp;Išjungti</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4411"/>
+        <location filename="../../gui/mainwindow.cpp" line="5186"/>
         <source>Close preview</source>
         <translation>Užverti peržiūrą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9688"/>
-        <location filename="../../gui/mainwindow.cpp" line="9729"/>
+        <location filename="../../gui/mainwindow.cpp" line="5334"/>
+        <source>Rename...</source>
+        <translation>Pervadinti...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5335"/>
+        <source>Clone...</source>
+        <translation>Klonuoti...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5338"/>
+        <source>Close Tab</source>
+        <translation>Užverti skirtuką</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5341"/>
+        <source>New Private Tab</source>
+        <translation>Naujas privatus skirtukas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5342"/>
+        <source>Open...</source>
+        <translation>Atverti...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5343"/>
+        <source>Reopen Closed Tab</source>
+        <translation>Vėl atverti užvertą skirtuką</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5352"/>
+        <source>Split</source>
+        <translation>Padalyti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5353"/>
+        <source>Left</source>
+        <translation>Kairėn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5354"/>
+        <source>Right</source>
+        <translation>Dešinėn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5355"/>
+        <source>Up</source>
+        <translation>Aukštyn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5356"/>
+        <source>Down</source>
+        <translation>Žemyn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5359"/>
+        <source>Clear</source>
+        <translation>Išvalyti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="5360"/>
+        <source>Delete</source>
+        <translation>Ištrinti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="7040"/>
+        <source>%1
+Private session: contents are discarded when closed.
+Choose Session &gt; Keep to turn it into a regular session.</source>
+        <translation>%1
+Privatus seansas: užvėrus jo turinys pašalinamas.
+Pasirinkite Seansas &gt; Išsaugoti, kad jis taptų įprastu seansu.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="7059"/>
+        <source>SpeedCrunch - %1 [Private]</source>
+        <translation>SpeedCrunch - %1 [Privatus]</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="8608"/>
+        <location filename="../../gui/mainwindow.cpp" line="8620"/>
+        <source>Reset All Settings</source>
+        <translation>Atkurti visas nuostatas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="8609"/>
+        <source>Reset all settings to their default values?</source>
+        <translation>Atkurti visų nuostatų numatytąsias reikšmes?</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="8610"/>
+        <source>This includes appearance, editing, result formats, and window preferences. Your calculations, open sessions, and user definitions will be kept.</source>
+        <translation>Tai apima išvaizdą, redagavimą, rezultatų formatus ir langų nuostatas. Skaičiavimai, atverti seansai ir naudotojo apibrėžtys bus išsaugoti.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="8620"/>
+        <source>The settings file could not be written.</source>
+        <translation>Nepavyko įrašyti nuostatų failo.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9505"/>
+        <source>Clear this session&apos;s calculations, unfinished expression, variables, functions, and units?</source>
+        <translation>Išvalyti šio seanso skaičiavimus, nebaigtą reiškinį, kintamuosius, funkcijas ir vienetus?</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9506"/>
+        <source>Global user definitions are kept.</source>
+        <translation>Visuotinės naudotojo apibrėžtys išsaugomos.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9642"/>
+        <location filename="../../gui/mainwindow.cpp" line="9662"/>
+        <source>Make Session Private</source>
+        <translation>Padaryti seansą privatų</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9643"/>
+        <source>The saved session %1 will be deleted. Its contents will stay open in a private session and will be discarded when that session is closed or SpeedCrunch exits.</source>
+        <translation>Įrašytas seansas %1 bus pašalintas. Jo turinys liks atvertas privačiame seanse ir bus pašalintas užvėrus tą seansą arba išėjus iš SpeedCrunch.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9648"/>
+        <source>Make Private</source>
+        <translation>Padaryti privatų</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9663"/>
+        <source>Could not delete the saved session %1.</source>
+        <translation>Nepavyko pašalinti įrašyto seanso %1.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9672"/>
+        <source>Keep Session</source>
+        <translation>Išsaugoti seansą</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9673"/>
+        <source>Could not save the session. It remains private.</source>
+        <translation>Nepavyko įrašyti seanso. Jis lieka privatus.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9869"/>
+        <location filename="../../gui/mainwindow.cpp" line="9881"/>
+        <location filename="../../gui/mainwindow.cpp" line="9902"/>
+        <location filename="../../gui/mainwindow.cpp" line="9912"/>
+        <source>Clone Session</source>
+        <translation>Klonuoti seansą</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9970"/>
+        <source>Could not save session file %1.</source>
+        <translation>Nepavyko įrašyti seanso failo %1.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9977"/>
+        <source>Could not delete session file %1.</source>
+        <translation>Nepavyko pašalinti seanso failo %1.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="10962"/>
+        <location filename="../../gui/mainwindow.cpp" line="11003"/>
         <source>JSON file (*.json);;Any file (*.*)</source>
         <translation>JSON failas (*.json);;Bet koks failas (*.*)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9692"/>
+        <location filename="../../gui/mainwindow.cpp" line="10966"/>
         <source>Export session as JSON</source>
         <translation>Eksportuoti seansą kaip JSON</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9757"/>
+        <location filename="../../gui/mainwindow.cpp" line="11031"/>
         <source>The selected file is not valid JSON: %1</source>
         <translation>Pasirinktas failas nėra tinkamas JSON: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9764"/>
+        <location filename="../../gui/mainwindow.cpp" line="11038"/>
         <source>The selected file is not a SpeedCrunch session JSON file.</source>
         <translation>Pasirinktas failas nėra SpeedCrunch seanso JSON failas.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9772"/>
+        <location filename="../../gui/mainwindow.cpp" line="11046"/>
         <source>This file uses an obsolete SpeedCrunch session format and cannot be imported.</source>
         <translation>Šis failas naudoja pasenusį SpeedCrunch seanso formatą ir negali būti importuotas.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9780"/>
+        <location filename="../../gui/mainwindow.cpp" line="11054"/>
         <source>The selected JSON file is missing the required $schema field.</source>
         <translation>Pasirinktame JSON faile trūksta privalomo $schema lauko.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9786"/>
+        <location filename="../../gui/mainwindow.cpp" line="11060"/>
         <source>The selected JSON file uses an unsupported JSON schema: %1</source>
         <translation>Pasirinktas JSON failas naudoja nepalaikomą JSON schemą: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9794"/>
+        <location filename="../../gui/mainwindow.cpp" line="11068"/>
         <source>The selected JSON file is missing the SpeedCrunch session schema identifier ($id).</source>
         <translation>Pasirinktame JSON faile trūksta SpeedCrunch seanso schemos identifikatoriaus ($id).</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9800"/>
+        <location filename="../../gui/mainwindow.cpp" line="11074"/>
         <source>The selected JSON file uses an unsupported SpeedCrunch session format: %1</source>
         <translation>Pasirinktas JSON failas naudoja nepalaikomą SpeedCrunch seanso formatą: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9808"/>
+        <location filename="../../gui/mainwindow.cpp" line="11082"/>
         <source>The selected JSON file is missing the required session name.</source>
         <translation>Pasirinktame JSON faile trūksta privalomo seanso pavadinimo.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9814"/>
+        <location filename="../../gui/mainwindow.cpp" line="11088"/>
         <source>The selected JSON file has an empty session name.</source>
         <translation>Pasirinktame JSON faile seanso pavadinimas yra tuščias.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9822"/>
+        <location filename="../../gui/mainwindow.cpp" line="11096"/>
         <source>The selected JSON file has invalid or incomplete SpeedCrunch session data.</source>
         <translation>Pasirinktame JSON faile yra neteisingų arba neišsamių SpeedCrunch seanso duomenų.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9833"/>
-        <location filename="../../gui/mainwindow.cpp" line="9841"/>
+        <location filename="../../gui/mainwindow.cpp" line="11107"/>
+        <location filename="../../gui/mainwindow.cpp" line="11115"/>
         <source>Open Sessions Folder</source>
         <translation>Atverti seansų aplanką</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9834"/>
+        <location filename="../../gui/mainwindow.cpp" line="11108"/>
         <source>Could not create the sessions folder: %1</source>
         <translation>Nepavyko sukurti seansų aplanko: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9842"/>
+        <location filename="../../gui/mainwindow.cpp" line="11116"/>
         <source>Could not open the sessions folder: %1</source>
         <translation>Nepavyko atverti seansų aplanko: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4555"/>
-        <location filename="../../gui/mainwindow.cpp" line="8508"/>
+        <location filename="../../gui/mainwindow.cpp" line="12059"/>
+        <source>Editor and Results Font</source>
+        <translation>Rengyklės ir rezultatų šriftas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="9788"/>
         <source>Open Session</source>
         <translation>Atverti seansą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3901"/>
+        <location filename="../../gui/mainwindow.cpp" line="4550"/>
         <source>Community</source>
         <translation>Bendruomenė</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4557"/>
-        <source>Split Left</source>
-        <translation>Skaidyti kairėn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4558"/>
-        <source>Split Right</source>
-        <translation>Skaidyti dešinėn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4559"/>
-        <source>Split Up</source>
-        <translation>Skaidyti aukštyn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4560"/>
-        <source>Split Down</source>
-        <translation>Skaidyti žemyn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4568"/>
-        <location filename="../../gui/mainwindow.cpp" line="8589"/>
-        <location filename="../../gui/mainwindow.cpp" line="8600"/>
-        <location filename="../../gui/mainwindow.cpp" line="8613"/>
-        <location filename="../../gui/mainwindow.cpp" line="8623"/>
-        <source>Duplicate Session</source>
-        <translation>Dubliuoti seansą</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="4569"/>
-        <location filename="../../gui/mainwindow.cpp" line="8652"/>
-        <location filename="../../gui/mainwindow.cpp" line="8666"/>
-        <location filename="../../gui/mainwindow.cpp" line="8677"/>
+        <location filename="../../gui/mainwindow.cpp" line="9941"/>
+        <location filename="../../gui/mainwindow.cpp" line="9955"/>
+        <location filename="../../gui/mainwindow.cpp" line="9969"/>
+        <location filename="../../gui/mainwindow.cpp" line="9976"/>
         <source>Rename Session</source>
         <translation>Pervadinti seansą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4571"/>
+        <location filename="../../gui/mainwindow.cpp" line="9504"/>
         <source>Clear Session</source>
         <translation>Išvalyti seansą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4572"/>
-        <location filename="../../gui/mainwindow.cpp" line="8951"/>
+        <location filename="../../gui/mainwindow.cpp" line="10222"/>
         <source>Delete Session</source>
         <translation>Ištrinti seansą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4575"/>
+        <location filename="../../gui/mainwindow.cpp" line="5357"/>
         <source>Close Pane</source>
         <translation>Užverti polangį</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="6952"/>
+        <location filename="../../gui/mainwindow.cpp" line="7836"/>
         <source>User Variables</source>
         <translation>Naudotojo kintamieji</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="7026"/>
+        <location filename="../../gui/mainwindow.cpp" line="7912"/>
         <source>User Units</source>
         <translation>Naudotojo vienetai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="8354"/>
-        <location filename="../../gui/mainwindow.cpp" line="8385"/>
+        <location filename="../../gui/mainwindow.cpp" line="9472"/>
         <source>Clear History</source>
         <translation>Išvalyti istoriją</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="8355"/>
-        <location filename="../../gui/mainwindow.cpp" line="8386"/>
+        <location filename="../../gui/mainwindow.cpp" line="9473"/>
         <source>Are you sure you want to clear the calculation history?</source>
         <translation>Ar tikrai norite išvalyti skaičiavimų istoriją?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="8590"/>
-        <location filename="../../gui/mainwindow.cpp" line="8653"/>
+        <location filename="../../gui/mainwindow.cpp" line="9870"/>
+        <location filename="../../gui/mainwindow.cpp" line="9941"/>
         <source>Session name:</source>
         <translation>Seanso pavadinimas:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="8601"/>
-        <location filename="../../gui/mainwindow.cpp" line="8667"/>
+        <location filename="../../gui/mainwindow.cpp" line="9882"/>
+        <location filename="../../gui/mainwindow.cpp" line="9956"/>
         <source>A session named %1 already exists.</source>
         <translation>Seansas pavadinimu %1 jau yra.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="8614"/>
+        <location filename="../../gui/mainwindow.cpp" line="9903"/>
         <source>Could not create session file %1.</source>
         <translation>Nepavyko sukurti seanso failo %1.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="8624"/>
+        <location filename="../../gui/mainwindow.cpp" line="9913"/>
         <source>Could not write session file %1.</source>
         <translation>Nepavyko įrašyti seanso failo %1.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="8678"/>
-        <source>Could not rename session file %1.</source>
-        <translation>Nepavyko pervadinti seanso failo %1.</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="8952"/>
+        <location filename="../../gui/mainwindow.cpp" line="10223"/>
         <source>Are you sure you want to delete this session?</source>
         <translation>Ar tikrai norite ištrinti šį seansą?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9127"/>
+        <location filename="../../gui/mainwindow.cpp" line="10397"/>
         <source>Custom Precision</source>
         <translation>Pasirinktinis tikslumas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9128"/>
+        <location filename="../../gui/mainwindow.cpp" line="10398"/>
         <source>Fractional digits:</source>
         <translation>Trupmeninės dalies skaitmenys:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9145"/>
+        <location filename="../../gui/mainwindow.cpp" line="10415"/>
         <source>Theme</source>
         <translation>Tema</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9154"/>
+        <location filename="../../gui/mainwindow.cpp" line="10424"/>
         <source>Light Themes</source>
         <translation>Šviesios temos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9161"/>
+        <location filename="../../gui/mainwindow.cpp" line="10431"/>
         <source>Dark Themes</source>
         <translation>Tamsios temos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9169"/>
+        <location filename="../../gui/mainwindow.cpp" line="10439"/>
         <source>Preview</source>
         <translation>Peržiūra</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9231"/>
+        <location filename="../../gui/mainwindow.cpp" line="10501"/>
         <source>Colors</source>
         <translation>Spalvos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9423"/>
+        <location filename="../../gui/mainwindow.cpp" line="10693"/>
         <source>Select color for %1</source>
         <translation>Pasirinkite spalvą elementui %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9479"/>
+        <location filename="../../gui/mainwindow.cpp" line="10749"/>
         <source>Import...</source>
         <translation>Importuoti...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9480"/>
+        <location filename="../../gui/mainwindow.cpp" line="10750"/>
         <source>Export...</source>
         <translation>Eksportuoti...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9510"/>
+        <location filename="../../gui/mainwindow.cpp" line="10780"/>
         <source>Import Theme</source>
         <translation>Importuoti temą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9511"/>
-        <location filename="../../gui/mainwindow.cpp" line="9600"/>
+        <location filename="../../gui/mainwindow.cpp" line="10781"/>
+        <location filename="../../gui/mainwindow.cpp" line="10870"/>
         <source>Theme file (*.json);;All files (*)</source>
         <translation>Temos failas (*.json);;Visi failai (*)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9522"/>
+        <location filename="../../gui/mainwindow.cpp" line="10792"/>
         <source>Invalid theme file.</source>
         <translation>Netinkamas temos failas.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9531"/>
+        <location filename="../../gui/mainwindow.cpp" line="10801"/>
         <source>Can&apos;t import theme &quot;%1&quot; because it conflicts with a built-in theme.</source>
         <translation>Nepavyksta importuoti temos „%1“, nes ji konfliktuoja su įtaisytąja tema.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9536"/>
+        <location filename="../../gui/mainwindow.cpp" line="10806"/>
         <source>Can&apos;t find a writable theme folder.</source>
         <translation>Nepavyksta rasti įrašomo temos aplanko.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9543"/>
+        <location filename="../../gui/mainwindow.cpp" line="10813"/>
         <source>Overwrite Theme</source>
         <translation>Perrašyti temą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9544"/>
+        <location filename="../../gui/mainwindow.cpp" line="10814"/>
         <source>A custom theme named &quot;%1&quot; already exists. Do you want to overwrite it?</source>
         <translation>Pasirinktinė tema pavadinimu „%1“ jau yra. Ar norite ją perrašyti?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9552"/>
+        <location filename="../../gui/mainwindow.cpp" line="10822"/>
         <source>Can&apos;t overwrite theme file %1</source>
         <translation>Nepavyksta perrašyti temos failo %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9558"/>
+        <location filename="../../gui/mainwindow.cpp" line="10828"/>
         <source>Can&apos;t copy theme file to %1</source>
         <translation>Nepavyksta nukopijuoti temos failo į %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9599"/>
+        <location filename="../../gui/mainwindow.cpp" line="10869"/>
         <source>Export Theme</source>
         <translation>Eksportuoti temą</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9610"/>
+        <location filename="../../gui/mainwindow.cpp" line="10880"/>
         <source>Can&apos;t export theme as &quot;%1&quot; because it conflicts with a built-in theme.</source>
         <translation>Nepavyksta eksportuoti temos kaip „%1“, nes ji konfliktuoja su įtaisytąja tema.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9615"/>
-        <location filename="../../gui/mainwindow.cpp" line="9714"/>
-        <location filename="../../gui/mainwindow.cpp" line="10625"/>
-        <location filename="../../gui/mainwindow.cpp" line="10664"/>
+        <location filename="../../gui/mainwindow.cpp" line="10885"/>
+        <location filename="../../gui/mainwindow.cpp" line="10988"/>
+        <location filename="../../gui/mainwindow.cpp" line="11980"/>
+        <location filename="../../gui/mainwindow.cpp" line="12019"/>
         <source>Can&apos;t write to file %1</source>
         <translation>Nepavyksta įrašyti į failą %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9851"/>
+        <location filename="../../gui/mainwindow.cpp" line="11125"/>
         <source>Global User Variable</source>
         <translation>Globalus naudotojo kintamasis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9852"/>
+        <location filename="../../gui/mainwindow.cpp" line="11126"/>
         <source>Global User Function</source>
         <translation>Globali naudotojo funkcija</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="9853"/>
+        <location filename="../../gui/mainwindow.cpp" line="11127"/>
         <source>Global User Unit</source>
         <translation>Globalus naudotojo vienetas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10196"/>
+        <location filename="../../gui/mainwindow.cpp" line="11471"/>
         <source>User Definitions</source>
         <translation>Naudotojo apibrėžimai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10202"/>
+        <location filename="../../gui/mainwindow.cpp" line="11477"/>
         <source>These definitions are global and are loaded into every session.
 They are immutable for sessions and override same-name definitions from the session editor.
 Enter one definition per line.</source>
@@ -5727,7 +6050,7 @@ Seansuose jų keisti negalima, ir jie turi pirmenybę prieš seanso rengyklės a
 Kiekvienoje eilutėje įveskite po vieną apibrėžimą.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10212"/>
+        <location filename="../../gui/mainwindow.cpp" line="11487"/>
         <source>Examples:
 my_rate=1.25
 f(x)=x^2+1
@@ -5738,23 +6061,23 @@ f(x)=x^2+1
 [cm_s]=[centimetre/second]</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10274"/>
+        <location filename="../../gui/mainwindow.cpp" line="11549"/>
         <source>Apply</source>
         <translation>Taikyti</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10275"/>
+        <location filename="../../gui/mainwindow.cpp" line="11550"/>
         <source>Validate</source>
         <translation>Tikrinti</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10311"/>
+        <location filename="../../gui/mainwindow.cpp" line="11586"/>
         <source>Test Results</source>
         <translation>Bandymo rezultatai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10312"/>
-        <location filename="../../gui/mainwindow.cpp" line="10344"/>
+        <location filename="../../gui/mainwindow.cpp" line="11587"/>
+        <location filename="../../gui/mainwindow.cpp" line="11619"/>
         <source>Imported variables: %1
 Imported functions: %2
 Imported units: %3
@@ -5765,135 +6088,130 @@ Importuoti vienetai: %3
 Eilučių su klaidomis numeriai: %4</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10316"/>
-        <location filename="../../gui/mainwindow.cpp" line="10348"/>
+        <location filename="../../gui/mainwindow.cpp" line="11591"/>
+        <location filename="../../gui/mainwindow.cpp" line="11623"/>
         <source>none</source>
         <translation>nėra</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10343"/>
+        <location filename="../../gui/mainwindow.cpp" line="11618"/>
         <source>Apply Results</source>
         <translation>Taikymo rezultatai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10357"/>
+        <location filename="../../gui/mainwindow.cpp" line="11632"/>
         <source>User definitions saved.</source>
         <translation>Naudotojo apibrėžimai išsaugoti.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10392"/>
+        <location filename="../../gui/mainwindow.cpp" line="11667"/>
         <source>History Size Limit</source>
         <translation>Istorijos dydžio riba</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10393"/>
+        <location filename="../../gui/mainwindow.cpp" line="11668"/>
         <source>Maximum number of history entries for this session (0 = unlimited):</source>
         <translation>Didžiausias šio seanso istorijos įrašų skaičius (0 = neribota):</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10642"/>
+        <location filename="../../gui/mainwindow.cpp" line="11997"/>
         <source>Text file (*.txt);;Any file (*.*)</source>
         <translation>Tekstinis failas (*.txt);;Bet koks failas (*.*)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10694"/>
-        <source>Display font</source>
-        <translation>Rodymo šriftas</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="12768"/>
-        <location filename="../../gui/mainwindow.cpp" line="12941"/>
+        <location filename="../../gui/mainwindow.cpp" line="14459"/>
+        <location filename="../../gui/mainwindow.cpp" line="14632"/>
         <source>Could not recalculate from calculation %1: %2</source>
         <translation>Nepavyko perskaičiuoti nuo skaičiavimo %1: %2</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="12857"/>
+        <location filename="../../gui/mainwindow.cpp" line="14548"/>
         <source>History Size Limit Reached</source>
         <translation>Pasiekta istorijos dydžio riba</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="12858"/>
+        <location filename="../../gui/mainwindow.cpp" line="14549"/>
         <source>This calculation fills the last available history slot. Future calculations will remove the oldest calculation from history. You can increase the limit from Session &gt; History Size Limit.</source>
         <translation>Šis skaičiavimas užpildo paskutinę laisvą istorijos vietą. Būsimi skaičiavimai pašalins seniausią skaičiavimą iš istorijos. Ribą galite padidinti meniu Seansas &gt; Istorijos dydžio riba.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="12881"/>
+        <location filename="../../gui/mainwindow.cpp" line="14572"/>
         <source>Editing calculation. Press Esc twice to cancel.</source>
         <translation>Skaičiavimas redaguojamas. Norėdami atšaukti, du kartus paspauskite Esc.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="12922"/>
+        <location filename="../../gui/mainwindow.cpp" line="14613"/>
         <source>Calculation Settings</source>
         <translation>Skaičiavimo nustatymai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="12998"/>
+        <location filename="../../gui/mainwindow.cpp" line="14689"/>
         <source>Invalid recalculation start index</source>
         <translation>Netinkamas perskaičiavimo pradžios indeksas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="13549"/>
+        <location filename="../../gui/mainwindow.cpp" line="15260"/>
         <source>System Default</source>
         <translation>Sistemos numatytoji</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="13553"/>
+        <location filename="../../gui/mainwindow.cpp" line="15264"/>
         <source>Language</source>
         <translation>Kalba</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="13553"/>
+        <location filename="../../gui/mainwindow.cpp" line="15264"/>
         <source>Select the language:</source>
         <translation>Pasirinkite kalbą:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="13583"/>
+        <location filename="../../gui/mainwindow.cpp" line="15294"/>
         <source>Custom</source>
         <translation>Pasirinktinis</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="13595"/>
+        <location filename="../../gui/mainwindow.cpp" line="15306"/>
         <source>Decimal places:</source>
         <translation>Dešimtainės vietos:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3871"/>
-        <location filename="../../gui/mainwindow.cpp" line="3872"/>
+        <location filename="../../gui/mainwindow.cpp" line="4507"/>
+        <location filename="../../gui/mainwindow.cpp" line="4508"/>
         <source>&amp;Automatic</source>
         <translation>&amp;Automatiškai</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4219"/>
+        <location filename="../../gui/mainwindow.cpp" line="4979"/>
         <source>&amp;Precision</source>
         <translation>&amp;Tikslumas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3776"/>
+        <location filename="../../gui/mainwindow.cpp" line="4384"/>
         <source>Plain &amp;text</source>
         <translation>Grynasis &amp;tekstas</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3805"/>
+        <location filename="../../gui/mainwindow.cpp" line="4424"/>
         <source>Formula &amp;Book</source>
         <translation>&amp;Formulių knyga</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="4207"/>
+        <location filename="../../gui/mainwindow.cpp" line="4967"/>
         <source>&amp;Export</source>
         <translation>&amp;Eksportuoti</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10603"/>
+        <location filename="../../gui/mainwindow.cpp" line="11958"/>
         <source>Export session as HTML</source>
         <translation>Eksportuoti seansą kaip HTML</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10603"/>
+        <location filename="../../gui/mainwindow.cpp" line="11958"/>
         <source>HTML file (*.html)</source>
         <translation>HTML failas (*.html)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="10641"/>
+        <location filename="../../gui/mainwindow.cpp" line="11996"/>
         <source>Export session as plain text</source>
         <translation>Eksportuoti seansą kaip grynąjį tekstą</translation>
     </message>
@@ -5901,12 +6219,12 @@ Eilučių su klaidomis numeriai: %4</translation>
 <context>
     <name>ManualWindow</name>
     <message>
-        <location filename="../../gui/manualwindow.cpp" line="49"/>
+        <location filename="../../gui/manualwindow.cpp" line="53"/>
         <source>SpeedCrunch Manual</source>
         <translation>SpeedCrunch vadovas</translation>
     </message>
     <message>
-        <location filename="../../gui/manualwindow.cpp" line="51"/>
+        <location filename="../../gui/manualwindow.cpp" line="55"/>
         <source>%1 - SpeedCrunch Manual</source>
         <translation>%1 - SpeedCrunch vadovas</translation>
     </message>
@@ -5920,24 +6238,24 @@ Eilučių su klaidomis numeriai: %4</translation>
     </message>
     <message>
         <location filename="../../gui/numberformatdialog.cpp" line="21"/>
-        <source>&lt;b&gt;Select the number format for display.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Note: for input numbers, obvious formats are accepted even when they differ from the selected display format.&lt;br/&gt;</source>
-        <translation>&lt;b&gt;Pasirinkite skaičių formatą rodymui.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Pastaba: įvesties skaičiams priimami akivaizdūs formatai, net jei jie skiriasi nuo pasirinkto rodymo formato.&lt;br/&gt;</translation>
+        <source>&lt;b&gt;Select the number format for results and input digit grouping.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Note: for input numbers, obvious formats are accepted even when they differ from the selected display format.&lt;br/&gt;</source>
+        <translation>&lt;b&gt;Pasirinkite skaičių formatą rezultatams ir įvesties skaitmenų grupavimui.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Pastaba: įvedamų skaičių vienareikšmiai formatai priimami net tada, kai skiriasi nuo pasirinkto rodymo formato.&lt;br/&gt;</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../core/session.cpp" line="118"/>
+        <location filename="../../core/session.cpp" line="120"/>
         <source>Global User Variable</source>
         <translation>Globalus naudotojo kintamasis</translation>
     </message>
     <message>
-        <location filename="../../core/session.cpp" line="119"/>
+        <location filename="../../core/session.cpp" line="121"/>
         <source>Global User Function</source>
         <translation>Globali naudotojo funkcija</translation>
     </message>
     <message>
-        <location filename="../../core/session.cpp" line="120"/>
+        <location filename="../../core/session.cpp" line="122"/>
         <source>Global User Unit</source>
         <translation>Globalus naudotojo vienetas</translation>
     </message>
@@ -6007,34 +6325,34 @@ Eilučių su klaidomis numeriai: %4</translation>
         <translation>Šešiasdešimtainis</translation>
     </message>
     <message>
-        <location filename="../../gui/versioncheck.cpp" line="198"/>
+        <location filename="../../gui/versioncheck.cpp" line="380"/>
         <source>Update Available</source>
         <translation>Yra naujinimas</translation>
     </message>
     <message>
-        <location filename="../../gui/versioncheck.cpp" line="202"/>
+        <location filename="../../gui/versioncheck.cpp" line="384"/>
         <source>A newer version (%1) is available.&lt;br/&gt;&lt;a href=&quot;%2&quot;&gt;Visit website to download.&lt;/a&gt;</source>
         <translation>Yra naujesnė versija (%1).&lt;br/&gt;&lt;a href=&quot;%2&quot;&gt;Apsilankykite svetainėje ir atsisiųskite.&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../gui/versioncheck.cpp" line="223"/>
-        <location filename="../../gui/versioncheck.cpp" line="242"/>
-        <location filename="../../gui/versioncheck.cpp" line="261"/>
+        <location filename="../../gui/versioncheck.cpp" line="411"/>
+        <location filename="../../gui/versioncheck.cpp" line="430"/>
+        <location filename="../../gui/versioncheck.cpp" line="449"/>
         <source>Check for Updates</source>
         <translation>Tikrinti, ar yra naujinimų</translation>
     </message>
     <message>
-        <location filename="../../gui/versioncheck.cpp" line="227"/>
+        <location filename="../../gui/versioncheck.cpp" line="415"/>
         <source>SpeedCrunch %1 is up to date.</source>
         <translation>SpeedCrunch %1 yra naujausia versija.</translation>
     </message>
     <message>
-        <location filename="../../gui/versioncheck.cpp" line="246"/>
+        <location filename="../../gui/versioncheck.cpp" line="434"/>
         <source>No connectivity. Please check your internet connection and try again.</source>
         <translation>Nėra ryšio. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
     </message>
     <message>
-        <location filename="../../gui/versioncheck.cpp" line="265"/>
+        <location filename="../../gui/versioncheck.cpp" line="453"/>
         <source>Could not verify the latest available version.</source>
         <translation>Nepavyko patikrinti naujausios prieinamos versijos.</translation>
     </message>
@@ -6042,149 +6360,204 @@ Eilučių su klaidomis numeriai: %4</translation>
 <context>
     <name>ResultDisplay</name>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="514"/>
-        <location filename="../../gui/resultdisplay.cpp" line="520"/>
-        <location filename="../../gui/resultdisplay.cpp" line="524"/>
+        <location filename="../../gui/resultdisplay.cpp" line="486"/>
+        <location filename="../../gui/resultdisplay.cpp" line="492"/>
+        <location filename="../../gui/resultdisplay.cpp" line="496"/>
         <source>Scroll to bottom</source>
         <translation>Slinkti į apačią</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1305"/>
-        <source>Copy Expression</source>
-        <translation>Kopijuoti reiškinį</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1312"/>
-        <source>Copy Result</source>
-        <translation>Kopijuoti rezultatą</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1328"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1366"/>
         <source>Edit Expression</source>
         <translation>Redaguoti reiškinį</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1332"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1370"/>
         <source>Change Settings</source>
         <translation>Keisti nustatymus</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1336"/>
-        <source>Remove Calculation</source>
-        <translation>Pašalinti skaičiavimą</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1341"/>
-        <source>Remove All Calculations Above</source>
-        <translation>Pašalinti visus skaičiavimus aukščiau</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1345"/>
-        <source>Remove All Calculations Below</source>
-        <translation>Pašalinti visus skaičiavimus žemiau</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1356"/>
-        <source>Open Session</source>
-        <translation>Atverti seansą</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1361"/>
-        <source>Split Left</source>
-        <translation>Skaidyti kairėn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1365"/>
-        <source>Split Right</source>
-        <translation>Skaidyti dešinėn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1369"/>
-        <source>Split Up</source>
-        <translation>Skaidyti aukštyn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1373"/>
-        <source>Split Down</source>
-        <translation>Skaidyti žemyn</translation>
-    </message>
-    <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1352"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1390"/>
         <source>New Tab</source>
         <translation>Nauja kortelė</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1378"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1401"/>
         <source>&amp;Import...</source>
         <translation>&amp;Importuoti...</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1382"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1405"/>
         <source>&amp;Export</source>
         <translation>&amp;Eksportuoti</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1387"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1410"/>
         <source>Plain &amp;text</source>
         <translation>Grynasis &amp;tekstas</translation>
     </message>
     <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1301"/>
+        <source>Copy</source>
+        <translation>Kopijuoti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1303"/>
+        <source>Selection</source>
+        <translation>Pažymėta sritis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1308"/>
+        <source>Select All</source>
+        <translation>Pažymėti viską</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1318"/>
+        <source>Expression</source>
+        <translation>Reiškinys</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1325"/>
+        <source>Result</source>
+        <translation>Rezultatas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1340"/>
+        <source>Calculation</source>
+        <translation>Skaičiavimas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1358"/>
+        <source>Calculation as Single Line</source>
+        <translation>Skaičiavimas vienoje eilutėje</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1374"/>
+        <source>Remove</source>
+        <translation>Šalinti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1375"/>
+        <source>This Calculation</source>
+        <translation>Šis skaičiavimas</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1379"/>
+        <source>All Calculations Above</source>
+        <translation>Visi aukščiau esantys skaičiavimai</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1383"/>
+        <source>All Calculations Below</source>
+        <translation>Visi žemiau esantys skaičiavimai</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1394"/>
+        <source>New Private Tab</source>
+        <translation>Naujas privatus skirtukas</translation>
+    </message>
+    <message>
         <location filename="../../gui/resultdisplay.cpp" line="1396"/>
-        <source>Duplicate Session</source>
-        <translation>Dubliuoti seansą</translation>
+        <source>Session</source>
+        <translation>Seansas</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1400"/>
-        <source>Rename Session</source>
-        <translation>Pervadinti seansą</translation>
+        <location filename="../../gui/resultdisplay.cpp" line="1397"/>
+        <source>Open...</source>
+        <translation>Atverti...</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1405"/>
-        <source>Clear Session</source>
-        <translation>Išvalyti seansą</translation>
+        <location filename="../../gui/resultdisplay.cpp" line="1419"/>
+        <source>Clone...</source>
+        <translation>Klonuoti...</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1409"/>
-        <source>Delete Session</source>
-        <translation>Ištrinti seansą</translation>
+        <location filename="../../gui/resultdisplay.cpp" line="1423"/>
+        <source>Rename...</source>
+        <translation>Pervadinti...</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1414"/>
-        <source>Close Session</source>
-        <translation>Užverti seansą</translation>
+        <location filename="../../gui/resultdisplay.cpp" line="1425"/>
+        <source>Keep</source>
+        <translation>Išsaugoti</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1418"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1425"/>
+        <source>Make Private...</source>
+        <translation>Padaryti privatų...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1431"/>
+        <source>Clear</source>
+        <translation>Išvalyti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1435"/>
+        <source>Delete</source>
+        <translation>Ištrinti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1440"/>
+        <source>Close</source>
+        <translation>Užverti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1445"/>
+        <source>Split</source>
+        <translation>Padalyti</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1446"/>
+        <source>Left</source>
+        <translation>Kairėn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1450"/>
+        <source>Right</source>
+        <translation>Dešinėn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1454"/>
+        <source>Up</source>
+        <translation>Aukštyn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1458"/>
+        <source>Down</source>
+        <translation>Žemyn</translation>
+    </message>
+    <message>
+        <location filename="../../gui/resultdisplay.cpp" line="1462"/>
         <source>Close Pane</source>
         <translation>Užverti polangį</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1426"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1470"/>
         <source>Main Menu</source>
         <translation>Pagrindinis meniu</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1550"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1594"/>
         <source>Cancel editing</source>
         <translation>Atšaukti redagavimą</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1597"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1641"/>
         <source>Copy result</source>
         <translation>Kopijuoti rezultatą</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1598"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1642"/>
         <source>Edit expression</source>
         <translation>Redaguoti reiškinį</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1599"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1643"/>
         <source>Change settings</source>
         <translation>Keisti nustatymus</translation>
     </message>
     <message>
-        <location filename="../../gui/resultdisplay.cpp" line="1600"/>
+        <location filename="../../gui/resultdisplay.cpp" line="1644"/>
         <source>Remove calculation</source>
         <translation>Pašalinti skaičiavimą</translation>
     </message>

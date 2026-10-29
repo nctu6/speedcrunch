@@ -146,6 +146,15 @@ Examples that canonicalize:
 * ``Pa*m^2 -> N``
 * ``J/s -> W``
 
+When a product or quotient is rewritten in SI units, the numeric value includes
+the prefixes and conversion factors from both operands. For example,
+``150[MJ] / 1[s]`` gives ``150000000 W``, and ``2[kV] * 3[A]`` gives ``6000 W``.
+The same rule applies to preserved SI forms such as ``N⋅m`` and ``W⋅s``:
+``2[kW] * 3[ms]`` gives ``6 W⋅s``.
+
+Unit symbols keep their case when shortened. For example, ``kT`` (kilotesla)
+stays distinct from ``kt`` (knot), and ``fT`` (femtotesla) from ``ft`` (foot).
+
 Examples that preserve composite intent:
 
 * ``J*Pa`` remains a composed derived expression, because there is no single
@@ -160,6 +169,15 @@ Examples that preserve composite intent:
   usually chosen for domain readability, so SpeedCrunch preserves common
   authored speed forms when they match a supported named unit.
 * ``nmi/h`` displays as ``knot`` for the same reason.
+
+Angular rates expressed per second also include the input time unit's
+conversion factor. For example, ``120[rad] / 2[min]`` gives ``1 rad⋅s⁻¹``.
+
+Dividing energy by area or volume keeps the ``J/m²`` or ``J/m³`` form.
+For example, ``4[TJ/m^3]`` is expressed in joules per cubic metre, with a
+numeric value of ``4000000000000``. Prefixes and scaled area or volume units
+are included in the conversion. To keep a particular unit expression, use
+an explicit target such as ``4[TJ/m^3] in [TJ/m^3]``.
 
 Preserved display forms are still normal units. Use explicit conversion when
 you want another expression:

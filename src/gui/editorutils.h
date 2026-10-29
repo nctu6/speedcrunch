@@ -110,6 +110,10 @@ inline QString normalizeSubtractionOperators(QString text)
 
 inline QString normalizeExpressionOperators(QString text)
 {
+    const int commentPos = text.indexOf(MathDsl::CommentSep);
+    if (commentPos >= 0)
+        return normalizeExpressionOperators(text.left(commentPos)) + text.mid(commentPos);
+
     text = UnicodeChars::normalizeUnitSymbolAliases(text);
     text = UnicodeChars::normalizeSexagesimalSymbolAliases(text);
     text = normalizeMultiplicationOperators(text);
@@ -121,6 +125,10 @@ inline QString normalizeExpressionOperators(QString text)
 
 inline QString normalizeExpressionOperatorsForEditorInput(QString text)
 {
+    const int commentPos = text.indexOf(MathDsl::CommentSep);
+    if (commentPos >= 0)
+        return normalizeExpressionOperatorsForEditorInput(text.left(commentPos)) + text.mid(commentPos);
+
     text = UnicodeChars::normalizeUnitSymbolAliases(text);
     text = UnicodeChars::normalizeSexagesimalSymbolAliases(text);
     text = UnicodeChars::normalizePiAliasesToPi(text);

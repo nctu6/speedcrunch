@@ -24,14 +24,8 @@ constexpr double kPi = 3.14159265358979323846;
 // this value to preserve hue continuity after modulo arithmetic.
 constexpr double kDegreesInCircle = 360.0;
 
-// Minimum text contrast used by generated foreground helpers. This is named
-// AA for the public behavior, but it is currently set to the stricter 7:1
-// target so generated UI foregrounds stay safely above AA.
-constexpr double kAaMinimumContrast = 7.0;
-
-// Reserved stricter contrast threshold for future Settings-driven AAA behavior.
-// It intentionally matches the current AA threshold while the UI uses 7:1 by
-// default everywhere.
+// WCAG thresholds used by the diagnostic report.
+constexpr double kAaMinimumContrast = 4.5;
 constexpr double kAaaMinimumContrast = 7.0;
 
 // Default percentage of the available lightness range used by shade generation.
@@ -70,11 +64,6 @@ constexpr double kDefaultShadeChromaDecay = 0.95;
 // ramp. It gets an explicit chroma reduction so it stays visually quieter than
 // the result-display/base surface.
 constexpr double kWindowShadeChromaMultiplier = 0.50;
-
-// Tinted foregrounds are rejected if gamut fitting has reduced their chroma
-// below this fraction of the original tint; otherwise a technically passing
-// foreground can look nearly neutral.
-constexpr double kMinimumChromaRetention = 0.25;
 
 // Tints below this OKLCH chroma are treated as visually neutral and skipped, so
 // foreground selection falls back to the black/white contrast path.
@@ -263,6 +252,18 @@ double contrastRatio(const QColor& first, const QColor& second)
     return (lighter + 0.05) / (darker + 0.05);
 }
 
+QColor eightBitColor(const QColor& color)
+{
+    return QColor(color.red(), color.green(), color.blue(), color.alpha());
+}
+
+bool meetsTextContrast(const QColor& foreground, const QColor& background, double minimumContrast)
+{
+    // Stylesheets use eight-bit hex colors. Check both rendering paths.
+    return contrastRatio(foreground, background) >= minimumContrast
+        && contrastRatio(foreground, eightBitColor(background)) >= minimumContrast;
+}
+
 QColor bestBlackOrWhiteForeground(const QColor& background)
 {
     const QColor black(Qt::black);
@@ -351,17 +352,17 @@ QColor readableLinkCandidate(const QColor& background,
     double passingLightness = dark ? 1.0 : 0.0;
 
     auto candidateForLightness = [hue, chroma](double lightness) {
-        return oklchToValidSrgbQColor({lightness, chroma, hue, 1.0});
+        return eightBitColor(oklchToValidSrgbQColor({lightness, chroma, hue, 1.0}));
     };
 
-    if (contrastRatio(candidateForLightness(passingLightness), background) < minimumContrast)
+    if (!meetsTextContrast(candidateForLightness(passingLightness), background, minimumContrast))
         return QColor();
 
     QColor passingCandidate = candidateForLightness(passingLightness);
     for (int i = 0; i < kBinarySearchIterations; ++i) {
         const double attemptLightness = (failingLightness + passingLightness) / 2.0;
         const QColor attempt = candidateForLightness(attemptLightness);
-        if (contrastRatio(attempt, background) >= minimumContrast) {
+        if (meetsTextContrast(attempt, background, minimumContrast)) {
             passingLightness = attemptLightness;
             passingCandidate = attempt;
         } else {
@@ -437,7 +438,7 @@ QString htmlStatusLine(const QString& label, bool passed)
 bool retainsVisibleTint(const Oklch& fitted, const Oklch& original)
 {
     return original.c >= kMinimumVisibleTintChroma
-        && fitted.c >= original.c * kMinimumChromaRetention;
+        && fitted.c >= kMinimumVisibleTintChroma;
 }
 
 QColor tintedAaForegroundForBackground(const QColor& background,
@@ -451,14 +452,23 @@ QColor tintedAaForegroundForBackground(const QColor& background,
     if (originalTint.c < kMinimumVisibleTintChroma)
         return QColor();
 
+    const auto meetsContrast = [&](const QColor& foreground) {
+        return meetsTextContrast(foreground, background, minimumContrast);
+    };
+    const auto foregroundForTint = [](const Oklch& tint) {
+        const QColor color = colorFromLinearSrgb(oklchToLinearSrgb(tint), tint.alpha);
+        return eightBitColor(color);
+    };
+
     Oklch fittedTint = fitOklchToSrgb(originalTint);
-    QColor candidate = colorFromLinearSrgb(oklchToLinearSrgb(fittedTint), fittedTint.alpha);
+    QColor candidate = foregroundForTint(fittedTint);
     if (retainsVisibleTint(fittedTint, originalTint)
-        && contrastRatio(candidate, background) >= minimumContrast) {
+        && meetsContrast(candidate)) {
         return candidate;
     }
 
-    const double targetLightness = relativeLuminance(background) < 0.5 ? 1.0 : 0.0;
+    const double targetLightness = bestBlackOrWhiteForeground(background) == QColor(Qt::white)
+        ? 1.0 : 0.0;
     double failingLightness = originalTint.l;
     double passingLightness = targetLightness;
     QColor passingCandidate;
@@ -468,8 +478,8 @@ QColor tintedAaForegroundForBackground(const QColor& background,
         Oklch attempt = originalTint;
         attempt.l = (failingLightness + passingLightness) / 2.0;
         const Oklch fitted = fitOklchToSrgb(attempt);
-        const QColor foreground = colorFromLinearSrgb(oklchToLinearSrgb(fitted), fitted.alpha);
-        if (contrastRatio(foreground, background) >= minimumContrast) {
+        const QColor foreground = foregroundForTint(fitted);
+        if (meetsContrast(foreground)) {
             passingLightness = attempt.l;
             passingTint = fitted;
             passingCandidate = foreground;
@@ -674,7 +684,9 @@ QColor generateSecondaryLinkFromBackground(const QColor& background,
                 continue;
             }
 
-            const double score = candidateOklch.c * 1000.0
+            // Rank by requested chroma so eight-bit rounding cannot outweigh
+            // the theme's hue preference among equally muted candidates.
+            const double score = chroma * 1000.0
                 + hueDistance(candidateOklch.h, preferredHue) / kDegreesInCircle
                 + std::abs(candidateOklch.l - backgroundOklch.l) * 0.01;
             if (score < bestScore) {

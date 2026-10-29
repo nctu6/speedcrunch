@@ -36,11 +36,10 @@ public:
 
 ThemedLineEdit::ThemedLineEdit(QWidget* parent)
     : QLineEdit(parent)
+    , m_cursorStyle(new ThemedLineEditStyle)
     , m_cursorBlinkTimer(new QTimer(this))
 {
-    QStyle* cursorStyle = new ThemedLineEditStyle;
-    cursorStyle->setParent(this);
-    setStyle(cursorStyle);
+    m_cursorStyle->setParent(this);
 
     m_cursorBlinkTimer->setSingleShot(false);
     connect(m_cursorBlinkTimer, &QTimer::timeout, this, [this]() {
@@ -61,6 +60,7 @@ void ThemedLineEdit::setCursorColor(const QColor& color)
         return;
 
     m_cursorColor = color;
+    setStyle(color.isValid() ? m_cursorStyle : nullptr);
     update();
 }
 
@@ -78,6 +78,10 @@ void ThemedLineEdit::focusOutEvent(QFocusEvent* event)
 
 void ThemedLineEdit::paintEvent(QPaintEvent* event)
 {
+    if (!m_cursorColor.isValid()) {
+        QLineEdit::paintEvent(event);
+        return;
+    }
     setProperty(kHideNativeCursorProperty, true);
     QLineEdit::paintEvent(event);
     setProperty(kHideNativeCursorProperty, QVariant());

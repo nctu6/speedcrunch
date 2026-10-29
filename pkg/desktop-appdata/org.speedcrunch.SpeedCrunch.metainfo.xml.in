@@ -6,11 +6,15 @@
   <project_license>GPL-2.0+</project_license>
   <update_contact>speedcrunch@googlegroups.com</update_contact>
   <content_rating type="oars-1.0" />
+  <branding>
+    <color type="primary" scheme_preference="light">#c4a7e7</color>
+    <color type="primary" scheme_preference="dark">#6b527f</color>
+  </branding>
 
   <!-- TRANSLATORS: Name of the application, usually shouldn't be translated. -->
   <_name>SpeedCrunch</_name>
-  <!-- TRANSLATORS: Short one-line description. -->
-  <_summary>A high-precision scientific calculator</_summary>
+  <!-- TRANSLATORS: Short app-store description. Keep it under 35 characters. -->
+  <_summary>High-precision calculator</_summary>
   <description>
     <_p>
       SpeedCrunch is a fast, high-precision scientific calculator. It features a syntax-highlighted

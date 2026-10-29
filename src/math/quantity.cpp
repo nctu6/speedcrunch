@@ -16,6 +16,8 @@
 #include <QJsonArray>
 #include <QStringList>
 
+#include <limits>
+
 #define RATIONAL_TOL HNumber("1e-20")
 
 #define ENSURE_DIMENSIONLESS(x) \
@@ -711,10 +713,11 @@ bool tryNamedSpeedDisplayUnit(const CNumber& displayUnitValue,
         UnitId::Knot
     };
 
-    const auto& units = Units::builtInUnitValues();
     for (const UnitId id : candidates) {
         const QString name = unitName(id);
-        const Quantity value = units.value(name);
+        Quantity value;
+        if (!Units::tryGetBuiltInUnitValue(name, &value))
+            continue;
         if (value.numericValue() != displayUnitValue)
             continue;
 
@@ -1335,6 +1338,19 @@ Quantity& Quantity::setDisplayUnit(const CNumber unit, const QString& name)
     return *this;
 }
 
+Quantity& Quantity::setCoherentSiDisplayUnit(const QString& name)
+{
+    // A coherent SI label replaces the operands' units, including their scale.
+    // Only authored composite labels can keep the product or quotient scale.
+    return setDisplayUnit(CNumber(1), name);
+}
+
+Quantity& Quantity::setAnglePerSecondDisplayUnit(const Quantity& angle)
+{
+    // Keep the angle's scale, but use seconds regardless of the input time unit.
+    return setDisplayUnit(angle.unit(), composeAnglePerSecondUnitName(angle.unitName()));
+}
+
 Quantity& Quantity::setFormat(Format c)
 {
     m_format = c;
@@ -1885,14 +1901,14 @@ Quantity Quantity::operator*(const Quantity& other) const
             // Keep N·m explicit by default because it is semantically ambiguous:
             // energy is expressed in J, while torque is commonly expressed as N·m.
             // Users can still request an explicit conversion target ("-> joule").
-            result.setDisplayUnit(this->unit() * other.unit(), QString(unitPhrase(UnitPhraseId::NewtonMetre)));
+            result.setCoherentSiDisplayUnit(unitPhrase(UnitPhraseId::NewtonMetre).toString());
         } else if (!hasExplicitAngleFactorOperand
                    && ((u1 == UnitId::Pascal
                     && isExactDimension(other, dimensionCubicMetre()))
                    || (u2 == UnitId::Pascal
                        && isExactDimension(*this, dimensionCubicMetre()))))
         {
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Joule)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Joule)));
         } else if (!hasExplicitAngleFactorOperand
                    && ((u1 == UnitId::Watt && u2 == UnitId::Second)
                    || (u2 == UnitId::Watt && u1 == UnitId::Second)
@@ -1907,66 +1923,63 @@ Quantity Quantity::operator*(const Quantity& other) const
             // it often conveys time-integration context (power over time).
             // Auto-collapsing to J can hide that intent unless user requests
             // an explicit conversion ("-> joule").
-            result.setDisplayUnit(this->unit() * other.unit(), QString(unitPhrase(UnitPhraseId::WattSecond)));
+            result.setCoherentSiDisplayUnit(unitPhrase(UnitPhraseId::WattSecond).toString());
         } else if (!hasExplicitAngleFactorOperand
                    && ((u1 == UnitId::Coulomb && u2 == UnitId::Volt)
                        || (u2 == UnitId::Coulomb && u1 == UnitId::Volt)))
         {
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Joule)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Joule)));
         } else if (!hasExplicitAngleFactorOperand
                    && ((isExactDimension(*this, dimensionVolt())
                     && isExactDimension(other, dimensionSecond()))
                    || (isExactDimension(other, dimensionVolt())
                        && isExactDimension(*this, dimensionSecond()))))
         {
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Weber)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Weber)));
         } else if (!hasExplicitAngleFactorOperand
                    && ((isExactDimension(*this, dimensionVolt())
                     && isExactDimension(other, dimensionAmpere()))
                    || (isExactDimension(other, dimensionVolt())
                        && isExactDimension(*this, dimensionAmpere()))))
         {
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Watt)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Watt)));
         } else if (!hasExplicitAngleFactorOperand
                    && ((isExactDimension(*this, dimensionWatt())
                     && isExactDimension(other, dimensionVolt()))
                    || (isExactDimension(other, dimensionWatt())
                        && isExactDimension(*this, dimensionVolt()))))
         {
-            result.setDisplayUnit(this->unit() * other.unit(),
-                                  QString(unitPhrase(UnitPhraseId::VoltSquaredAmpere)));
+            result.setCoherentSiDisplayUnit(unitPhrase(UnitPhraseId::VoltSquaredAmpere).toString());
         } else if (!hasExplicitAngleFactorOperand
                    && ((isExactDimension(*this, dimensionFarad())
                     && isExactDimension(other, dimensionVolt()))
                    || (isExactDimension(other, dimensionFarad())
                        && isExactDimension(*this, dimensionVolt()))))
         {
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Coulomb)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Coulomb)));
         } else if (!hasExplicitAngleFactorOperand
                    && ((isExactDimension(*this, dimensionTesla())
                     && isExactDimension(other, dimensionSquareMetre()))
                    || (isExactDimension(other, dimensionTesla())
                        && isExactDimension(*this, dimensionSquareMetre()))))
         {
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Weber)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Weber)));
         } else if (!hasExplicitAngleFactorOperand
                    && ((isExactDimension(*this, dimensionPascal())
                     && isExactDimension(other, dimensionSquareMetre()))
                    || (isExactDimension(other, dimensionPascal())
                        && isExactDimension(*this, dimensionSquareMetre()))))
         {
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Newton)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Newton)));
         } else if (((this->hasUnit() && Units::isExplicitAngleUnitName(this->unitName())
                      && isPureInverseTimeQuantity(other))
                     || (other.hasUnit() && Units::isExplicitAngleUnitName(other.unitName())
                         && isPureInverseTimeQuantity(*this))))
         {
-            const QString angleUnitName =
+            const Quantity& angle =
                 this->hasUnit() && Units::isExplicitAngleUnitName(this->unitName())
-                ? this->unitName()
-                : other.unitName();
-            result.setDisplayUnit(this->unit() * other.unit(),
-                                  composeAnglePerSecondUnitName(angleUnitName));
+                ? *this : other;
+            result.setAnglePerSecondDisplayUnit(angle);
         } else if (this->hasUnit()
                    && other.hasUnit()
                    && !result.isDimensionless()
@@ -1981,7 +1994,7 @@ Quantity Quantity::operator*(const Quantity& other) const
                        && isExactDimension(*this, dimensionCandela()))))
         {
             // This mapping is unambiguous in this context: cd·sr is luminous flux.
-            result.setDisplayUnit(this->unit() * other.unit(), QString(::unitName(UnitId::Lumen)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Lumen)));
         }
     }
 
@@ -2003,11 +2016,11 @@ Quantity Quantity::operator*(const Quantity& other) const
             Units::findUnit(canonical);
             otherUnitName = canonical.unitName();
         }
-        const QString displayName =
-            isPureInverseTimeQuantity(other)
-            ? composeAnglePerSecondUnitName(this->unitName())
-            : composeProductUnitName(this->unitName(), otherUnitName);
-        result.setDisplayUnit(this->unit() * other.unit(), displayName);
+        if (isPureInverseTimeQuantity(other))
+            result.setAnglePerSecondDisplayUnit(*this);
+        else
+            result.setDisplayUnit(this->unit() * other.unit(),
+                                  composeProductUnitName(this->unitName(), otherUnitName));
     } else if (rhsExplicitAngleDimensionless && !this->isDimensionless()) {
         QString thisUnitName = this->unitName();
         if (thisUnitName.isEmpty()) {
@@ -2016,11 +2029,11 @@ Quantity Quantity::operator*(const Quantity& other) const
             Units::findUnit(canonical);
             thisUnitName = canonical.unitName();
         }
-        const QString displayName =
-            isPureInverseTimeQuantity(*this)
-            ? composeAnglePerSecondUnitName(other.unitName())
-            : composeProductUnitName(other.unitName(), thisUnitName);
-        result.setDisplayUnit(this->unit() * other.unit(), displayName);
+        if (isPureInverseTimeQuantity(*this))
+            result.setAnglePerSecondDisplayUnit(other);
+        else
+            result.setDisplayUnit(this->unit() * other.unit(),
+                                  composeProductUnitName(other.unitName(), thisUnitName));
     }
 
     if (!result.hasUnit() && !result.isDimensionless()) {
@@ -2255,23 +2268,21 @@ Quantity Quantity::operator/(const Quantity& other) const
              || isExactDimension(*this, dimensionJoule()))
             && isExactDimension(other, dimensionSquareMetre()))
         {
-            result.setDisplayUnit(this->unit() / other.unit(),
-                                  QString(unitPhrase(UnitPhraseId::JoulePerSquareMetre)));
+            result.setCoherentSiDisplayUnit(unitPhrase(UnitPhraseId::JoulePerSquareMetre).toString());
             return result;
         }
         if (((this->hasUnit() && u1 == UnitId::Joule)
              || isExactDimension(*this, dimensionJoule()))
             && isExactDimension(other, dimensionCubicMetre()))
         {
-            result.setDisplayUnit(this->unit() / other.unit(),
-                                  QString(unitPhrase(UnitPhraseId::JoulePerCubicMetre)));
+            result.setCoherentSiDisplayUnit(unitPhrase(UnitPhraseId::JoulePerCubicMetre).toString());
             return result;
         }
 
         if (isExactDimension(*this, dimensionJoule())
             && isExactDimension(other, dimensionSecond()))
         {
-            result.setDisplayUnit(this->unit() / other.unit(), QString(::unitName(UnitId::Watt)));
+            result.setCoherentSiDisplayUnit(QString(::unitName(UnitId::Watt)));
             return result;
         }
 
@@ -2281,8 +2292,7 @@ Quantity Quantity::operator/(const Quantity& other) const
             && Units::isExplicitAngleUnitName(this->unitName())
             && isPureTimeQuantity(other))
         {
-            result.setDisplayUnit(this->unit() / other.unit(),
-                                  composeAnglePerSecondUnitName(this->unitName()));
+            result.setAnglePerSecondDisplayUnit(*this);
             return result;
         }
 
@@ -2926,6 +2936,45 @@ Quantity DMath::cbrt(const Quantity& n)
         auto& name = i.key();
         result.modifyDimension(name, exp * Rational(1,3));
         ++i;
+    }
+    return result;
+}
+
+Quantity DMath::root(const Quantity& n, const Quantity& x)
+{
+    ENSURE_DIMENSIONLESS(n);
+    if (x.isCollection() || n.isCollection() || !n.isInteger() || !n.isPositive())
+        return nan(OutOfDomain);
+
+    const HNumber index = n.numericValue().real;
+    if (!x.isDimensionless() && index > HNumber(std::numeric_limits<int>::max()))
+        return nan(OutOfDomain);
+    if (index == HNumber(1))
+        return x;
+    if (index == HNumber(2))
+        return sqrt(x);
+    if (index == HNumber(3) && x.isReal())
+        return cbrt(x);
+
+    const HNumber exponent = HNumber(1) / index;
+    const CNumber value = x.numericValue();
+    CNumber numericRoot;
+    if (value.isReal()
+        && (!value.isNegative() || (index % HNumber(2)) == HNumber(1))) {
+        // Use the magnitude so odd roots stay real even in complex mode.
+        const HNumber magnitude = HMath::raise(HMath::abs(value.real), exponent);
+        numericRoot = value.isNegative() ? -magnitude : magnitude;
+    } else {
+        if (!complexMode)
+            return nan(OutOfDomain);
+        numericRoot = CMath::raise(value, CNumber(exponent));
+    }
+
+    Quantity result(numericRoot);
+    if (!x.isDimensionless()) {
+        const Rational dimensionExponent(1, index.toInt());
+        for (auto i = x.m_dimension.constBegin(); i != x.m_dimension.constEnd(); ++i)
+            result.modifyDimension(i.key(), i.value() * dimensionExponent);
     }
     return result;
 }

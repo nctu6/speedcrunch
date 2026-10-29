@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "session.h"
 #include "sessionhistory.h"
 #include "variable.h"
@@ -341,6 +343,7 @@ Session::Session(const Session& other)
     , m_evaluator(new Evaluator)
     , m_name(other.m_name)
     , m_editorText(other.m_editorText)
+    , m_private(other.m_private)
     , m_historyLimit(other.m_historyLimit)
 {
     bindEvaluator();
@@ -356,6 +359,7 @@ Session& Session::operator=(const Session& other)
     m_historyHead = other.m_historyHead;
     m_name = other.m_name;
     m_editorText = other.m_editorText;
+    m_private = other.m_private;
     m_historyLimit = other.m_historyLimit;
     bindEvaluator();
     m_evaluator->copySymbolContextFrom(*other.m_evaluator);
@@ -400,6 +404,7 @@ void Session::serialize(QJsonObject &json) const
 
 int Session::deSerialize(const QJsonObject &json, bool merge=false)
 {
+    StartupDiagnostics::Scope timing("Deserialize session");
     return SessionSerialization::deserialize(*this, json, merge);
 }
 

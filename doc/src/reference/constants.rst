@@ -50,7 +50,7 @@ Constants in the widget can be filtered by category and subcategory.
    ``j ^ 2 = -1``.
 
    The displayed symbol used in formatted results can be selected in
-   :menuselection:`Settings --> Results --> Complex Numbers` as either ``i`` (default) or ``j``.
+   :menuselection:`Settings --> Results --> Imaginary Unit` as either ``i`` (default) or ``j``.
 
    Using this constant, complex numbers are expressed as the sum of a real and an
    imaginary part::

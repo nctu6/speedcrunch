@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <QtHelpProject version="1.0">
-    <namespace>org.sphinx.manual-enus.1.0</namespace>
+    <namespace>org.sphinx.manual-enus.1.1</namespace>
     <virtualFolder>doc</virtualFolder>
-    <customFilter name="SpeedCrunch 1.0">
+    <customFilter name="SpeedCrunch 1.1">
         <filterAttribute>manual-en_US</filterAttribute>
-        <filterAttribute>1.0</filterAttribute>
+        <filterAttribute>1.1</filterAttribute>
     </customFilter>
     <filterSection>
         <filterAttribute>manual-en_US</filterAttribute>
-        <filterAttribute>1.0</filterAttribute>
+        <filterAttribute>1.1</filterAttribute>
         <toc>
-            <section title="SpeedCrunch 1.0 documentation" ref="contents.html">
+            <section title="SpeedCrunch 1.1 documentation" ref="contents.html">
                 <section title="Introduction" ref="introduction.html"/>
                 <section title="User Guide" ref="userguide/index.html">
                     <section title="Installation" ref="userguide/installation.html">
@@ -49,11 +49,13 @@
                     <section title="User Interface" ref="userguide/interface.html">
                         <section title="Widgets" ref="userguide/interface.html#widgets"/>
                         <section title="Session Tabs and Panes" ref="userguide/interface.html#session-tabs-and-panes"/>
+                        <section title="Private Sessions" ref="userguide/interface.html#private-sessions"/>
                         <section title="Expression Editor Features" ref="userguide/interface.html#expression-editor-features"/>
                         <section title="Import/Export" ref="userguide/interface.html#import-export">
                             <section title="User Definitions" ref="userguide/interface.html#user-definitions"/>
                         </section>
                         <section title="Settings" ref="userguide/interface.html#settings">
+                            <section title="Resetting Settings" ref="userguide/interface.html#resetting-settings"/>
                             <section title="Result Display Interactions" ref="userguide/interface.html#result-display-interactions"/>
                             <section title="Notation" ref="userguide/interface.html#notation"/>
                             <section title="Angle Mode" ref="userguide/interface.html#angle-mode"/>
@@ -65,6 +67,7 @@
                             <section title="Editing" ref="userguide/interface.html#editing"/>
                             <section title="User Interface Settings" ref="userguide/interface.html#user-interface-settings"/>
                         </section>
+                        <section title="Help" ref="userguide/interface.html#help"/>
                         <section title="Keyboard Shortcuts" ref="userguide/interface.html#keyboard-shortcuts">
                             <section title="Editing" ref="userguide/interface.html#id3"/>
                             <section title="Session Tabs" ref="userguide/interface.html#session-tabs"/>
@@ -249,12 +252,12 @@
             <keyword name="int() (function)" id="function.int" ref="reference/basic.html#sc.int"/>
             <keyword name="inv() (function)" id="function.inv" ref="reference/basic.html#sc.inv"/>
             <keyword name="j (constant)" id="constant.j" ref="reference/constants.html#sc.j"/>
-            <keyword name="lb() (function)" id="function.lb" ref="reference/basic.html#sc.lb"/>
             <keyword name="lcm() (function)" id="function.lcm" ref="reference/integer.html#sc.lcm"/>
-            <keyword name="lg() (function)" id="function.lg" ref="reference/basic.html#sc.lg"/>
             <keyword name="ln() (function)" id="function.ln" ref="reference/basic.html#sc.ln"/>
             <keyword name="lngamma() (function)" id="function.lngamma" ref="reference/basic.html#sc.lngamma"/>
             <keyword name="log() (function)" id="function.log" ref="reference/basic.html#sc.log"/>
+            <keyword name="log10() (function)" id="function.log10" ref="reference/basic.html#sc.log10"/>
+            <keyword name="log2() (function)" id="function.log2" ref="reference/basic.html#sc.log2"/>
             <keyword name="mad() (function)" id="function.mad" ref="reference/statistical.html#sc.mad"/>
             <keyword name="mask() (function)" id="function.mask" ref="reference/integer.html#sc.mask"/>
             <keyword name="mass() (function)" id="function.mass" ref="reference/basic.html#sc.mass"/>
@@ -293,6 +296,7 @@
             <keyword name="rational() (function)" id="function.rational" ref="reference/integer.html#sc.rational"/>
             <keyword name="real() (function)" id="function.real" ref="reference/basic.html#sc.real"/>
             <keyword name="rectform() (function)" id="function.rectform" ref="reference/basic.html#sc.rectform"/>
+            <keyword name="root() (function)" id="function.root" ref="reference/basic.html#sc.root"/>
             <keyword name="round() (function)" id="function.round" ref="reference/integer.html#sc.round"/>
             <keyword name="roundeven() (function)" id="function.roundeven" ref="reference/integer.html#sc.roundeven"/>
             <keyword name="rows() (function)" id="function.rows" ref="reference/basic.html#sc.rows"/>

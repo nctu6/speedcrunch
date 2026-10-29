@@ -1,54 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>speedcrunch.png</file>
-        <file>locale/ar.qm</file>
-        <file>locale/bg.qm</file>
-        <file>locale/bn.qm</file>
-        <file>locale/ca.qm</file>
-        <file>locale/cs.qm</file>
-        <file>locale/da.qm</file>
-        <file>locale/de.qm</file>
-        <file>locale/el.qm</file>
-        <file>locale/en_GB.qm</file>
-        <file>locale/en_US.qm</file>
-        <file>locale/es.qm</file>
-        <file>locale/es_ES.qm</file>
-        <file>locale/et.qm</file>
-        <file>locale/eu.qm</file>
-        <file>locale/fa.qm</file>
-        <file>locale/fi.qm</file>
-        <file>locale/fr.qm</file>
-        <file>locale/gl.qm</file>
-        <file>locale/he.qm</file>
-        <file>locale/hi.qm</file>
-        <file>locale/hu.qm</file>
-        <file>locale/id.qm</file>
-        <file>locale/it.qm</file>
-        <file>locale/ja.qm</file>
-        <file>locale/ko.qm</file>
-        <file>locale/lt.qm</file>
-        <file>locale/lv.qm</file>
-        <file>locale/ms.qm</file>
-        <file>locale/nb.qm</file>
-        <file>locale/nl.qm</file>
-        <file>locale/pl.qm</file>
-        <file>locale/pt_BR.qm</file>
-        <file>locale/pt_PT.qm</file>
-        <file>locale/ro.qm</file>
-        <file>locale/ru.qm</file>
-        <file>locale/sk.qm</file>
-        <file>locale/sl.qm</file>
-        <file>locale/sw.qm</file>
-        <file>locale/sv.qm</file>
-        <file>locale/th.qm</file>
-        <file>locale/ta.qm</file>
-        <file>locale/te.qm</file>
-        <file>locale/tr.qm</file>
-        <file>locale/uk.qm</file>
-        <file>locale/uz_Latn.qm</file>
-        <file>locale/vi.qm</file>
-        <file>locale/zh_CN.qm</file>
-        <file>locale/zh_TW.qm</file>
         <file>color-schemes/Terminal.json</file>
         <file>color-schemes/Tomorrow.json</file>
         <file>color-schemes/Tomorrow Night.json</file>

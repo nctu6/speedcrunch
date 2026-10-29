@@ -27,9 +27,13 @@ msgstr "SpeedCrunch"
 
 #. TRANSLATORS: Short one-line description.
 #: tmp/org.speedcrunch.SpeedCrunch.desktop.in.h:2
-#: tmp/org.speedcrunch.SpeedCrunch.metainfo.xml.in.h:4
 msgid "A high-precision scientific calculator"
 msgstr "Ein hochpräziser wissenschaftlicher Taschenrechner"
+
+#. TRANSLATORS: Short app-store description. Keep it under 35 characters.
+#: tmp/org.speedcrunch.SpeedCrunch.metainfo.xml.in.h:4
+msgid "High-precision calculator"
+msgstr "Hochpräziser Taschenrechner"
 
 #. TRANSLATORS: Extra keywords for finding the application in the desktop environment. The trailing ';' is important!
 #: tmp/org.speedcrunch.SpeedCrunch.desktop.in.h:4

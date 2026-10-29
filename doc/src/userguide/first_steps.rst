@@ -99,5 +99,5 @@ read on to learn about its more advanced features.
 
 .. rubric:: Footnotes
 
-.. [#f1] This requires that the :ref:`Auto-Insert "ans" When Starting with an Operator <automatic_result_reuse>` setting
+.. [#f1] This requires that the :ref:`Auto-Insert ans <automatic_result_reuse>` setting
          is enabled.

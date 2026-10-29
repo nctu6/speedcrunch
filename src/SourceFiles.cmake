@@ -16,6 +16,7 @@ core/errors.h
 core/numberformatter.h
 core/pageserver.h
 core/settings.h
+core/singleinstance.h
 core/opcode.h
 core/sessionhistory.h
 core/sessionjsonkeys.h
@@ -25,20 +26,31 @@ core/variable.h
 core/userfunction.h
 core/userunit.h
 gui/aboutbox.h
+gui/diagnosticsdialog.h
+gui/diagnosticapplication.h
+core/startupdiagnostics.h
+gui/startupappearance.h
 gui/bitfieldwidget.h
 gui/bookdock.h
+gui/constantbrowserutils.h
 gui/constantswidget.h
 gui/customkeypaddialog.h
 gui/displayformatutils.h
 gui/dockcomboboxchevron.h
 gui/dockliststyle.h
+gui/dockwidget.h
 gui/editor.h
 gui/functiontooltiputils.h
 gui/functionswidget.h
 gui/historywidget.h
 gui/genericdock.h
+gui/gtkmenupalette.h
 gui/keypad.h
+gui/lineeditstyleutils.h
 gui/mainwindow.h
+gui/launchcontroller.h
+gui/platformactivation.h
+gui/menustyleutils.h
 gui/manualwindow.h
 gui/numberformatdialog.h
     gui/notationandprecisiondialog.h
@@ -51,7 +63,6 @@ gui/userunitlistwidget.h
 gui/syntaxhighlighter.h
 gui/themedlineedit.h
 gui/uiconfig.h
-gui/versioncheck.h
 math/floatnum/floatcommon.h
 math/floatnum/floatconfig.h
 math/floatnum/floatconst.h
@@ -90,6 +101,7 @@ core/manualserver.cpp
 core/numberformatter.cpp
 core/pageserver.cpp
 core/settings.cpp
+core/singleinstance.cpp
 core/session.cpp
 core/sessionhistory.cpp
 core/userdefinitions.cpp
@@ -98,6 +110,7 @@ core/userfunction.cpp
 core/userunit.cpp
 core/opcode.cpp
 gui/aboutbox.cpp
+gui/diagnosticsdialog.cpp
 gui/bitfieldwidget.cpp
 gui/bookdock.cpp
 gui/constantswidget.cpp
@@ -105,6 +118,7 @@ gui/customkeypaddialog.cpp
 gui/displayformatutils.cpp
 gui/dockcomboboxchevron.cpp
 gui/dockliststyle.cpp
+gui/dockwidget.h
 gui/editor.cpp
 gui/functiontooltiputils.cpp
 gui/functionswidget.cpp
@@ -113,6 +127,9 @@ gui/historywidget.cpp
 gui/genericdock.h
 gui/keypad.cpp
 gui/mainwindow.cpp
+gui/launchcontroller.cpp
+gui/platformactivation.cpp
+gui/menustyleutils.cpp
 gui/manualwindow.cpp
 gui/numberformatdialog.cpp
 gui/notationandprecisiondialog.cpp
@@ -125,7 +142,6 @@ gui/tooltipstyleutils.cpp
 gui/variablelistwidget.cpp
 gui/userfunctionlistwidget.cpp
 gui/userunitlistwidget.cpp
-gui/versioncheck.cpp
 math/floatnum/floatcommon.c
 math/floatnum/floatconst.c
 math/floatnum/floatconvert.c
@@ -190,6 +206,8 @@ gui/uiconfig.h
 )
 
 set(testevaluator_SOURCES
+gui/dockcomboboxchevron.cpp
+gui/menustyleutils.cpp
 core/constants.cpp
 core/colorscheme.cpp
 core/evaluator.cpp
@@ -315,6 +333,10 @@ tests/testdmath.cpp
 )
 
 set(testeditorui_SOURCES
+gui/dockliststyle.cpp
+gui/themedlineedit.cpp
+gui/dockcomboboxchevron.cpp
+gui/menustyleutils.cpp
 core/constants.cpp
 core/colorscheme.cpp
 core/evaluator.cpp
@@ -367,6 +389,8 @@ tests/testoklch.cpp
 )
 
 set(testdocksui_SOURCES
+gui/dockcomboboxchevron.cpp
+gui/menustyleutils.cpp
 core/constants.cpp
 core/colorscheme.cpp
 core/evaluator.cpp
@@ -419,7 +443,11 @@ core/unitdisplayformat.cpp
 tests/testdocksui.cpp
 )
 
-set(testdisplayui_SOURCES
+set(mainwindowuitest_SOURCES
+core/singleinstance.cpp
+gui/launchcontroller.cpp
+gui/platformactivation.cpp
+gui/menustyleutils.cpp
 core/book.cpp
 core/constants.cpp
 core/colorscheme.cpp
@@ -437,6 +465,7 @@ core/sessionhistory.cpp
 core/variable.cpp
 core/numberformatter.cpp
 gui/aboutbox.cpp
+gui/diagnosticsdialog.cpp
 gui/bitfieldwidget.cpp
 gui/bookdock.cpp
 gui/constantswidget.cpp
@@ -462,7 +491,6 @@ gui/tooltipstyleutils.cpp
 gui/userfunctionlistwidget.cpp
 gui/variablelistwidget.cpp
 gui/userunitlistwidget.cpp
-gui/versioncheck.cpp
 math/floatnum/floatcommon.c
 math/floatnum/floatconst.c
 math/floatnum/floatconvert.c
@@ -488,8 +516,14 @@ math/quantity.cpp
 core/units.cpp
 core/unitdisplayformat.cpp
 resources/speedcrunch.qrc
-tests/testdisplayui.cpp
+tests/mainwindowtesthelpers.cpp
 )
+
+if(ENABLE_UPDATE_CHECKS)
+    list(APPEND speedcrunch_HEADERS gui/versioncheck.h)
+    list(APPEND speedcrunch_SOURCES gui/versioncheck.cpp)
+    list(APPEND mainwindowuitest_SOURCES gui/versioncheck.cpp)
+endif()
 
 set(testserial_SOURCES
 core/numberformatter.cpp

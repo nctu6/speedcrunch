@@ -7,12 +7,12 @@
 
 #include <QObject>
 #include <QPointer>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QString>
-#include <QVector>
+#include <QThread>
 
 class QWidget;
+class VersionCheckWorker;
 
 class VersionCheck : public QObject {
     Q_OBJECT
@@ -24,33 +24,34 @@ public:
     };
 
     explicit VersionCheck(QWidget* parentWindow, QObject* parent = 0);
+    ~VersionCheck() override;
 
+    void checkForUpdateAfterFirstPaint();
     void checkForUpdateIfDue();
     void checkForUpdateNow();
 
-private slots:
-    void handleReplyFinished();
+protected:
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
-    static bool compareVersions(const QString& left, const QString& right, int* result);
-    static bool tryParseVersion(const QString& version, QVector<qulonglong>* components);
-    static void showUpdateDialog(QWidget* parent, const QString& latestVersion);
+    void handleReplyFinished(QNetworkReply::NetworkError error, const QString& latestVersion,
+                             int httpStatus, const QString& errorString,
+                             bool comparable, int comparison, bool shouldNotify);
+    static void showUpdateDialog(QWidget* parent, const QString& latestVersion,
+                                 VersionCheckWorker* notificationWorker);
     static void showUpToDateDialog(QWidget* parent, const QString& currentVersion);
     static void showNoConnectivityDialog(QWidget* parent);
     static void showVerificationFailedDialog(QWidget* parent);
     static bool isConnectivityError(QNetworkReply::NetworkError error);
 
-    void markCheckAttempted();
-    bool isCheckDue() const;
     void startRequest(CheckTrigger trigger);
-    void storeFetchedVersion(const QString& version);
-    bool shouldNotifyForVersion(const QString& version) const;
-    void markVersionNotified(const QString& version);
 
     QPointer<QWidget> m_parentWindow;
-    QNetworkAccessManager m_networkAccessManager;
-    QPointer<QNetworkReply> m_pendingReply;
+    QPointer<QThread> m_networkThread;
+    VersionCheckWorker* m_networkWorker = nullptr;
+    bool m_requestPending = false;
     CheckTrigger m_trigger = CheckTriggerAutomatic;
+    bool m_automaticCheckScheduled = false;
 };
 
 #endif

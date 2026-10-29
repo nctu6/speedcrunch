@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "gui/resultdisplay.h"
+#include "gui/startupappearance.h"
+#include "gui/menustyleutils.h"
 
 #include "gui/displayformatutils.h"
 #include "gui/resultlineformatutils.h"
@@ -31,6 +35,7 @@
 #include <QFrame>
 #include <QHoverEvent>
 #include <QIcon>
+#include <QKeySequence>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMenu>
@@ -41,12 +46,14 @@
 #include <QPolygonF>
 #include <QLinearGradient>
 #include <QScrollBar>
+#include <QSet>
+#include <QTextDocumentFragment>
 #include <QToolButton>
 
 #include <limits>
 
 namespace {
-constexpr int kResultDisplayHorizontalPadding = 14;
+constexpr int kResultDisplayHorizontalPadding = UiConfig::ModernEditorHorizontalMargin;
 constexpr int kResultDisplayFadeHeight = 28;
 
 struct ResultDisplayScrollBarColors
@@ -155,53 +162,17 @@ void applyContextMenuTheme(QMenu* menu,
                            const QColor& hoverBackground,
                            const QColor& hoverForeground)
 {
-    if (menu == nullptr || !background.isValid() || !foreground.isValid())
-        return;
-
     const QColor effectiveHoverBackground = hoverBackground.isValid()
         ? hoverBackground
         : background;
     const QColor effectiveHoverForeground = hoverForeground.isValid()
         ? hoverForeground
         : foreground;
-    QPalette palette = menu->palette();
-    for (const QPalette::ColorGroup group : {QPalette::Active,
-                                             QPalette::Inactive,
-                                             QPalette::Disabled}) {
-        palette.setColor(group, QPalette::Window, background);
-        palette.setColor(group, QPalette::Base, background);
-        palette.setColor(group, QPalette::Text, foreground);
-        palette.setColor(group, QPalette::WindowText, foreground);
-        palette.setColor(group, QPalette::ButtonText, foreground);
-        palette.setColor(group, QPalette::Highlight, effectiveHoverBackground);
-        palette.setColor(group, QPalette::HighlightedText, effectiveHoverForeground);
-    }
-    menu->setPalette(palette);
-    menu->setStyleSheet(QStringLiteral(
-        "QMenu {"
-        " background-color: %1;"
-        " color: %2;"
-        " border: 1px solid %3;"
-        " border-radius: 8px;"
-        "}"
-        "QMenu::item:selected {"
-        " background-color: %4;"
-        " color: %5;"
-        "}")
-                            .arg(background.name(),
-                                 foreground.name(),
-                                 effectiveHoverBackground.name(),
-                                 effectiveHoverBackground.name(),
-                                 effectiveHoverForeground.name()));
-
-    for (QAction* action : menu->actions()) {
-        if (QMenu* submenu = action->menu())
-            applyContextMenuTheme(submenu,
-                                  background,
-                                  foreground,
-                                  effectiveHoverBackground,
-                                  effectiveHoverForeground);
-    }
+    if (background.isValid() && foreground.isValid())
+        MenuStyle::setThemeColors(menu, background, foreground,
+                                  effectiveHoverBackground, effectiveHoverForeground);
+    else
+        MenuStyle::apply(menu);
 }
 
 int maxRenderedHistoryEntries(const Session* session)
@@ -249,7 +220,8 @@ QString formatResultForClipboard(const Quantity& value)
     return textToCopy;
 }
 
-QStringList formatResultLines(const HistoryEntry& entry, const Evaluator* evaluator)
+QStringList formatResultLines(const HistoryEntry& entry, const Evaluator* evaluator,
+                              bool includeSimplifiedExpression = true)
 {
     Settings* settings = Settings::instance();
     const bool oldComplexNumbers = settings->complexNumbers;
@@ -330,7 +302,9 @@ QStringList formatResultLines(const HistoryEntry& entry, const Evaluator* evalua
         entry.result(),
         false,
         true,
-        evaluator);
+        evaluator,
+        false,
+        !includeSimplifiedExpression);
 
     settings->complexNumbers = oldComplexNumbers;
     settings->imaginaryUnit = oldImaginaryUnit;
@@ -370,14 +344,91 @@ QString formattedExpressionForDisplay(const HistoryEntry& entry, const Evaluator
         evaluator);
 }
 
-QString simplifiedExpressionLineForDisplay(const HistoryEntry& entry, const Evaluator* evaluator)
+QString simplifiedExpressionLineForDisplay(const HistoryEntry& entry, const Evaluator* evaluator,
+                                          const QStringList& renderedLines)
 {
-    const QString simplifiedLine = ResultLineFormatUtils::simplifiedExpressionLineForDisplay(
-        entry.interpretedExpr(),
-        entry.expr(),
-        Settings::instance()->simplifyResultExpressions,
-        evaluator);
-    return simplifiedLine.isEmpty() ? QString() : QStringLiteral("= ") + simplifiedLine;
+    // Every successful calculation has a numeric result. A single saved output
+    // row therefore cannot be a separate simplified expression.
+    if (!Settings::instance()->simplifyResultExpressions || renderedLines.size() < 3)
+        return QString();
+
+    const QString interpreted = entry.interpretedExpr().section(MathDsl::CommentSep, 0, 0);
+    const QString source = entry.expr().section(MathDsl::CommentSep, 0, 0);
+    if (SimplifiedExpressionUtils::isPlainNumericArithmeticExpression(interpreted)
+        && SimplifiedExpressionUtils::isPlainNumericArithmeticExpression(source))
+        return QString();
+
+    const int assignment = interpreted.indexOf(MathDsl::Equals);
+    const int sourceAssignment = source.indexOf(MathDsl::Equals);
+    if (assignment > 0 && sourceAssignment > 0
+        && source.left(sourceAssignment).trimmed() == interpreted.left(assignment).trimmed()) {
+        const Evaluator* scanner = evaluator ? evaluator : Evaluator::instance();
+        const Tokens left = scanner->scan(interpreted.left(assignment));
+        if (left.valid() && left.size() == 1 && left.first().isIdentifier()) {
+            // A simplified variable assignment keeps its '='. If the recorded
+            // result rows contain none, there is no symbolic row to highlight.
+            bool hasAssignmentRow = false;
+            for (int i = 1; i < renderedLines.size(); ++i) {
+                if (renderedLines.at(i).startsWith(QLatin1String("= "))
+                    && renderedLines.at(i).indexOf(MathDsl::Equals, 2) >= 0) {
+                    hasAssignmentRow = true;
+                    break;
+                }
+            }
+            if (!hasAssignmentRow)
+                return QString();
+        }
+    }
+
+    // The formatter puts the optional simplified expression before all result
+    // formats. Compare that saved row with results formatted from the saved
+    // value and context, without simplifying the original expression again.
+    const QString& candidate = renderedLines.at(1);
+    if (!candidate.startsWith(QLatin1String("= ")))
+        return QString();
+    if (SimplifiedExpressionUtils::isStandaloneSexagesimalTimeLiteral(candidate.mid(2)))
+        return QString();
+    StartupDiagnostics::Scope timing("Infer simplified history line from saved results");
+    if (candidate.indexOf(MathDsl::Equals, 2) >= 0)
+        return candidate;
+    // Scalar result notation can contain constants, complex notation and
+    // radicals, but cannot introduce variable names or arbitrary functions.
+    // Inspect the saved text before formatting any numerical comparison.
+    const Quantity value = entry.result();
+    if (!value.isCollection() && value.isDimensionless() && value.unitName().isEmpty()
+        && value.numericValue().imag.isZero()) {
+        static const QSet<QString> resultIdentifiers {
+            QStringLiteral("i"), QStringLiteral("j"), QStringLiteral("e"),
+            QStringLiteral("pi"), QString(UnicodeChars::Pi),
+            QStringLiteral("nan"), QStringLiteral("inf"), QStringLiteral("infinity"),
+            QStringLiteral("sqrt"), QStringLiteral("exp"), QStringLiteral("cis"),
+            QStringLiteral("√"), QStringLiteral("∛"),
+            QStringLiteral("rad"), QStringLiteral("deg"), QStringLiteral("gon"),
+            QStringLiteral("turn"), QStringLiteral("rev")
+        };
+        const Evaluator* scanner = evaluator ? evaluator : Evaluator::instance();
+        for (const Token& token : scanner->scan(candidate.mid(2))) {
+            if (token.isIdentifier() && !resultIdentifiers.contains(token.text().toLower()))
+                return candidate;
+        }
+    }
+    const QStringList results = formatResultLines(entry, evaluator, false);
+    if (results.contains(candidate))
+        return QString();
+    // Digit grouping and decimal separators are application preferences, not
+    // part of a saved calculation's format context. Ignore their presentation
+    // differences when matching a saved result to its numerical counterpart.
+    const auto comparisonText = [](QString text) {
+        text = ResultLineFormatUtils::normalizeResultLineForComparison(text);
+        text.remove(QRegularExpression(QStringLiteral("[\\s\\p{Zs}.,]+")));
+        return text;
+    };
+    const QString normalized = comparisonText(candidate);
+    for (const QString& result : results) {
+        if (comparisonText(result) == normalized)
+            return QString();
+    }
+    return candidate;
 }
 
 bool isSimplifiedExpressionRenderLine(const QStringList& renderedLines, int lineIndex, const QString& simplifiedLine)
@@ -453,7 +504,9 @@ ResultDisplay::ResultDisplay(QWidget* parent)
     , m_scrollToBottomButtonHovered(false)
     , m_scrollToBottomButton(new QToolButton(this))
 {
-    setViewportMargins(kResultDisplayHorizontalPadding, 0, kResultDisplayHorizontalPadding, 0);
+    StartupDiagnostics::Scope timing("Initialize result display controls");
+    applyEditorDisplayStyle();
+    MenuStyle::install();
     setBackgroundRole(QPalette::Base);
     setLayoutDirection(Qt::LeftToRight);
     setMinimumWidth(150);
@@ -596,7 +649,7 @@ void ResultDisplay::setCloseSessionEnabled(bool enabled)
     viewport()->update();
 }
 
-void ResultDisplay::setSession(const Session* session)
+void ResultDisplay::setSession(const Session* session, bool renderHistory)
 {
     if (m_session == session)
         return;
@@ -604,7 +657,8 @@ void ResultDisplay::setSession(const Session* session)
     m_session = session;
     m_highlighter->setEvaluator(m_session ? m_session->evaluator() : nullptr);
     clear();
-    refresh();
+    if (renderHistory)
+        refresh();
     viewport()->update();
 }
 
@@ -628,8 +682,8 @@ void ResultDisplay::append(const QString& expression, Quantity& value,
         ctx.round = settings->resultRoundingMode;
         const HistoryEntry entry(expression, value, interpretedExpression, ctx);
         const QStringList resultLines = formatResultLines(entry, evaluator);
-        const QString simplifiedLine = simplifiedExpressionLineForDisplay(entry, evaluator);
         const QStringList renderedLines = QStringList({ formattedExpressionForDisplay(entry, evaluator) }) + resultLines;
+        const QString simplifiedLine = simplifiedExpressionLineForDisplay(entry, evaluator, renderedLines);
         for (int i = 0; i < resultLines.size(); ++i) {
             const QString& line = resultLines.at(i);
             appendPlainText(line);
@@ -691,6 +745,12 @@ QString ResultDisplay::exportHtml() const
 
 void ResultDisplay::rehighlight()
 {
+    StartupDiagnostics::AppearanceScope timing("Refresh result highlighting and appearance", this);
+    if (StartupDiagnostics::isRecording()) {
+        StartupDiagnostics::observeHighlightInputs(timing, this,
+            StartupDiagnostics::configuredThemeInputs(), {m_themeSurfaceColor},
+            m_session ? m_session->evaluator() : Evaluator::instance());
+    }
     m_highlighter->update();
     const QColor backgroundColor = themeSurfaceBackground();
     QPalette palette = this->palette();
@@ -700,7 +760,7 @@ void ResultDisplay::rehighlight()
     palette.setColor(QPalette::Active, QPalette::Window, backgroundColor);
     palette.setColor(QPalette::Inactive, QPalette::Window, backgroundColor);
     palette.setColor(QPalette::Disabled, QPalette::Window, backgroundColor);
-    setPalette(palette);
+    StartupDiagnostics::setAppearancePalette(this, palette);
     setAutoFillBackground(true);
     setAttribute(Qt::WA_StyledBackground, true);
 
@@ -711,12 +771,22 @@ void ResultDisplay::rehighlight()
     viewportPalette.setColor(QPalette::Active, QPalette::Window, backgroundColor);
     viewportPalette.setColor(QPalette::Inactive, QPalette::Window, backgroundColor);
     viewportPalette.setColor(QPalette::Disabled, QPalette::Window, backgroundColor);
-    viewport()->setPalette(viewportPalette);
+    StartupDiagnostics::setAppearancePalette(viewport(), viewportPalette);
     viewport()->setAutoFillBackground(true);
     viewport()->setAttribute(Qt::WA_StyledBackground, true);
 
     updateSurfaceStyleSheet();
     updateScrollBarStyleSheet();
+}
+
+void ResultDisplay::applyEditorDisplayStyle()
+{
+    const int inset = Settings::instance()->editorDisplayStyle == Settings::EditorDisplayClassic
+        ? UiConfig::ClassicTextInset
+        : kResultDisplayHorizontalPadding;
+    const int padding = qMax(0, inset - qRound(document()->documentMargin()));
+    setViewportMargins(padding, 0, padding, 0);
+    repositionScrollToBottomButton();
 }
 
 void ResultDisplay::setThemeSurfaceColor(const QColor& color)
@@ -740,9 +810,9 @@ void ResultDisplay::setThemeToolTipColors(const QColor& background,
 void ResultDisplay::updateSurfaceStyleSheet()
 {
     const QString background = themeSurfaceBackground().name();
-    setStyleSheet(QStringLiteral("QPlainTextEdit { background-color: %1; }")
+    StartupDiagnostics::setAppearanceStyleSheet(this, QStringLiteral("QPlainTextEdit { background-color: %1; }")
                       .arg(background));
-    viewport()->setStyleSheet(QStringLiteral("QWidget { background-color: %1; }")
+    StartupDiagnostics::setAppearanceStyleSheet(viewport(), QStringLiteral("QWidget { background-color: %1; }")
                                   .arg(background));
 }
 
@@ -929,6 +999,7 @@ QColor ResultDisplay::hoverActionIconColor(HoveredActionBadge badge) const
 
 void ResultDisplay::refresh()
 {
+    StartupDiagnostics::AppearanceScope timing("Render session history", this);
     const Session* session = displaySession(this);
     if (session == nullptr) {
         clear();
@@ -942,7 +1013,7 @@ void ResultDisplay::refresh()
         const HistoryEntry& lastEntry = session->historyEntryAtRef(historyIndex);
         const Evaluator* evaluator = session->evaluator();
         const QStringList renderedLines = renderedHistoryLinesForDisplay(lastEntry, evaluator);
-        const QString simplifiedLine = simplifiedExpressionLineForDisplay(lastEntry, evaluator);
+        const QString simplifiedLine = simplifiedExpressionLineForDisplay(lastEntry, evaluator, renderedLines);
         for (int i = 0; i < renderedLines.size(); ++i) {
             const QString& line = renderedLines.at(i);
             appendPlainText(line);
@@ -1030,16 +1101,23 @@ void ResultDisplay::refresh()
     m_count = historyCount;
     m_firstDisplayedHistoryIndex = firstDisplayedHistoryIndex;
 
+    StartupDiagnostics::Scope phaseTiming("Prepare history display text");
     QStringList allLines;
+    QVector<QStringList> renderedEntries;
+    renderedEntries.reserve(m_count - m_firstDisplayedHistoryIndex);
     allLines.reserve(qMax(1, (m_count - m_firstDisplayedHistoryIndex) * 3));
     for (int i = m_firstDisplayedHistoryIndex; i < m_count; ++i) {
         const HistoryEntry& historyEntry = session->historyEntryAtRef(i);
-        allLines.append(renderedHistoryLinesForDisplay(historyEntry, session->evaluator()));
+        renderedEntries.append(renderedHistoryLinesForDisplay(historyEntry, session->evaluator()));
+        allLines.append(renderedEntries.constLast());
         allLines.append(QLatin1String(""));
     }
 
+    phaseTiming.next("Install history text document");
     setPlainText(allLines.join(QLatin1String("\n")));
-    markSimplifiedExpressionBlocks();
+    phaseTiming.next("Identify simplified history lines");
+    markSimplifiedExpressionBlocks(renderedEntries);
+    phaseTiming.next("Restore history scroll and controls");
     verticalScrollBar()->setValue(previousScrollValue);
 
     markHistoryBlockIndexCacheDirty();
@@ -1195,6 +1273,18 @@ void ResultDisplay::mouseDoubleClickEvent(QMouseEvent* event)
     cursor.movePosition(QTextCursor::StartOfBlock);
     cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
     setTextCursor(cursor);
+    const int selectedHistoryIndex = historyIndexAtPosition(event->pos());
+    const Session* selectedSession = displaySession(this);
+    int expressionBlock = -1;
+    int lastBlock = -1;
+    if (selectedSession != nullptr && selectedHistoryIndex >= 0
+        && selectedHistoryIndex < selectedSession->historySize()
+        && blockRangeForHistoryIndex(selectedHistoryIndex, expressionBlock, lastBlock)
+        && cursor.blockNumber() == expressionBlock) {
+        // Reuse the source expression, including any literal comment text.
+        emit expressionSelected(selectedSession->historyEntryAtRef(selectedHistoryIndex).expr());
+        return;
+    }
     QString text = cursor.selectedText();
     QString resultMarker = QLatin1String("= ");
     if (text.startsWith(resultMarker)) {
@@ -1295,21 +1385,32 @@ void ResultDisplay::mousePressEvent(QMouseEvent* event)
 
 QMenu* ResultDisplay::createContextMenu(const QPoint& pos)
 {
-    QMenu* menu = createStandardContextMenu();
+    QMenu* menu = new QMenu(this);
+    QMenu* copyMenu = menu->addMenu(tr("Copy"));
+    QAction* copySelectionAction = copyMenu->addAction(
+        tr("Selection") + QLatin1Char('\t') + QKeySequence(QKeySequence::Copy).toString(QKeySequence::NativeText));
+    copySelectionAction->setEnabled(textCursor().hasSelection());
+    copyMenu->setEnabled(copySelectionAction->isEnabled());
+    connect(copySelectionAction, &QAction::triggered, this, &ResultDisplay::copy);
+    QAction* selectAllAction = menu->addAction(QIcon::fromTheme(QStringLiteral("edit-select-all")),
+        tr("Select All") + QLatin1Char('\t') + QKeySequence(QKeySequence::SelectAll).toString(QKeySequence::NativeText));
+    selectAllAction->setEnabled(!document()->isEmpty());
+    connect(selectAllAction, &QAction::triggered, this, &ResultDisplay::selectAll);
     const int historyIndex = historyIndexAtPosition(pos);
     if (historyIndex >= 0) {
         const Session* session = displaySession(this);
         if (session == nullptr)
             return menu;
-        menu->addSeparator();
-        QAction* copyExpressionAction = menu->addAction(tr("Copy Expression"));
+        copyMenu->setEnabled(true);
+        copyMenu->addSeparator();
+        QAction* copyExpressionAction = copyMenu->addAction(tr("Expression"));
         connect(copyExpressionAction, &QAction::triggered, this, [session, historyIndex]() {
             if (historyIndex < 0 || historyIndex >= session->historySize())
                 return;
 
             QApplication::clipboard()->setText(session->historyEntryAtRef(historyIndex).expr(), QClipboard::Clipboard);
         });
-        QAction* copyResultAction = menu->addAction(tr("Copy Result"));
+        QAction* copyResultAction = copyMenu->addAction(tr("Result"));
         const bool canCopyResult = historyIndex >= 0
             && historyIndex < session->historySize()
             && !session->historyEntryAtRef(historyIndex).result().isNan();
@@ -1324,6 +1425,31 @@ QMenu* ResultDisplay::createContextMenu(const QPoint& pos)
 
             QApplication::clipboard()->setText(formatResultForClipboard(value), QClipboard::Clipboard);
         });
+        QAction* copyCalculationAction = copyMenu->addAction(tr("Calculation"));
+        int startBlock = -1;
+        int endBlock = -1;
+        QString calculationText;
+        if (blockRangeForHistoryIndex(historyIndex, startBlock, endBlock)) {
+            // Use the displayed lines so saved formatting and simplifications
+            // are copied exactly as shown, without the blank separator line.
+            QTextCursor calculationCursor(document());
+            calculationCursor.setPosition(document()->findBlockByNumber(startBlock).position());
+            const QTextBlock lastBlock = document()->findBlockByNumber(endBlock);
+            calculationCursor.setPosition(lastBlock.position() + lastBlock.length() - 1,
+                                          QTextCursor::KeepAnchor);
+            calculationText = QTextDocumentFragment(calculationCursor).toPlainText();
+        }
+        copyCalculationAction->setEnabled(!calculationText.isEmpty());
+        connect(copyCalculationAction, &QAction::triggered, this, [calculationText]() {
+            QApplication::clipboard()->setText(calculationText, QClipboard::Clipboard);
+        });
+        QAction* copySingleLineAction = copyMenu->addAction(tr("Calculation as Single Line"));
+        copySingleLineAction->setEnabled(!calculationText.isEmpty());
+        connect(copySingleLineAction, &QAction::triggered, this, [calculationText]() {
+            QString singleLineText = calculationText;
+            singleLineText.replace(QLatin1Char('\n'), QLatin1Char(' '));
+            QApplication::clipboard()->setText(singleLineText, QClipboard::Clipboard);
+        });
         menu->addSeparator();
         QAction* editAction = menu->addAction(tr("Edit Expression"));
         connect(editAction, &QAction::triggered, this, [this, historyIndex]() {
@@ -1333,16 +1459,16 @@ QMenu* ResultDisplay::createContextMenu(const QPoint& pos)
         connect(editSettingsAction, &QAction::triggered, this, [this, historyIndex]() {
             emit editHistoryEntryContextRequested(historyIndex);
         });
-        QAction* removeAction = menu->addAction(tr("Remove Calculation"));
+        QMenu* removeMenu = menu->addMenu(tr("Remove"));
+        QAction* removeAction = removeMenu->addAction(tr("This Calculation"));
         connect(removeAction, &QAction::triggered, this, [this, historyIndex]() {
             emit removeHistoryEntryRequested(historyIndex);
         });
-        menu->addSeparator();
-        QAction* removeAboveAction = menu->addAction(tr("Remove All Calculations Above"));
+        QAction* removeAboveAction = removeMenu->addAction(tr("All Calculations Above"));
         connect(removeAboveAction, &QAction::triggered, this, [this, historyIndex]() {
             emit removeHistoryEntriesAboveRequested(historyIndex);
         });
-        QAction* removeBelowAction = menu->addAction(tr("Remove All Calculations Below"));
+        QAction* removeBelowAction = removeMenu->addAction(tr("All Calculations Below"));
         connect(removeBelowAction, &QAction::triggered, this, [this, historyIndex]() {
             emit removeHistoryEntriesBelowRequested(historyIndex);
         });
@@ -1353,33 +1479,18 @@ QMenu* ResultDisplay::createContextMenu(const QPoint& pos)
     connect(newSessionAction, &QAction::triggered, this, [this]() {
         emit newSessionRequested();
     });
-    QAction* openSessionAction = menu->addAction(tr("Open Session"));
+    QAction* privateSessionAction = menu->addAction(tr("New Private Tab"));
+    connect(privateSessionAction, &QAction::triggered, this, &ResultDisplay::newPrivateSessionRequested);
+    QMenu* sessionMenu = menu->addMenu(tr("Session"));
+    QAction* openSessionAction = sessionMenu->addAction(tr("Open..."));
     connect(openSessionAction, &QAction::triggered, this, [this]() {
         emit openSessionRequested();
     });
-    menu->addSeparator();
-    QAction* splitLeftAction = menu->addAction(tr("Split Left"));
-    connect(splitLeftAction, &QAction::triggered, this, [this]() {
-        emit splitLeftRequested();
-    });
-    QAction* splitRightAction = menu->addAction(tr("Split Right"));
-    connect(splitRightAction, &QAction::triggered, this, [this]() {
-        emit splitRightRequested();
-    });
-    QAction* splitUpAction = menu->addAction(tr("Split Up"));
-    connect(splitUpAction, &QAction::triggered, this, [this]() {
-        emit splitUpRequested();
-    });
-    QAction* splitDownAction = menu->addAction(tr("Split Down"));
-    connect(splitDownAction, &QAction::triggered, this, [this]() {
-        emit splitDownRequested();
-    });
-    menu->addSeparator();
-    QAction* importSessionAction = menu->addAction(tr("&Import..."));
+    QAction* importSessionAction = sessionMenu->addAction(tr("&Import..."));
     connect(importSessionAction, &QAction::triggered, this, [this]() {
         emit importSessionRequested();
     });
-    QMenu* exportSessionMenu = menu->addMenu(tr("&Export"));
+    QMenu* exportSessionMenu = sessionMenu->addMenu(tr("&Export"));
     QAction* exportJsonAction = exportSessionMenu->addAction(QStringLiteral("JSON"));
     connect(exportJsonAction, &QAction::triggered, this, [this]() {
         emit exportSessionJsonRequested();
@@ -1392,28 +1503,49 @@ QMenu* ResultDisplay::createContextMenu(const QPoint& pos)
     connect(exportHtmlAction, &QAction::triggered, this, [this]() {
         emit exportSessionHtmlRequested();
     });
-    menu->addSeparator();
-    QAction* duplicateSessionAction = menu->addAction(tr("Duplicate Session"));
+    sessionMenu->addSeparator();
+    QAction* duplicateSessionAction = sessionMenu->addAction(tr("Clone..."));
     connect(duplicateSessionAction, &QAction::triggered, this, [this]() {
         emit duplicateSessionRequested();
     });
-    QAction* renameSessionAction = menu->addAction(tr("Rename Session"));
+    QAction* renameSessionAction = sessionMenu->addAction(tr("Rename..."));
+    QAction* convertPrivacyAction = sessionMenu->addAction(m_session && m_session->isPrivate()
+        ? tr("Keep") : tr("Make Private..."));
+    connect(convertPrivacyAction, &QAction::triggered, this, &ResultDisplay::convertSessionPrivacyRequested);
     connect(renameSessionAction, &QAction::triggered, this, [this]() {
         emit renameSessionRequested();
     });
-    menu->addSeparator();
-    QAction* clearSessionAction = menu->addAction(tr("Clear Session"));
+    sessionMenu->addSeparator();
+    QAction* clearSessionAction = sessionMenu->addAction(tr("Clear"));
     connect(clearSessionAction, &QAction::triggered, this, [this]() {
         emit clearSessionRequested();
     });
-    QAction* deleteSessionAction = menu->addAction(tr("Delete Session"));
+    QAction* deleteSessionAction = sessionMenu->addAction(tr("Delete"));
     connect(deleteSessionAction, &QAction::triggered, this, [this]() {
         emit deleteSessionRequested();
     });
-    menu->addSeparator();
-    QAction* closeSessionAction = menu->addAction(tr("Close Session"));
+    sessionMenu->addSeparator();
+    QAction* closeSessionAction = sessionMenu->addAction(tr("Close"));
     connect(closeSessionAction, &QAction::triggered, this, [this]() {
         emit closeSessionRequested();
+    });
+    menu->addSeparator();
+    QMenu* splitMenu = menu->addMenu(tr("Split"));
+    QAction* splitLeftAction = splitMenu->addAction(tr("Left"));
+    connect(splitLeftAction, &QAction::triggered, this, [this]() {
+        emit splitLeftRequested();
+    });
+    QAction* splitRightAction = splitMenu->addAction(tr("Right"));
+    connect(splitRightAction, &QAction::triggered, this, [this]() {
+        emit splitRightRequested();
+    });
+    QAction* splitUpAction = splitMenu->addAction(tr("Up"));
+    connect(splitUpAction, &QAction::triggered, this, [this]() {
+        emit splitUpRequested();
+    });
+    QAction* splitDownAction = splitMenu->addAction(tr("Down"));
+    connect(splitDownAction, &QAction::triggered, this, [this]() {
+        emit splitDownRequested();
     });
     QAction* closePaneAction = menu->addAction(tr("Close Pane"));
     connect(closePaneAction, &QAction::triggered, this, [this]() {
@@ -1836,7 +1968,7 @@ void ResultDisplay::updateScrollBarStyleSheet()
     const ResultDisplayScrollBarColors colors =
         scrollBarColorsForResultBackground(themeSurfaceBackground());
 
-    verticalScrollBar()->setStyleSheet(QString(
+    StartupDiagnostics::setAppearanceStyleSheet(verticalScrollBar(), QString(
         "QScrollBar:vertical {"
         "   border: 0;"
         "   margin: 0 0 0 0;"
@@ -2167,11 +2299,28 @@ void ResultDisplay::markSimplifiedExpressionBlocks()
     const int historySize = session->historySize();
     const int firstDisplayedHistoryIndex = firstDisplayedHistoryIndexForCount(historySize, session);
 
+    QVector<QStringList> renderedEntries;
+    renderedEntries.reserve(historySize - firstDisplayedHistoryIndex);
+    for (int i = firstDisplayedHistoryIndex; i < historySize; ++i) {
+        renderedEntries.append(renderedHistoryLinesForDisplay(
+            session->historyEntryAtRef(i), session->evaluator()));
+    }
+    markSimplifiedExpressionBlocks(renderedEntries);
+}
+
+void ResultDisplay::markSimplifiedExpressionBlocks(const QVector<QStringList>& renderedEntries)
+{
+    const Session* session = displaySession(this);
+    if (session == nullptr)
+        return;
+    const int historySize = session->historySize();
+    const int firstDisplayedHistoryIndex = firstDisplayedHistoryIndexForCount(historySize, session);
+
     QTextBlock block = document()->firstBlock();
     for (int i = firstDisplayedHistoryIndex; i < historySize && block.isValid(); ++i) {
         const HistoryEntry& entry = session->historyEntryAtRef(i);
-        const QStringList renderedLines = renderedHistoryLinesForDisplay(entry, session->evaluator());
-        const QString simplifiedLine = simplifiedExpressionLineForDisplay(entry, session->evaluator());
+        const QStringList& renderedLines = renderedEntries.at(i - firstDisplayedHistoryIndex);
+        const QString simplifiedLine = simplifiedExpressionLineForDisplay(entry, session->evaluator(), renderedLines);
         int lineIndex = 0;
 
         while (block.isValid()) {

@@ -24,6 +24,7 @@ private:
     std::unique_ptr<Evaluator> m_evaluator;
     QString m_name;
     QString m_editorText;
+    bool m_private = false;
     int m_historyLimit = 1000; // 0: unlimited.
     int physicalHistoryIndex(int logicalIndex) const;
     void normalizeHistoryOrder();
@@ -46,6 +47,8 @@ public:
     int deSerialize(const QJsonObject & json, bool merge);
     QString name() const { return m_name; }
     void setName(const QString& name);
+    bool isPrivate() const { return m_private; }
+    void setPrivate(bool value) { m_private = value; }
     QString editorText() const { return m_editorText; }
     void setEditorText(const QString& text) { m_editorText = text; }
     int historyLimit() const { return m_historyLimit; }

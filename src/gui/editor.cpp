@@ -3,6 +3,11 @@
 
 
 #include "gui/editor.h"
+#include "gui/constantbrowserutils.h"
+#include "gui/dockliststyle.h"
+#include "gui/themedlineedit.h"
+#include "gui/lineeditstyleutils.h"
+#include "gui/startupappearance.h"
 #include "gui/displayformatutils.h"
 #include "gui/editorutils.h"
 #include "gui/functiontooltiputils.h"
@@ -27,7 +32,9 @@
 #include <QAbstractTextDocumentLayout>
 #include <QEvent>
 #include <QFont>
+#include <QFontMetricsF>
 #include <QFrame>
+#include <QLabel>
 #include <QHeaderView>
 #include <QInputMethodEvent>
 #include <QKeyEvent>
@@ -38,32 +45,38 @@
 #include <QPlainTextEdit>
 #include <QPointer>
 #include <QScreen>
+#include <QScopeGuard>
+#include <QScopedValueRollback>
 #include <QScrollBar>
 #include <QShowEvent>
+#include <QSignalBlocker>
 #include <QRegularExpression>
 #include <QStyle>
+#include <QStyledItemDelegate>
+#include <QStyleOptionViewItem>
 #include <QResizeEvent>
-#include <QTimeLine>
 #include <QTimer>
 #include <QTextBlock>
 #include <QTextLayout>
 #include <QTreeWidget>
 #include <QVersionNumber>
+#include <QVBoxLayout>
 #include <QWheelEvent>
 #include <QWindow>
 
 #include <algorithm>
 #include <cmath>
 
-constexpr int kEditorOuterLeft = 14;
-constexpr int kEditorOuterTop = 8;
-constexpr int kEditorOuterRight = 14;
-constexpr int kEditorOuterBottom = 14;
-constexpr int kEditorHorizontalPadding = 18;
-constexpr int kEditorVerticalPadding = 10;
-constexpr int kEditorRadius = 13;
+constexpr int kEditorOuterLeft = UiConfig::ModernEditorHorizontalMargin;
+constexpr int kEditorOuterTop = UiConfig::ModernEditorTopMargin;
+constexpr int kEditorOuterRight = UiConfig::ModernEditorHorizontalMargin;
+constexpr int kEditorOuterBottom = UiConfig::ModernEditorBottomMargin;
+constexpr int kEditorHorizontalPadding = UiConfig::ModernEditorHorizontalPadding;
+constexpr int kEditorVerticalPadding = UiConfig::ModernEditorVerticalPadding;
+constexpr int kEditorRadius = UiConfig::ModernEditorCornerRadius;
 constexpr int kEditorCursorWidth = 2;
 constexpr int kEditorDocumentMargin = 2;
+constexpr int kClassicEditorHorizontalPadding = UiConfig::ClassicTextInset - kEditorDocumentMargin;
 
 static QPointer<Editor> s_completionMouseSelectionOwner;
 
@@ -188,8 +201,18 @@ static void prepareCompletionPopup(Widget* popup, Editor* editor, const QTextCur
 
 static int editorVerticalDecorationHeight()
 {
+    if (Settings::instance()->editorDisplayStyle == Settings::EditorDisplayClassic)
+        return 2 * (kEditorDocumentMargin + UiConfig::ClassicEditorVerticalPadding)
+            + UiConfig::OutlineStrokeWidth;
     return kEditorOuterTop + kEditorOuterBottom + 2 * kEditorVerticalPadding
-           + 2 * kEditorDocumentMargin + 2;
+           + 2 * kEditorDocumentMargin + 2 * UiConfig::OutlineStrokeWidth;
+}
+
+static int editorLineHeight(const QFont& font)
+{
+    // QPlainTextEdit advances each line by a whole-pixel height. Integer font
+    // metrics can round down and leave too little space below the text.
+    return int(std::ceil(QFontMetricsF(font).height()));
 }
 
 static QColor editorFillColorForThemeBackground(const QColor& background)
@@ -1356,35 +1379,22 @@ static int trailingIdentifierStart(const QString& text, int endPosition)
 static QString formattedLiveResultWithAlternatives(const Quantity& quantity,
                                                    const QString& expression,
                                                    const QString& interpretedExpression,
-                                                   const QString& simplifiedExpression = QString(),
                                                    const QString& sourceExpression = QString(),
                                                    const Evaluator* evaluator = nullptr)
 {
-    Q_UNUSED(expression);
-    Q_UNUSED(simplifiedExpression);
     const QString source = sourceExpression.isEmpty() ? expression : sourceExpression;
     const QStringList lines = ResultLineFormatUtils::formatResultLinesForDisplay(
         source,
         interpretedExpression,
         quantity,
+        false,
         true,
-        true,
-        evaluator);
+        evaluator,
+        true);
     QStringList escapedLines;
     for (const QString& line : lines)
         escapedLines.append(line.toHtmlEscaped());
     return escapedLines.join(QStringLiteral("<br/>"));
-}
-
-static QString simplifiedExpressionLineForTooltip(const QString& interpretedExpression,
-                                                  const QString& sourceExpression,
-                                                  const Evaluator* evaluator)
-{
-    return ResultLineFormatUtils::simplifiedExpressionLineForDisplay(
-        interpretedExpression,
-        sourceExpression,
-        Settings::instance()->simplifyResultExpressions,
-        evaluator);
 }
 
 Editor::Editor(QWidget* parent)
@@ -1399,10 +1409,11 @@ Editor::Editor(QWidget* parent)
     m_constantCompletion = 0;
     m_completionTimer = new QTimer(this);
     m_isAutoCalcEnabled = true;
-    m_highlighter = new SyntaxHighlighter(this);
+    m_highlighter = new SyntaxHighlighter(this, true);
     updateMatchedParenthesisColors();
     m_matchingTimer = new QTimer(this);
     m_cursorBlinkTimer = new QTimer(this);
+    m_cursorBlinkingEnabled = Settings::instance()->cursorBlinking;
     m_customCursorVisible = true;
     m_historyArrowNavigationEnabled = true;
 
@@ -1415,6 +1426,7 @@ Editor::Editor(QWidget* parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setCursorWidth(kEditorCursorWidth);
     setAttribute(Qt::WA_StyledBackground, true);
+    viewport()->setObjectName(QStringLiteral("editorViewport"));
     viewport()->setAutoFillBackground(false);
     document()->setDocumentMargin(kEditorDocumentMargin);
 
@@ -1454,7 +1466,11 @@ void Editor::setSession(Session* session)
 
     m_session = session;
     m_evaluator = m_session->evaluator();
-    m_highlighter->setEvaluator(m_evaluator);
+    {
+        // Rebinding the highlighter changes formatting, not the expression.
+        const QSignalBlocker blocker(this);
+        m_highlighter->setEvaluator(m_evaluator);
+    }
     updateHistory();
 }
 
@@ -1480,12 +1496,47 @@ void Editor::dismissCurrentAutoCalc()
 
 void Editor::setText(const QString& text)
 {
-    setPlainText(normalizeExpressionTypedInEditor(text));
+    setPlainText(Settings::instance()->automaticInputAdjustments ? normalizeExpressionTypedInEditor(text) : text);
     updateHeightAndEnsureCursorVisible();
+}
+
+QString Editor::historyExpressionForInput(const QString& text)
+{
+    if (Settings::instance()->automaticInputAdjustments)
+        return text;
+
+    // Older entries can contain adjustments made before the option was disabled.
+    const int commentPos = text.indexOf(MathDsl::CommentSep);
+    const QString expression = Evaluator::expandSuperscriptPowers(
+        commentPos >= 0 ? text.left(commentPos) : text);
+    QString raw;
+    raw.reserve(expression.size());
+    for (QChar ch : expression) {
+        if (MathDsl::isMultiplicationOperator(ch) || MathDsl::isMultiplicationOperatorAlias(ch))
+            raw += MathDsl::MulOpAl1;
+        else if (MathDsl::isDivisionOperatorAlias(ch) || ch == UnicodeChars::BigSolidus)
+            raw += MathDsl::DivOp;
+        else if (MathDsl::isSubtractionOperatorAlias(ch))
+            raw += MathDsl::SubOpAl1;
+        else if (ch == MathDsl::TransOp)
+            raw += QStringLiteral("->");
+        else
+            raw += ch;
+    }
+    return commentPos >= 0 ? raw + text.mid(commentPos) : raw;
 }
 
 void Editor::insert(const QString& text)
 {
+    // Inserted fragments may belong to an existing comment even without a '?'.
+    // Use the start of a selection, since the selected delimiter may be removed.
+    if (!Settings::instance()->automaticInputAdjustments
+        || isInsideCommentFromQuestionMark(this->text(), textCursor().selectionStart())) {
+        insertPlainText(text);
+        updateHeightAndEnsureCursorVisible();
+        return;
+    }
+
     QString normalized = normalizeExpressionTypedInEditor(text);
     const QString normalizedTrimmed = normalized.trimmed();
     const int pos = textCursor().position();
@@ -1538,7 +1589,7 @@ void Editor::doBackspace()
 {
     QTextCursor cursor = textCursor();
 
-    const int groupedLength = !cursor.hasSelection()
+    const int groupedLength = Settings::instance()->automaticInputAdjustments && !cursor.hasSelection()
         ? groupedTokenLengthBefore(toPlainText(), cursor.position())
         : 0;
     if (groupedLength > 0) {
@@ -1556,7 +1607,7 @@ void Editor::doDelete()
 {
     QTextCursor cursor = textCursor();
 
-    const int groupedLength = !cursor.hasSelection()
+    const int groupedLength = Settings::instance()->automaticInputAdjustments && !cursor.hasSelection()
         ? groupedTokenLengthAfter(toPlainText(), cursor.position())
         : 0;
     if (groupedLength > 0) {
@@ -1587,12 +1638,22 @@ void Editor::setCursorPosition(int position)
     setTextCursor(cursor);
 }
 
+void Editor::doSetTextCursor(const QTextCursor& cursor)
+{
+    // An edit block delays Qt's layout update. Automatic rewrites can move
+    // past the old line ends before it finishes, so refresh the block before
+    // Qt tries to scroll the new cursor into view.
+    if (m_inputEditInProgress)
+        cursor.block().clearLayout();
+    QPlainTextEdit::doSetTextCursor(cursor);
+}
+
 QSize Editor::sizeHint() const
 {
     ensurePolished();
     const QFontMetrics metrics = fontMetrics();
     const int width = metrics.horizontalAdvance('x') * 10;
-    const int height = metrics.lineSpacing() + editorVerticalDecorationHeight();
+    const int height = editorLineHeight(font()) + editorVerticalDecorationHeight();
     return QSize(width, height);
 }
 
@@ -1637,10 +1698,21 @@ void Editor::setCustomCursorVisible(bool visible)
     viewport()->update();
 }
 
+void Editor::setCursorBlinkingEnabled(bool enabled)
+{
+    if (m_cursorBlinkingEnabled == enabled)
+        return;
+    m_cursorBlinkingEnabled = enabled;
+    if (hasFocus() || m_completion->isVisible())
+        showThemedCursorAndRestartBlink();
+    else
+        hideThemedCursorAndStopBlink();
+}
+
 void Editor::showThemedCursorAndRestartBlink()
 {
     m_themedCursorVisible = true;
-    if (shouldPaintThemedCursor()) {
+    if (shouldPaintThemedCursor() && m_cursorBlinkingEnabled) {
         const int cursorFlashTime = QApplication::cursorFlashTime();
         const int blinkInterval = cursorFlashTime > 0 ? qMax(1, cursorFlashTime / 2) : 500;
         m_cursorBlinkTimer->start(blinkInterval);
@@ -2101,7 +2173,7 @@ void Editor::triggerAutoComplete()
             if (tokens[i].asOperator() == Token::ListSeparator)
                 continue;
             if (tokens[i].asOperator() == Token::AssociationEnd
-                && tokens[i].text() == QLatin1String(")"))
+                && tokens[i].text() == QString(MathDsl::GroupEnd))
                 break;
             if (tokens[i].isIdentifier()) {
                 auto arg = tokens[i].text();
@@ -2216,14 +2288,14 @@ void Editor::autoComplete(const QString& item)
                                                 QTextCursor::KeepAnchor);
     if (hasParensAlready) {
         auto nextChar = cursor.selectedText();
-        hasParensAlready = (nextChar == "(");
+        hasParensAlready = (nextChar == QString(MathDsl::GroupStart));
     }
     bool isFunction = !unitContext
                       && (FunctionRepo::instance()->find(str.at(0))
                           || m_evaluator->hasUserFunction(str.at(0)));
     bool shouldAutoInsertParens = isFunction && !hasParensAlready;
     if (shouldAutoInsertParens) {
-        insert(QString::fromLatin1("()"));
+        insert(QString(MathDsl::GroupStart) + MathDsl::GroupEnd);
         cursor = textCursor();
         cursor.movePosition(QTextCursor::PreviousCharacter);
         setTextCursor(cursor);
@@ -2234,26 +2306,26 @@ void Editor::autoComplete(const QString& item)
 
 void Editor::insertFromMimeData(const QMimeData* source)
 {
-    const QStringList expressions = EditorUtils::parsePastedExpressionsForEditorInput(source->text());
+    if (!source->text().contains(RegExpPatterns::lineBreak())
+        && isInsideCommentFromQuestionMark(text(), textCursor().selectionStart())) {
+        insert(source->text());
+        return;
+    }
+
+    const QStringList expressions = EditorUtils::parsePastedExpressionsImpl(
+        source->text(), [](const QString& text) { return text; });
 
     if (expressions.isEmpty())
         return;
 
-    auto normalizedPastedExpression = [](const QString& expression) {
-        QString formattedNumericLiteral;
-        if (NumberFormatter::tryFormatStandaloneNumericLiteralForDisplay(expression, &formattedNumericLiteral))
-            return normalizeExpressionTypedInEditor(formattedNumericLiteral);
-        return expression;
-    };
-
     if (expressions.size() == 1) {
         // Insert text manually to make sure expression does not contain new line characters
-        insert(normalizedPastedExpression(expressions.at(0)));
+        insert(expressions.at(0));
         return;
     }
     emit bulkEvaluationStarted();
     for (int i = 0; i < expressions.size(); ++i) {
-        insert(normalizedPastedExpression(expressions.at(i)));
+        insert(expressions.at(i));
         evaluate();
     }
     emit bulkEvaluationFinished();
@@ -2274,12 +2346,6 @@ void Editor::autoCalc()
 
     if (m_evaluator->error().isEmpty()) {
         QString interpretedExpr = m_evaluator->interpretedExpression();
-        QString simplifiedLine;
-        if (!quantity.isNan() && !m_evaluator->isUserFunctionAssign()
-            && !Evaluator::isCommentOnlyExpression(str)) {
-            simplifiedLine = simplifiedExpressionLineForTooltip(interpretedExpr, text(), m_evaluator);
-        }
-
         if (quantity.isNan() && (m_evaluator->isUserFunctionAssign()
             || Evaluator::isCommentOnlyExpression(str))) {
             // Result is not available for user function assignment and
@@ -2288,7 +2354,7 @@ void Editor::autoCalc()
         } else {
             const auto formatted =
                 formattedLiveResultWithAlternatives(
-                    quantity, str, interpretedExpr, simplifiedLine, text(), m_evaluator);
+                    quantity, str, interpretedExpr, text(), m_evaluator);
             auto message = tr("Current result:<br/>%1").arg(formatted);
             emit autoCalcMessageAvailable(message);
             emit autoCalcQuantityAvailable(quantity);
@@ -2311,18 +2377,13 @@ void Editor::autoCalc()
                 auto baseQuantity = m_evaluator->evalNoAssign();
                 if (m_evaluator->error().isEmpty()) {
                     const QString interpretedExpr = m_evaluator->interpretedExpression();
-                    const QString simplifiedLine = (!baseQuantity.isNan()
-                        && !m_evaluator->isUserFunctionAssign()
-                        && !Evaluator::isCommentOnlyExpression(baseExpression))
-                        ? simplifiedExpressionLineForTooltip(interpretedExpr, text(), m_evaluator)
-                        : QString();
                     if (baseQuantity.isNan() && (m_evaluator->isUserFunctionAssign()
                         || Evaluator::isCommentOnlyExpression(baseExpression))) {
                         emit autoCalcDisabled();
                     } else {
                         const auto formatted =
                             formattedLiveResultWithAlternatives(
-                                baseQuantity, baseExpression, interpretedExpr, simplifiedLine, text(), m_evaluator);
+                                baseQuantity, baseExpression, interpretedExpr, text(), m_evaluator);
                         auto message = tr("Current result:<br/>%1").arg(formatted);
                         emit autoCalcMessageAvailable(message);
                         emit autoCalcQuantityAvailable(baseQuantity);
@@ -2381,10 +2442,6 @@ void Editor::autoCalcSelection(const QString& custom)
 
     if (m_evaluator->error().isEmpty()) {
         const QString interpretedExpr = m_evaluator->interpretedExpression();
-        const QString simplifiedLine = (!quantity.isNan() && !m_evaluator->isUserFunctionAssign()
-            && !Evaluator::isCommentOnlyExpression(str))
-            ? simplifiedExpressionLineForTooltip(interpretedExpr, rawSelection, m_evaluator)
-            : QString();
         if (quantity.isNan() && (m_evaluator->isUserFunctionAssign()
             || Evaluator::isCommentOnlyExpression(str))) {
             // Result is not available for user function assignment and
@@ -2394,7 +2451,7 @@ void Editor::autoCalcSelection(const QString& custom)
         } else {
             const auto formatted =
                 formattedLiveResultWithAlternatives(
-                    quantity, str, interpretedExpr, simplifiedLine, rawSelection, m_evaluator);
+                    quantity, str, interpretedExpr, rawSelection, m_evaluator);
             auto message = tr("Selection result:<br/>%1").arg(formatted);
             emit autoCalcMessageAvailable(message);
             emit autoCalcQuantityAvailable(quantity);
@@ -2411,10 +2468,6 @@ void Editor::autoCalcSelection(const QString& custom)
             const auto baseQuantity = m_evaluator->evalNoAssign();
             if (m_evaluator->error().isEmpty()) {
                 const QString interpretedExpr = m_evaluator->interpretedExpression();
-                const QString simplifiedLine = (!baseQuantity.isNan() && !m_evaluator->isUserFunctionAssign()
-                    && !Evaluator::isCommentOnlyExpression(baseExpression))
-                    ? simplifiedExpressionLineForTooltip(interpretedExpr, rawSelection, m_evaluator)
-                    : QString();
                 if (baseQuantity.isNan() && (m_evaluator->isUserFunctionAssign()
                     || Evaluator::isCommentOnlyExpression(baseExpression))) {
                     auto message = tr("Selection result: n/a");
@@ -2422,7 +2475,7 @@ void Editor::autoCalcSelection(const QString& custom)
                 } else {
                     const auto formatted =
                         formattedLiveResultWithAlternatives(
-                            baseQuantity, baseExpression, interpretedExpr, simplifiedLine, rawSelection, m_evaluator);
+                            baseQuantity, baseExpression, interpretedExpr, rawSelection, m_evaluator);
                     auto message = tr("Selection result:<br/>%1").arg(formatted);
                     emit autoCalcMessageAvailable(message);
                     emit autoCalcQuantityAvailable(baseQuantity);
@@ -2464,10 +2517,76 @@ void Editor::evaluate()
     triggerEnter();
 }
 
+static void paintInputDigitSeparators(QPainter& painter, const QTextBlock& block,
+                                     const QPointF& offset,
+                                     const QAbstractTextDocumentLayout::PaintContext& context)
+{
+    // The layout has already drawn the unchanged document text. Add the glyphs
+    // described by SyntaxHighlighter's format properties. A space needs only
+    // the reserved gap, while commas, dots and underscores need a painted glyph.
+    // The grouping glyph belongs to the preceding digit for selection colors.
+    // It is never a separate character that the cursor or Backspace can visit.
+    const QTextLayout* layout = block.layout();
+    for (const auto& range : layout->formats()) {
+        const bool replacement = range.format.hasProperty(SyntaxHighlighter::InputRadixReplacement);
+        const QString separator = range.format.stringProperty(replacement
+            ? SyntaxHighlighter::InputRadixReplacement : SyntaxHighlighter::InputDigitSeparator);
+        if (separator.isEmpty() || separator == QLatin1String(" "))
+            continue;
+        for (int pos = range.start; pos < range.start + range.length; ++pos) {
+            const QTextLine line = layout->lineForTextPosition(pos);
+            if (!line.isValid())
+                continue;
+            QFont font = range.format.font().resolve(layout->font());
+            font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
+            QColor color = range.format.foreground().color();
+            QBrush background = block.blockFormat().background();
+            if (background == Qt::NoBrush)
+                background = context.palette.base();
+            for (const auto& selection : context.selections) {
+                const int absolutePos = block.position() + pos;
+                if (absolutePos >= selection.cursor.selectionStart()
+                        && absolutePos < selection.cursor.selectionEnd()) {
+                    if (selection.format.foreground() != Qt::NoBrush)
+                        color = selection.format.foreground().color();
+                    if (selection.format.background() != Qt::NoBrush)
+                        background = selection.format.background();
+                }
+            }
+            painter.save();
+            painter.setFont(font);
+            painter.setPen(color);
+            const qreal x = replacement ? line.cursorToX(pos)
+                : line.cursorToX(pos + 1) - range.format.fontLetterSpacing();
+            if (replacement) {
+                // Cover the original decimal glyph, including its selection
+                // background, then draw the selected one in the same place.
+                // This changes the view without rewriting the document.
+                painter.fillRect(QRectF(offset + QPointF(x, line.y()),
+                                       QSizeF(line.cursorToX(pos + 1) - x, line.height())), background);
+            }
+            painter.drawText(offset + QPointF(x, line.y() + line.ascent()), separator);
+            painter.restore();
+        }
+    }
+}
+
 void Editor::paintEvent(QPaintEvent* event)
 {
     if (m_customCursorVisible && !m_themePrimaryColor.isValid()) {
         QPlainTextEdit::paintEvent(event);
+        if (!Settings::instance()->inputDigitGrouping)
+            return;
+        QPainter painter(viewport());
+        painter.setClipRegion(event->region());
+        QPointF offset = contentOffset();
+        const auto context = getPaintContext();
+        for (QTextBlock block = firstVisibleBlock(); block.isValid(); block = block.next()) {
+            paintInputDigitSeparators(painter, block, offset, context);
+            offset.ry() += blockBoundingRect(block).height();
+            if (offset.y() > viewport()->height())
+                break;
+        }
         return;
     }
 
@@ -2538,6 +2657,7 @@ void Editor::paintEvent(QPaintEvent* event)
                 selections.append(range);
             }
             layout->draw(&painter, offset, selections, clip);
+            paintInputDigitSeparators(painter, block, offset, context);
         }
         offset.ry() += bounds.height();
         if (offset.y() > viewport()->height()) {
@@ -2572,7 +2692,7 @@ void Editor::historyBack()
     if (m_currentHistoryIndex == m_history.count())
         m_savedCurrentEditor = toPlainText();
     --m_currentHistoryIndex;
-    setText(m_history.at(m_currentHistoryIndex).expr());
+    setText(historyExpressionForInput(m_history.at(m_currentHistoryIndex).expr()));
     moveCursorToEnd(this);
     ensureCursorVisible();
 }
@@ -2594,7 +2714,7 @@ void Editor::historyForward()
     if (m_currentHistoryIndex == m_history.count())
         setText(m_savedCurrentEditor);
     else
-        setText(m_history.at(m_currentHistoryIndex).expr());
+        setText(historyExpressionForInput(m_history.at(m_currentHistoryIndex).expr()));
     moveCursorToEnd(this);
     ensureCursorVisible();
 }
@@ -2609,9 +2729,11 @@ void Editor::triggerEnter()
 
 void Editor::changeEvent(QEvent* event)
 {
-    if (event->type() == QEvent::FontChange)
-        updateHeightAndEnsureCursorVisible();
     QPlainTextEdit::changeEvent(event);
+    if (event->type() == QEvent::FontChange) {
+        m_highlighter->rehighlight();
+        updateHeightAndEnsureCursorVisible();
+    }
 }
 
 bool Editor::event(QEvent* event)
@@ -2648,6 +2770,30 @@ void Editor::focusOutEvent(QFocusEvent* event)
 
 void Editor::inputMethodEvent(QInputMethodEvent* event)
 {
+    if (!Settings::instance()->automaticInputAdjustments) {
+        QPlainTextEdit::inputMethodEvent(event);
+        return;
+    }
+    const int replacementPosition = event->replacementLength() > 0
+        ? textCursor().position() + event->replacementStart()
+        : textCursor().selectionStart();
+    if (isInsideCommentFromQuestionMark(text(), replacementPosition)) {
+        QPlainTextEdit::inputMethodEvent(event);
+        return;
+    }
+
+    // Composed input can also rewrite existing text, such as an exponent.
+    // Keep that rewrite in the same undo step as the committed characters.
+    const bool hasCommittedEdit = !event->commitString().isEmpty() || event->replacementLength() > 0;
+    const QScopedValueRollback<bool> inputEdit(m_inputEditInProgress, hasCommittedEdit);
+    QTextCursor editCursor = textCursor();
+    if (hasCommittedEdit)
+        editCursor.beginEditBlock();
+    const auto finishEdit = qScopeGuard([&]() {
+        if (hasCommittedEdit)
+            editCursor.endEditBlock();
+    });
+
     const QString normalizedCommit = normalizeExpressionTypedInEditor(event->commitString());
     const QString normalizedPreedit = normalizeExpressionTypedInEditor(event->preeditString());
     const int cursorPosition = textCursor().position();
@@ -2921,6 +3067,49 @@ void Editor::keyPressEvent(QKeyEvent* event)
     if (m_completion->handleEditorKeyPress(event))
         return;
 
+    // Opening a picker must not start an empty document edit block. Finishing
+    // that block emits textChanged and the active pane then takes focus back.
+    if (event->key() == Qt::Key_Space && event->modifiers() == Qt::ControlModifier
+        && !m_constantCompletion) {
+        m_completionTimer->stop();
+        m_constantCompletion = new ConstantCompletion(this);
+        m_constantCompletion->setThemeColors(m_completionBackgroundColor,
+                                             m_completionForegroundColor,
+                                             m_completionScrollbarThumbColor,
+                                             m_completionScrollbarThumbForegroundColor,
+                                             m_completionSelectedRowColor,
+                                             m_completionSelectedRowForegroundColor,
+                                             m_completionOutlineColor,
+                                             m_completionCornerRadius,
+                                             m_completionSearchButtonFill,
+                                             m_completionSearchButtonCross);
+        connect(m_constantCompletion,
+                SIGNAL(selectedCompletion(const QString&)),
+                SLOT(insertConstant(const QString&)));
+        connect(m_constantCompletion,
+                &ConstantCompletion::canceledCompletion,
+                this, &Editor::cancelConstantCompletion);
+        connect(m_constantCompletion, &ConstantCompletion::visibilityChanged,
+                this, &Editor::constantSearchVisibilityChanged);
+        m_constantCompletion->showCompletion();
+        event->accept();
+        return;
+    }
+
+    // Shortcut text can contain control characters or printable letters.
+    // Let Qt perform the edit before any expression insertion rules run.
+    if (event->matches(QKeySequence::Undo)
+        || event->matches(QKeySequence::Redo)
+        || event->matches(QKeySequence::Cut)
+        || event->matches(QKeySequence::Paste)) {
+        QPlainTextEdit::keyPressEvent(event);
+        return;
+    }
+    if (event->matches(QKeySequence::Copy)) {
+        emit copySequencePressed();
+        event->accept();
+        return;
+    }
     if (event->matches(QKeySequence::SelectAll)) {
         QPlainTextEdit::keyPressEvent(event);
         if (textCursor().hasSelection())
@@ -2930,6 +3119,23 @@ void Editor::keyPressEvent(QKeyEvent* event)
         event->accept();
         return;
     }
+
+    const bool hasPrintableTextPayload =
+        !event->text().isEmpty()
+        && (event->key() < Qt::Key_Escape || event->key() == Qt::Key_unknown)
+        && std::all_of(event->text().cbegin(), event->text().cend(),
+                       [](const QChar& ch) { return ch.isPrint(); });
+
+    // Keep a typed key and its automatic rewrites together, while preventing
+    // consecutive digits from merging into one undo step.
+    const QScopedValueRollback<bool> inputEdit(m_inputEditInProgress, hasPrintableTextPayload);
+    QTextCursor editCursor = textCursor();
+    if (hasPrintableTextPayload)
+        editCursor.beginEditBlock();
+    const auto finishEdit = qScopeGuard([&]() {
+        if (hasPrintableTextPayload)
+            editCursor.endEditBlock();
+    });
 
     int key = event->key();
     switch (key) {
@@ -2944,7 +3150,100 @@ void Editor::keyPressEvent(QKeyEvent* event)
     default:
         break;
     }
+    switch (key) {
+    case Qt::Key_Tab:
+        // setTabChangesFocus() still allows entering a Tab character when
+        // there's no other widgets to change focus to. To avoid that,
+        // explicitly consume any Tabs that make it here.
+        event->accept();
+        return;
+
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+        triggerEnter();
+        event->accept();
+        return;
+
+    case Qt::Key_Escape:
+        m_currentAutoCalcDismissed = true;
+        emit escapePressed();
+        event->accept();
+        return;
+
+    case Qt::Key_Up:
+        if (!m_historyArrowNavigationEnabled) {
+            QPlainTextEdit::keyPressEvent(event);
+            event->accept();
+            return;
+        }
+        if (event->modifiers() & Qt::ShiftModifier)
+            emit shiftUpPressed();
+        else if (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorAlways
+                 || (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorSingleLineOnly
+                     && height() <= sizeHint().height()))
+            historyBack();
+        else
+            QPlainTextEdit::keyPressEvent(event);
+        event->accept();
+        return;
+
+    case Qt::Key_Down:
+        if (!m_historyArrowNavigationEnabled) {
+            QPlainTextEdit::keyPressEvent(event);
+            event->accept();
+            return;
+        }
+        if (event->modifiers() & Qt::ShiftModifier)
+            emit shiftDownPressed();
+        else if (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorAlways
+                 || (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorSingleLineOnly
+                     && height() <= sizeHint().height()))
+            historyForward();
+        else
+            QPlainTextEdit::keyPressEvent(event);
+        event->accept();
+        return;
+
+    case Qt::Key_PageUp:
+        if (event->modifiers() & Qt::ShiftModifier)
+            emit shiftPageUpPressed();
+        else if (event->modifiers() & Qt::ControlModifier)
+            emit controlPageUpPressed();
+        else
+            emit pageUpPressed();
+        event->accept();
+        return;
+
+    case Qt::Key_PageDown:
+        if (event->modifiers() & Qt::ShiftModifier)
+            emit shiftPageDownPressed();
+        else if (event->modifiers() & Qt::ControlModifier)
+            emit controlPageDownPressed();
+        else
+            emit pageDownPressed();
+        event->accept();
+        return;
+
+
+    default:
+        break;
+    }
+
+    if (!Settings::instance()->automaticInputAdjustments) {
+        // Keep calculator commands above, but let Qt edit every character as
+        // ordinary text, including operators and incomplete expressions.
+        QPlainTextEdit::keyPressEvent(event);
+        return;
+    }
+
     const int cursorPosition = textCursor().position();
+    if (isInsideCommentFromQuestionMark(text(), textCursor().selectionStart())
+        && !(event->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier))
+        && hasPrintableTextPayload) {
+        QPlainTextEdit::keyPressEvent(event);
+        return;
+    }
+
     const bool squareBracketContext = isInsideUnmatchedSquareBracketContext(
         text(),
         cursorPosition);
@@ -2974,7 +3273,8 @@ void Editor::keyPressEvent(QKeyEvent* event)
         return QString();
     };
 
-    const QString normalizedEventText = normalizeExpressionTypedInEditor(event->text());
+    const QString normalizedEventText = hasPrintableTextPayload
+        ? normalizeExpressionTypedInEditor(event->text()) : QString();
     const auto isOperatorLikeSingleCharInput = [](const QString& input) {
         if (input.size() != 1)
             return false;
@@ -2996,17 +3296,6 @@ void Editor::keyPressEvent(QKeyEvent* event)
         return;
     }
 
-    const bool hasPrintableTextPayload =
-        !event->text().isEmpty()
-        && (key < Qt::Key_Escape || key == Qt::Key_unknown)
-        && std::all_of(event->text().cbegin(), event->text().cend(),
-                       [](const QChar& ch) { return ch.isPrint(); });
-    if (isInsideCommentFromQuestionMark(text(), cursorPosition)
-        && !(event->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier))
-        && hasPrintableTextPayload) {
-        QPlainTextEdit::keyPressEvent(event);
-        return;
-    }
     if (!textCursor().hasSelection()
         && (hasPrintableTextPayload || isDeadKey(key))
         && hasOnlyWhitespaceToLeft(text(), cursorPosition)) {
@@ -3311,19 +3600,27 @@ void Editor::keyPressEvent(QKeyEvent* event)
         || normalizedEventText == QLatin1String(".")
         || normalizedEventText == QLatin1String(",");
     if (isTypedRadixSeparator) {
+        const QChar typed = normalizedTypedCharFromEvent(event, normalizedEventText);
+        const QString radix(typed == MathDsl::CommaSep || typed == MathDsl::DotSep
+                            ? typed : key == Qt::Key_Comma ? MathDsl::CommaSep : MathDsl::DotSep);
         if (!(event->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier))) {
-            const QString radix = QString(QChar(this->radixChar()));
+            const QString left = text().left(textCursor().selectionStart());
+            const Tokens tokens = evaluator()->scan(left);
+            if (!squareBracketContext && !tokens.isEmpty()
+                && tokens.last().isNumber()
+                && tokens.last().pos() + tokens.last().size() == left.size()
+                && tokens.last().text().startsWith(MathDsl::HexPrefix, Qt::CaseInsensitive)) {
+                // Hex digits A-F belong to the number, so punctuation after
+                // them must not start an implicit multiplication.
+                insert(radix);
+                event->accept();
+                return;
+            }
             if (rewriteTrailingSuperscriptExponentToParenthesizedAscii(this, radix)) {
                 event->accept();
                 return;
             }
             const QChar prev = previousNonSpaceChar(text(), textCursor().position());
-            if (prev == QChar(this->radixChar())
-                || prev == MathDsl::DotSep
-                || prev == MathDsl::CommaSep) {
-                event->accept();
-                return;
-            }
             const bool startsNewDecimalAfterOperator =
                 prev.isNull()
                 || prev == MathDsl::AddOp
@@ -3355,13 +3652,13 @@ void Editor::keyPressEvent(QKeyEvent* event)
                 event->accept();
                 return;
             }
-            if (!prev.isDigit()) {
+            if (!prev.isDigit() && prev != MathDsl::DotSep && prev != MathDsl::CommaSep) {
                 event->accept();
                 return;
             }
         }
         if (event->modifiers() == Qt::KeypadModifier) {
-            insert(QChar(this->radixChar()));
+            insert(radix);
             event->accept();
             return;
         }
@@ -3521,79 +3818,6 @@ void Editor::keyPressEvent(QKeyEvent* event)
     }
 
     switch (key) {
-    case Qt::Key_Tab:
-        // setTabChangesFocus() still allows entering a Tab character when
-        // there's no other widgets to change focus to. To avoid that,
-        // explicitly consume any Tabs that make it here.
-        event->accept();
-        return;
-
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        triggerEnter();
-        event->accept();
-        return;
-
-    case Qt::Key_Escape:
-        m_currentAutoCalcDismissed = true;
-        emit escapePressed();
-        event->accept();
-        return;
-
-    case Qt::Key_Up:
-        if (!m_historyArrowNavigationEnabled) {
-            QPlainTextEdit::keyPressEvent(event);
-            event->accept();
-            return;
-        }
-        if (event->modifiers() & Qt::ShiftModifier)
-            emit shiftUpPressed();
-        else if (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorAlways
-                 || (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorSingleLineOnly
-                     && height() <= sizeHint().height()))
-            historyBack();
-        else
-            QPlainTextEdit::keyPressEvent(event);
-        event->accept();
-        return;
-
-    case Qt::Key_Down:
-        if (!m_historyArrowNavigationEnabled) {
-            QPlainTextEdit::keyPressEvent(event);
-            event->accept();
-            return;
-        }
-        if (event->modifiers() & Qt::ShiftModifier)
-            emit shiftDownPressed();
-        else if (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorAlways
-                 || (Settings::instance()->upDownArrowBehavior == Settings::UpDownArrowBehaviorSingleLineOnly
-                     && height() <= sizeHint().height()))
-            historyForward();
-        else
-            QPlainTextEdit::keyPressEvent(event);
-        event->accept();
-        return;
-
-    case Qt::Key_PageUp:
-        if (event->modifiers() & Qt::ShiftModifier)
-            emit shiftPageUpPressed();
-        else if (event->modifiers() & Qt::ControlModifier)
-            emit controlPageUpPressed();
-        else
-            emit pageUpPressed();
-        event->accept();
-        return;
-
-    case Qt::Key_PageDown:
-        if (event->modifiers() & Qt::ShiftModifier)
-            emit shiftPageDownPressed();
-        else if (event->modifiers() & Qt::ControlModifier)
-            emit controlPageDownPressed();
-        else
-            emit pageDownPressed();
-        event->accept();
-        return;
-
     case Qt::Key_Left:
     case Qt::Key_Right:
         {
@@ -3743,28 +3967,6 @@ void Editor::keyPressEvent(QKeyEvent* event)
         return;
 
     case Qt::Key_Space:
-        if (event->modifiers() == Qt::ControlModifier
-            && !m_constantCompletion)
-        {
-            m_constantCompletion = new ConstantCompletion(this);
-            m_constantCompletion->setThemeColors(m_completionBackgroundColor,
-                                                 m_completionForegroundColor,
-                                                 m_completionScrollbarThumbColor,
-                                                 m_completionScrollbarThumbForegroundColor,
-                                                 m_completionSelectedRowColor,
-                                                 m_completionSelectedRowForegroundColor,
-                                                 m_completionOutlineColor,
-                                                 m_completionCornerRadius);
-            connect(m_constantCompletion,
-                    SIGNAL(selectedCompletion(const QString&)),
-                    SLOT(insertConstant(const QString&)));
-            connect(m_constantCompletion,
-                    &ConstantCompletion::canceledCompletion,
-                    this, &Editor::cancelConstantCompletion);
-            m_constantCompletion->showCompletion();
-            event->accept();
-            return;
-        }
         if (event->modifiers() == Qt::NoModifier) {
             const int pos = textCursor().position();
             if (pos > 0 && text().at(pos - 1).isSpace()) {
@@ -3878,7 +4080,7 @@ void Editor::keyPressEvent(QKeyEvent* event)
             insert(EditorUtils::adjustedTypedTextForImplicitMultiplicationAfterDigit(
                 text(),
                 textCursor().position(),
-                QStringLiteral("=")));
+                QString(MathDsl::Equals)));
             event->accept();
             return;
         }
@@ -3954,12 +4156,6 @@ void Editor::keyPressEvent(QKeyEvent* event)
     default:;
     }
 
-    if (event->matches(QKeySequence::Copy)) {
-        emit copySequencePressed();
-        event->accept();
-        return;
-    }
-
     QString normalizedText = normalizedEventText;
     if (!(event->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier))
         && normalizedText == QLatin1String("?")
@@ -4020,31 +4216,40 @@ void Editor::scrollContentsBy(int dx, int dy)
 
 void Editor::updateHeightForWrappedText()
 {
-    const int lineHeight = fontMetrics().lineSpacing();
     int visualLineCount = 0;
+    qreal blockTop = 0;
+    qreal textHeight = 0;
 
     for (QTextBlock block = document()->begin(); block.isValid(); block = block.next()) {
+        // Highlighting can invalidate wrapping before Qt lays the block out again.
+        // Resolve it before counting lines so the editor does not briefly shrink.
+        const QRectF bounds = blockBoundingRect(block);
         const QTextLayout* layout = block.layout();
-        if (!layout) {
-            visualLineCount += 1;
-            continue;
+        if (layout) {
+            for (int i = 0; i < layout->lineCount() && visualLineCount + i < 5; ++i) {
+                const QTextLine line = layout->lineAt(i);
+                textHeight = qMax(textHeight, blockTop + line.y() + line.height());
+            }
         }
-
-        visualLineCount += std::max(1, layout->lineCount());
+        visualLineCount += layout ? std::max(1, layout->lineCount()) : 1;
+        blockTop += bounds.height();
     }
 
-    if (visualLineCount <= 0)
-        visualLineCount = 1;
-
-    const int clampedLines = std::max(1, std::min(5, visualLineCount));
-    m_canScrollWrappedText = visualLineCount > clampedLines;
-    setFixedHeight(lineHeight * clampedLines + editorVerticalDecorationHeight());
+    // Use Qt's laid-out span, including leading and font fallback. Multiplying
+    // font metrics by the line count can leave extra space or clip the text.
+    if (textHeight <= 0)
+        textHeight = editorLineHeight(font());
+    m_canScrollWrappedText = visualLineCount > 5;
+    setFixedHeight(int(std::ceil(textHeight)) + editorVerticalDecorationHeight());
     if (!m_canScrollWrappedText)
         verticalScrollBar()->setValue(verticalScrollBar()->minimum());
 }
 
 void Editor::updateHeightAndEnsureCursorVisible()
 {
+    if (m_updatingWrappedTextHeight)
+        return;
+    const QScopedValueRollback<bool> updatingHeight(m_updatingWrappedTextHeight, true);
     updateHeightForWrappedText();
     if (m_canScrollWrappedText)
         ensureCursorVisible();
@@ -4062,14 +4267,46 @@ void Editor::wheelEvent(QWheelEvent* event)
     event->accept();
 }
 
+void Editor::refreshInputMode()
+{
+    // A dead caret from the previous mode must not affect the next edit.
+    m_pendingDeadCaretPreedit = false;
+    rehighlight();
+}
+
 void Editor::rehighlight()
 {
+    StartupDiagnostics::AppearanceScope timing("Refresh editor highlighting and appearance", this);
+    if (StartupDiagnostics::isRecording()) {
+        const QByteArray theme = m_themePreviewColorScheme.has_value()
+            ? StartupDiagnostics::themeInputs(*m_themePreviewColorScheme)
+            : StartupDiagnostics::configuredThemeInputs();
+        StartupDiagnostics::observeHighlightInputs(timing, this, theme,
+            {m_themeSurfaceColor, m_themeOuterSurfaceColor, m_themePrimaryColor, m_usePrimaryOutline},
+            m_evaluator);
+    }
+    // Qt can emit textChanged while applying styles and highlighting.
+    // A theme refresh must not act like an edit or clear a result selection.
+    const QSignalBlocker blocker(this);
     if (m_themePreviewColorScheme.has_value())
         m_highlighter->setColorScheme(
             ColorScheme::fromJsonObject(m_themePreviewColorScheme->toJsonObject()));
     else
-        m_highlighter->update();
+        m_highlighter->updateColorScheme();
     updateMatchedParenthesisColors();
+    updateAppearance();
+    {
+        StartupDiagnostics::AppearanceScope highlightTiming("Highlight editor document", this);
+        m_highlighter->rehighlight();
+    }
+    updateHeightAndEnsureCursorVisible();
+}
+
+void Editor::updateAppearance()
+{
+    StartupDiagnostics::AppearanceScope timing("Refresh editor appearance", this);
+    // Style changes must preserve the expression and any result selection.
+    const QSignalBlocker blocker(this);
     const QColor themeBackground = m_highlighter->colorForRole(ColorScheme::Background);
     const QColor generatedPrimary = generatePrimaryFromBackground(themeBackground);
     // Editors can rehighlight before MainWindow injects the resolved theme
@@ -4080,26 +4317,28 @@ void Editor::rehighlight()
         : (generatedPrimary.isValid()
               ? generatedPrimary
               : QApplication::palette().color(QPalette::Text));
-    const QColor color = m_themeSurfaceColor.isValid()
+    const bool classic = Settings::instance()->editorDisplayStyle == Settings::EditorDisplayClassic;
+    const QColor modernColor = m_themeSurfaceColor.isValid()
         ? m_themeSurfaceColor
         : editorFillColorForThemeBackground(themeBackground);
     const QColor outerColor = m_themeOuterSurfaceColor.isValid()
         ? m_themeOuterSurfaceColor
-        : color;
+        : (classic ? themeBackground : modernColor);
+    const QColor color = modernColor;
     const QString colorName = color.name();
     const QString primaryColorName = primaryColor.name();
     const QString borderColorName = m_usePrimaryOutline
         ? primaryColorName
-        : QStringLiteral("transparent");
+        : (classic ? modernColor.name() : QStringLiteral("transparent"));
     QPalette pal = palette();
     for (const QPalette::ColorGroup group : {QPalette::Active,
                                              QPalette::Inactive,
                                              QPalette::Disabled}) {
         pal.setColor(group, QPalette::Base, color);
-        pal.setColor(group, QPalette::Window, outerColor);
+        pal.setColor(group, QPalette::Window, classic ? color : outerColor);
         pal.setColor(group, QPalette::Text, primaryColor);
     }
-    setPalette(pal);
+    StartupDiagnostics::setAppearancePalette(this, pal);
     setAutoFillBackground(false);
     setAttribute(Qt::WA_StyledBackground, true);
 
@@ -4111,35 +4350,59 @@ void Editor::rehighlight()
         viewportPalette.setColor(group, QPalette::Window, color);
         viewportPalette.setColor(group, QPalette::Text, primaryColor);
     }
-    viewport()->setPalette(viewportPalette);
+    StartupDiagnostics::setAppearancePalette(viewport(), viewportPalette);
     viewport()->setAutoFillBackground(false);
     viewport()->setAttribute(Qt::WA_StyledBackground, true);
-    setStyleSheet(QStringLiteral(R"(
-        QPlainTextEdit {
-            background-color: %1;
-            color: %2;
-            border: %11px solid %3;
-            border-radius: %4px;
-            margin: %5px %6px %7px %8px;
-            padding: %9px %10px;
-        }
-    )").arg(colorName,
-            primaryColorName,
-            borderColorName)
-       .arg(kEditorRadius)
-       .arg(kEditorOuterTop)
-       .arg(kEditorOuterRight)
-       .arg(kEditorOuterBottom)
-       .arg(kEditorOuterLeft)
-       .arg(kEditorVerticalPadding)
-       .arg(kEditorHorizontalPadding)
-       .arg(UiConfig::OutlineStrokeWidth));
-    setPalette(pal);
+    if (classic) {
+        const int separatorWidth = m_usePrimaryOutline
+            ? UiConfig::OutlineStrokeWidth : UiConfig::ClassicUnfocusedSeparatorWidth;
+        // Keep the text in place when the focus line changes thickness.
+        const int topPadding = UiConfig::ClassicEditorVerticalPadding
+            + UiConfig::OutlineStrokeWidth - separatorWidth;
+        StartupDiagnostics::setAppearanceStyleSheet(this, QStringLiteral(R"(
+            QPlainTextEdit {
+                background-color: %1;
+                color: %2;
+                border: 0;
+                border-top: %4px solid %3;
+                border-radius: 0;
+                margin: 0;
+                padding: %7px %5px %6px;
+            }
+        )").arg(colorName, primaryColorName, borderColorName)
+           .arg(separatorWidth)
+           .arg(kClassicEditorHorizontalPadding)
+           .arg(UiConfig::ClassicEditorVerticalPadding)
+           .arg(topPadding));
+    } else {
+        StartupDiagnostics::setAppearanceStyleSheet(this, QStringLiteral(R"(
+            QPlainTextEdit {
+                background-color: %1;
+                color: %2;
+                border: %11px solid %3;
+                border-radius: %4px;
+                margin: %5px %6px %7px %8px;
+                padding: %9px %10px;
+            }
+        )").arg(colorName,
+                primaryColorName,
+                borderColorName)
+           .arg(kEditorRadius)
+           .arg(kEditorOuterTop)
+           .arg(kEditorOuterRight)
+           .arg(kEditorOuterBottom)
+           .arg(kEditorOuterLeft)
+           .arg(kEditorVerticalPadding)
+           .arg(kEditorHorizontalPadding)
+           .arg(UiConfig::OutlineStrokeWidth));
+    }
+    StartupDiagnostics::setAppearancePalette(this, pal);
     document()->setDocumentMargin(kEditorDocumentMargin);
-    viewport()->setStyleSheet(QStringLiteral("background: transparent;"));
-    viewport()->setPalette(viewportPalette);
+    // Qt parents the right-click menu to the viewport. Keep transparency
+    // scoped to the viewport so system menus can paint their own background.
+    StartupDiagnostics::setAppearanceStyleSheet(viewport(), QStringLiteral("QWidget#editorViewport { background: transparent; }"));
+    StartupDiagnostics::setAppearancePalette(viewport(), viewportPalette);
     clearMask();
-    m_highlighter->rehighlight();
 }
 
 void Editor::setThemeSurfaceColor(const QColor& color, const QColor& outerColor)
@@ -4170,13 +4433,27 @@ QTextCharFormat Editor::matchedParenthesisFormat() const
 
 void Editor::setThemePrimaryColor(const QColor& color, bool usePrimaryOutline)
 {
+    // Pane activation runs while typing. Keep unchanged themes from rebuilding
+    // the editor's styles and text layout on every character.
+    const bool themeChanged = m_themePrimaryColor != color
+        || m_usePrimaryOutline != usePrimaryOutline
+        // Qt can reset the viewport palette when polishing a parent widget.
+        || viewport()->palette().color(QPalette::Base) != palette().color(QPalette::Base);
     m_themePrimaryColor = color;
     m_usePrimaryOutline = usePrimaryOutline;
-    rehighlight();
+    if (themeChanged) {
+        updateAppearance();
+        updateHeightAndEnsureCursorVisible();
+    }
     if (shouldPaintThemedCursor())
         showThemedCursorAndRestartBlink();
     else
         hideThemedCursorAndStopBlink();
+}
+
+bool Editor::isConstantSearchVisible() const
+{
+    return m_constantCompletion && m_constantCompletion->isVisible();
 }
 
 void Editor::setThemeCompletionColors(const QColor& background,
@@ -4186,7 +4463,9 @@ void Editor::setThemeCompletionColors(const QColor& background,
                                       const QColor& selectedRow,
                                       const QColor& selectedRowForeground,
                                       const QColor& outline,
-                                      int cornerRadius)
+                                      int cornerRadius,
+                                      const QColor& searchButtonFill,
+                                      const QColor& searchButtonCross)
 {
     m_completionBackgroundColor = background;
     m_completionForegroundColor = foreground;
@@ -4196,6 +4475,8 @@ void Editor::setThemeCompletionColors(const QColor& background,
     m_completionSelectedRowForegroundColor = selectedRowForeground;
     m_completionOutlineColor = outline;
     m_completionCornerRadius = cornerRadius;
+    m_completionSearchButtonFill = searchButtonFill;
+    m_completionSearchButtonCross = searchButtonCross;
     m_completion->setThemeColors(background,
                                  foreground,
                                  scrollbarThumb,
@@ -4212,7 +4493,9 @@ void Editor::setThemeCompletionColors(const QColor& background,
                                              selectedRow,
                                              selectedRowForeground,
                                              outline,
-                                             cornerRadius);
+                                             cornerRadius,
+                                             searchButtonFill,
+                                             searchButtonCross);
     }
 }
 
@@ -4501,7 +4784,7 @@ bool EditorCompletion::handleCompletionKey(QKeyEvent* event)
     switch (key) {
     case Qt::Key_Enter:
     case Qt::Key_Return:
-        if (m_popupInteracted) {
+        if (m_popupInteracted || Settings::instance()->autoCompletionAcceptWithEnter) {
             doneCompletion();
             return true;
         }
@@ -4580,8 +4863,7 @@ void EditorCompletion::showCompletion(const QStringList& choices)
     // Performance: compute these once per popup render (not per row) because
     // unit completion can contain many entries and this function runs often.
     Evaluator* evaluator = m_editor->evaluator();
-    const QList<QString> builtInUnitKeys =
-        Units::builtInUnitLookup(Settings::instance()->angleUnit).keys();
+    const QStringList& builtInUnitKeys = Units::builtInUnitIdentifiers();
     const QSet<QString> builtInUnits(
         builtInUnitKeys.constBegin(),
         builtInUnitKeys.constEnd());
@@ -4673,104 +4955,151 @@ void EditorCompletion::selectItem(const QString& item)
         m_popup->setCurrentItem(targets.at(0));
 }
 
+namespace {
+constexpr int constantUnitRole = Qt::UserRole + 1;
+
+class ConstantCompletionDelegate : public QStyledItemDelegate {
+public:
+    ConstantCompletionDelegate(SyntaxHighlighter* highlighter, QObject* parent)
+        : QStyledItemDelegate(parent), m_highlighter(highlighter)
+    {
+        Q_ASSERT(m_highlighter);
+    }
+
+    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+               const QModelIndex& index) const override
+    {
+        QStyleOptionViewItem item(option);
+        initStyleOption(&item, index);
+        // Keep the full text area for the name and unit we draw below.
+        item.showDecorationSelected = true;
+        const QString name = item.text;
+        item.text.clear();
+        const QStyle* style = item.widget ? item.widget->style() : QApplication::style();
+        style->drawControl(QStyle::CE_ItemViewItem, &item, painter, item.widget);
+        const QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &item, item.widget);
+        if (textRect.isEmpty())
+            return;
+
+        const QPalette::ColorGroup group = !(item.state & QStyle::State_Enabled)
+            ? QPalette::Disabled : (item.state & QStyle::State_Active) ? QPalette::Active : QPalette::Inactive;
+        const bool selected = item.state & QStyle::State_Selected;
+        const QColor foreground = item.palette.color(group, selected ? QPalette::HighlightedText : QPalette::Text);
+        const QColor unitColor = m_highlighter->colorForRole(ColorScheme::Unit);
+        QFont unitFont(item.font);
+        if (unitFont.pointSizeF() > 0)
+            unitFont.setPointSizeF(unitFont.pointSizeF() * 0.93);
+        else if (unitFont.pixelSize() > 0)
+            unitFont.setPixelSize(qMax(1, qRound(unitFont.pixelSize() * 0.93)));
+
+        const QFontMetrics unitMetrics(unitFont);
+        const QString rawUnit = index.data(constantUnitRole).toString();
+        const QString unit = unitMetrics.elidedText(rawUnit, Qt::ElideRight, textRect.width() / 2);
+        const QString gap = unit.isEmpty() ? QString() : QStringLiteral("    ");
+        const int unitWidth = unitMetrics.horizontalAdvance(unit) + item.fontMetrics.horizontalAdvance(gap);
+        const QString displayName = item.fontMetrics.elidedText(name, Qt::ElideRight,
+                                                               qMax(0, textRect.width() - unitWidth));
+        // Isolate the unit so mixed-direction names do not reorder its symbols.
+        const QString text = unit.isEmpty() ? displayName
+            : displayName + gap + QChar(0x2066) + unit + QChar(0x2069);
+        if (text.isEmpty())
+            return;
+        QTextLayout layout(text, item.font);
+        QTextOption textOption;
+        textOption.setTextDirection(item.direction);
+        textOption.setAlignment(QStyle::visualAlignment(item.direction, Qt::AlignLeft));
+        textOption.setWrapMode(QTextOption::NoWrap);
+        layout.setTextOption(textOption);
+        QTextLayout::FormatRange unitFormat;
+        unitFormat.start = displayName.size() + gap.size();
+        unitFormat.length = text.size() - unitFormat.start;
+        unitFormat.format.setFont(unitFont);
+        unitFormat.format.setForeground(unitColor);
+        layout.setFormats({unitFormat});
+        layout.beginLayout();
+        QTextLine line = layout.createLine();
+        line.setLineWidth(textRect.width());
+        layout.endLayout();
+        painter->save();
+        painter->setClipRect(textRect, Qt::IntersectClip);
+        painter->setPen(foreground);
+        layout.draw(painter, QPointF(textRect.left(), textRect.top() + (textRect.height() - line.height()) / 2));
+        painter->restore();
+    }
+
+private:
+    SyntaxHighlighter* m_highlighter;
+};
+} // namespace
+
 ConstantCompletion::ConstantCompletion(Editor* editor)
     : QObject(editor)
+    , m_editor(editor)
 {
-    m_editor = editor;
-
     m_popup = new CompletionPopup<QFrame>;
     m_popup->setObjectName(QStringLiteral("constantCompletionPopup"));
     m_popup->setParent(editor, Qt::Popup | Qt::FramelessWindowHint);
-    m_popup->setFocusPolicy(Qt::NoFocus);
-    m_popup->setFocusProxy(editor);
+    m_popup->setAttribute(Qt::WA_NoMouseReplay, true);
     m_popup->setFrameStyle(QFrame::NoFrame);
     m_popup->setAutoFillBackground(true);
 
-    m_categoryWidget = new QTreeWidget(m_popup);
-    m_categoryWidget->setObjectName(QStringLiteral("constantCompletionCategoryPopup"));
-    m_categoryWidget->setFrameShape(QFrame::NoFrame);
-    m_categoryWidget->setColumnCount(1);
-    m_categoryWidget->setRootIsDecorated(false);
-    m_categoryWidget->header()->hide();
-    m_categoryWidget->setEditTriggers(QTreeWidget::NoEditTriggers);
-    m_categoryWidget->setSelectionBehavior(QTreeWidget::SelectRows);
-    m_categoryWidget->setMouseTracking(true);
-    m_categoryWidget->installEventFilter(this);
-    m_categoryWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-    connect(m_categoryWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-                              SLOT(showConstants()));
+    m_search = new ThemedLineEdit(m_popup);
+    m_search->setObjectName(QStringLiteral("constantCompletionSearch"));
+    m_search->setPlaceholderText(tr("Search constants"));
+    m_search->setAccessibleName(tr("Search constants"));
+    m_search->setClearButtonEnabled(true);
+    m_popup->setFocusProxy(m_search);
 
     m_constantWidget = new QTreeWidget(m_popup);
     m_constantWidget->setObjectName(QStringLiteral("constantCompletionConstantsPopup"));
     m_constantWidget->setFrameShape(QFrame::NoFrame);
-    m_constantWidget->setColumnCount(2);
-    m_constantWidget->setColumnHidden(1, true);
-    m_constantWidget->setRootIsDecorated(false);
+    m_constantWidget->setColumnCount(1);
     m_constantWidget->header()->hide();
+    m_constantWidget->setItemDelegate(new ConstantCompletionDelegate(editor->findChild<SyntaxHighlighter*>(), m_constantWidget));
+    m_constantWidget->setRootIsDecorated(false);
     m_constantWidget->setEditTriggers(QTreeWidget::NoEditTriggers);
     m_constantWidget->setSelectionBehavior(QTreeWidget::SelectRows);
+    m_constantWidget->setSelectionMode(QTreeWidget::SingleSelection);
     m_constantWidget->setMouseTracking(true);
+    m_constantWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    m_noMatchLabel = new QLabel(tr("No match found"), m_popup);
+    m_noMatchLabel->setAlignment(Qt::AlignCenter);
+    m_noMatchLabel->hide();
+
+    auto* layout = new QVBoxLayout(m_popup);
+    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setSpacing(6);
+    layout->addWidget(m_search);
+    layout->addWidget(m_constantWidget, 1);
+    QWidget::setTabOrder(m_search, m_constantWidget);
+
+    connect(m_search, &QLineEdit::textChanged, this, &ConstantCompletion::filter);
+    connect(m_constantWidget, &QTreeWidget::itemClicked, this, &ConstantCompletion::doneCompletion);
+    filter();
+
+    const int rowHeight = qMax(m_constantWidget->sizeHintForRow(0), m_constantWidget->fontMetrics().height());
+    m_popupSize = QSize(qMax(480, m_search->fontMetrics().horizontalAdvance(QLatin1Char('M')) * 48),
+                       rowHeight * 7 + m_search->sizeHint().height() + 22);
+    // Let the compositor shorten the list on small outputs.
+    layout->setSizeConstraint(QLayout::SetNoConstraint);
+    m_constantWidget->setMinimumSize(0, 0);
+    m_popup->resize(m_popupSize);
+    m_search->installEventFilter(this);
     m_constantWidget->installEventFilter(this);
-    m_constantWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-    connect(m_constantWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-                              SLOT(doneCompletion()));
-
-    m_slider = new QTimeLine(100, m_popup);
-    m_slider->setEasingCurve(QEasingCurve(QEasingCurve::Linear));
-    connect(m_slider, SIGNAL(frameChanged(int)),
-                      SLOT(setHorizontalPosition(int)));
-
-    const Constants* constants = Constants::instance();
-    m_constantList = constants->list();
-
-    // Populate categories.
-    QStringList domainList;
-    domainList << tr("All");
-    QTreeWidgetItem* all = new QTreeWidgetItem(m_categoryWidget, domainList);
-    for (int i = 0; i < constants->domains().count(); ++i) {
-        domainList.clear();
-        domainList << constants->domains().at(i);
-        new QTreeWidgetItem(m_categoryWidget, domainList);
-    }
-    m_categoryWidget->setCurrentItem(all);
-
-    // Populate constants.
-    m_lastDomain = tr("All");
-    for (int i = 0; i < constants->list().count(); ++i) {
-        QStringList names;
-        names << constants->list().at(i).name;
-        names << constants->list().at(i).name.toUpper();
-        new QTreeWidgetItem(m_constantWidget, names);
-    }
-    m_constantWidget->sortItems(0, Qt::AscendingOrder);
-
-    // Find size, the biggest between both.
-    m_constantWidget->resizeColumnToContents(0);
-    m_categoryWidget->resizeColumnToContents(0);
-    int width = qMax(m_constantWidget->width(), m_categoryWidget->width());
-    const int constantsHeight =
-        m_constantWidget->sizeHintForRow(0)
-            * qMin(7, m_constantList.count()) + 3;
-    const int domainsHeight =
-        m_categoryWidget->sizeHintForRow(0)
-            * qMin(7, constants->domains().count()) + 3;
-    const int height = qMax(constantsHeight, domainsHeight);
-    width += 200; // Extra space (FIXME: scrollbar size?).
-
-    // Adjust dimensions.
-    m_popupSize = QSize(width, height);
-    m_popup->resize(width, height);
-    m_constantWidget->resize(width, height);
-    m_categoryWidget->resize(width, height);
+    m_constantWidget->viewport()->installEventFilter(this);
     m_popup->installEventFilter(this);
 }
 
 ConstantCompletion::~ConstantCompletion()
 {
-    // The editor owns the popup through Qt parent-child deletion.
-    m_editor->setFocus();
+    m_popup->removeEventFilter(this);
+    delete m_popup;
+}
+
+bool ConstantCompletion::isVisible() const
+{
+    return m_popup->isVisible();
 }
 
 void ConstantCompletion::setThemeColors(const QColor& background,
@@ -4780,7 +5109,9 @@ void ConstantCompletion::setThemeColors(const QColor& background,
                                         const QColor& selectedRow,
                                         const QColor& selectedRowForeground,
                                         const QColor& outline,
-                                        int cornerRadius)
+                                        int cornerRadius,
+                                        const QColor& searchButtonFill,
+                                        const QColor& searchButtonCross)
 {
     m_backgroundColor = background;
     m_foregroundColor = foreground;
@@ -4790,6 +5121,8 @@ void ConstantCompletion::setThemeColors(const QColor& background,
     m_selectedRowForegroundColor = selectedRowForeground;
     m_outlineColor = outline;
     m_cornerRadius = cornerRadius;
+    m_searchButtonFill = searchButtonFill.isValid() ? searchButtonFill : foreground;
+    m_searchButtonCross = searchButtonCross.isValid() ? searchButtonCross : background;
     applyThemeColors();
 }
 
@@ -4799,211 +5132,169 @@ void ConstantCompletion::applyThemeColors()
         return;
 
     QPalette palette = m_popup->palette();
-    for (const QPalette::ColorGroup group : {QPalette::Active,
-                                             QPalette::Inactive,
-                                             QPalette::Disabled}) {
+    for (const QPalette::ColorGroup group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
         palette.setColor(group, QPalette::Window, m_backgroundColor);
         palette.setColor(group, QPalette::WindowText, m_foregroundColor);
+        palette.setColor(group, QPalette::Base, m_backgroundColor);
+        palette.setColor(group, QPalette::Text, m_foregroundColor);
+        palette.setColor(group, QPalette::PlaceholderText, m_foregroundColor);
+        palette.setColor(group, QPalette::Button, m_backgroundColor);
+        palette.setColor(group, QPalette::ButtonText, m_foregroundColor);
+        palette.setColor(group, QPalette::Highlight, m_selectedRowColor);
+        palette.setColor(group, QPalette::HighlightedText, m_selectedRowForegroundColor);
     }
     m_popup->setPalette(palette);
-    m_popup->setStyleSheet(QStringLiteral("QFrame#constantCompletionPopup { background: %1; }")
-                               .arg(m_backgroundColor.name()));
+    m_search->setPalette(palette);
+    m_popup->setStyleSheet(QStringLiteral(
+        "QFrame#constantCompletionPopup { background: %1; border: %2px solid %3; border-radius: %4px; }")
+        .arg(m_backgroundColor.name()).arg(UiConfig::PopupOutlineStrokeWidth)
+        .arg(m_outlineColor.name()).arg(m_cornerRadius));
+    static_cast<ThemedLineEdit*>(m_search)->setCursorColor(m_searchButtonFill);
+    const int focusInset = UiConfig::OutlineStrokeWidth - 1;
+    m_search->setStyleSheet(QStringLiteral(
+        "QLineEdit { background: %1; color: %2; border: 1px solid %3;"
+        " border-radius: %4px; padding: 4px 6px; selection-background-color: %5; selection-color: %6; }"
+        "QLineEdit:focus { border: %7px solid %8; padding: %9px %10px; }")
+        .arg(m_backgroundColor.name(), m_foregroundColor.name(), m_outlineColor.name())
+        .arg(UiConfig::ControlCornerRadius)
+        .arg(m_selectedRowColor.name(), m_selectedRowForegroundColor.name())
+        .arg(UiConfig::OutlineStrokeWidth).arg(m_searchButtonFill.name())
+        .arg(4 - focusInset).arg(6 - focusInset));
 
-    const ToolTipStyleUtils::TreePopupTheme theme {
-        m_backgroundColor,
-        m_foregroundColor,
-        m_scrollbarThumbColor,
-        m_scrollbarThumbForegroundColor,
-        m_selectedRowColor,
-        m_selectedRowForegroundColor,
-        m_outlineColor,
-        m_cornerRadius
-    };
-    ToolTipStyleUtils::applyTreePopupTheme(m_categoryWidget, theme);
-    ToolTipStyleUtils::applyTreePopupTheme(m_constantWidget, theme);
+    updateSearchClearButton(m_search->hasFocus());
+
+    ToolTipStyleUtils::applyTreePopupTheme(m_constantWidget,
+        {m_backgroundColor, m_foregroundColor,
+         m_scrollbarThumbColor, m_scrollbarThumbForegroundColor,
+         m_selectedRowColor, m_selectedRowForegroundColor, m_outlineColor, m_cornerRadius});
+    m_constantWidget->setStyleSheet(m_constantWidget->styleSheet() + QStringLiteral(
+        "QTreeWidget { border: 0; border-radius: 0; }"
+        "QTreeWidget::item { padding: 5px 6px; border-radius: 3px; }"));
 }
 
-void ConstantCompletion::showCategory()
+void ConstantCompletion::updateSearchClearButton(bool focused)
 {
-    m_slider->setFrameRange(m_popup->width(), 0);
-    m_slider->stop();
-    m_slider->start();
-    m_categoryWidget->setFocus();
-}
-
-void ConstantCompletion::showConstants()
-{
-    m_slider->setFrameRange(0, m_popup->width());
-    m_slider->stop();
-    m_slider->start();
-    m_constantWidget->setFocus();
-
-    QString chosenDomain;
-    if (m_categoryWidget->currentItem())
-        chosenDomain = m_categoryWidget->currentItem()->text(0);
-
-    if (m_lastDomain == chosenDomain)
+    if (!m_backgroundColor.isValid() || !m_foregroundColor.isValid())
         return;
+    LineEditStyleUtils::applyClearButtonColors(m_search,
+        focused ? m_searchButtonFill : m_backgroundColor,
+        focused ? m_searchButtonCross : m_foregroundColor);
+}
 
+void ConstantCompletion::filter()
+{
     m_constantWidget->clear();
-
-    for (int i = 0; i < m_constantList.count(); ++i) {
-        QStringList names;
-        names << m_constantList.at(i).name;
-        names << m_constantList.at(i).name.toUpper();
-
-        const bool include = (chosenDomain == tr("All")) ?
-            true : (m_constantList.at(i).domain == chosenDomain);
-
-        if (!include)
+    const auto& constants = Constants::instance()->list();
+    for (const Constant& constant : constants) {
+        if (!ConstantBrowserUtils::matches(constant, m_search->text()))
             continue;
-
-        new QTreeWidgetItem(m_constantWidget, names);
+        auto* item = new QTreeWidgetItem(m_constantWidget,
+            {constant.name});
+        const QString unit = ConstantBrowserUtils::unit(constant);
+        item->setData(0, constantUnitRole, unit);
+        item->setData(0, Qt::AccessibleTextRole,
+                      unit.isEmpty() ? constant.name : constant.name + QLatin1Char(' ') + unit);
+        item->setData(0, Qt::UserRole, ConstantBrowserUtils::expression(constant));
+        const QString tip = constant.name + QLatin1Char('\n') + constant.value
+            + (unit.isEmpty() ? QString() : QLatin1Char(' ') + unit);
+        item->setToolTip(0, tip);
     }
-
     m_constantWidget->sortItems(0, Qt::AscendingOrder);
-    m_constantWidget->setCurrentItem(m_constantWidget->itemAt(0, 0));
-    m_lastDomain = chosenDomain;
+    m_constantWidget->setCurrentItem(m_constantWidget->topLevelItem(0));
+    m_noMatchLabel->hide();
+    if (m_constantWidget->topLevelItemCount() == 0)
+        DockListStyle::showCenteredNoMatchLabel(m_constantWidget, m_noMatchLabel);
+}
+
+void ConstantCompletion::restoreEditorFocus()
+{
+    m_editor->window()->activateWindow();
+    m_editor->setFocus(Qt::OtherFocusReason);
+    QTimer::singleShot(0, m_editor, [editor = m_editor]() {
+        editor->window()->activateWindow();
+        editor->setFocus(Qt::OtherFocusReason);
+        editor->viewport()->setFocus(Qt::OtherFocusReason);
+    });
 }
 
 bool ConstantCompletion::eventFilter(QObject* object, QEvent* event)
 {
+    if (object == m_constantWidget->viewport() && event->type() == QEvent::Resize
+        && m_constantWidget->topLevelItemCount() == 0) {
+        DockListStyle::showCenteredNoMatchLabel(m_constantWidget, m_noMatchLabel);
+    }
     if (object == m_popup) {
-        if (event->type() == QEvent::Resize) {
-            // A Wayland compositor can shorten a popup to fit the output. Keep
-            // both sliding pages fitted to that actual size, including scrollbars.
-            const int oldWidth = static_cast<QResizeEvent*>(event)->oldSize().width();
-            const int position = oldWidth > 0
-                ? -m_categoryWidget->x() * m_popup->width() / oldWidth : 0;
-            m_categoryWidget->resize(m_popup->size());
-            m_constantWidget->resize(m_popup->size());
-            setHorizontalPosition(position);
-        }
+        if (event->type() == QEvent::Show || event->type() == QEvent::Hide)
+            emit visibilityChanged();
+        if (event->type() == QEvent::Hide && !m_finishing)
+            emit canceledCompletion();
         return false;
     }
+    if (object == m_search && (event->type() == QEvent::FocusIn || event->type() == QEvent::FocusOut)) {
+        updateSearchClearButton(event->type() == QEvent::FocusIn);
+    }
+    if (event->type() != QEvent::KeyPress)
+        return false;
 
-    if (event->type() == QEvent::Hide) {
-        emit canceledCompletion();
+    auto* keyEvent = static_cast<QKeyEvent*>(event);
+    const int key = keyEvent->key();
+    if (key == Qt::Key_Escape) {
+        m_popup->hide();
+        restoreEditorFocus();
         return true;
     }
-
-    if (object == m_constantWidget) {
-
-        if (event->type() == QEvent::KeyPress) {
-            int key = static_cast<QKeyEvent*>(event)->key();
-
-            switch (key) {
-            case Qt::Key_Enter:
-            case Qt::Key_Return:
-            case Qt::Key_Tab:
-                doneCompletion();
-                return true;
-
-            case Qt::Key_Left:
-                showCategory();
-                return true;
-
-            case Qt::Key_Right:
-            case Qt::Key_Up:
-            case Qt::Key_Down:
-            case Qt::Key_Home:
-            case Qt::Key_End:
-            case Qt::Key_PageUp:
-            case Qt::Key_PageDown:
-                return false;
-            }
-
-            if (key != Qt::Key_Escape)
-                QApplication::sendEvent(m_editor, event);
-            m_popup->hide();
-            emit canceledCompletion();
-            return true;
-        }
+    if (key == Qt::Key_Return || key == Qt::Key_Enter
+        || (key == Qt::Key_Tab && keyEvent->modifiers() == Qt::NoModifier)) {
+        doneCompletion();
+        return true;
     }
-
-    if (object == m_categoryWidget) {
-
-        if (event->type() == QEvent::KeyPress) {
-            int key = static_cast<QKeyEvent*>(event)->key();
-
-            switch (key) {
-            case Qt::Key_Enter:
-            case Qt::Key_Return:
-            case Qt::Key_Right:
-                showConstants();
-                return true;
-
-            case Qt::Key_Up:
-            case Qt::Key_Down:
-            case Qt::Key_Home:
-            case Qt::Key_End:
-            case Qt::Key_PageUp:
-            case Qt::Key_PageDown:
-                return false;
-            }
-
-            if (key != Qt::Key_Escape)
-                QApplication::sendEvent(m_editor, event);
-            m_popup->hide();
-            emit canceledCompletion();
-            return true;
-        }
+    if (object == m_search && (key == Qt::Key_Up || key == Qt::Key_Down)) {
+        ConstantBrowserUtils::moveSelection(m_constantWidget, key);
+        return true;
     }
-
+    const bool editsSearch = (!keyEvent->text().isEmpty() && keyEvent->text().front().isPrint())
+        || key == Qt::Key_Backspace || key == Qt::Key_Delete;
+    if (object == m_constantWidget && editsSearch
+        && !(keyEvent->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier))) {
+        m_search->setFocus();
+        QApplication::sendEvent(m_search, event);
+        return true;
+    }
     return false;
 }
 
 void ConstantCompletion::doneCompletion()
 {
-    m_popup->hide();
-    m_editor->setFocus();
     const auto* item = m_constantWidget->currentItem();
-    if (!item) {
-        emit selectedCompletion(QString());
+    if (!item || m_finishing)
         return;
-    }
-
-    auto found = std::find_if(m_constantList.begin(), m_constantList.end(),
-        [&](const Constant& c) { return item->text(0) == c.name; }
-    );
-    if (found == m_constantList.end()) {
-        emit selectedCompletion(QString());
-        return;
-    }
-
-    QString normalizedUnit = found->unit;
-    normalizedUnit.replace(UnicodeChars::MiddleDot, MathDsl::MulDotOp);
-    const QString expression = found->unit.isEmpty()
-        ? found->value
-        : QStringLiteral("%1%2[%3]")
-            .arg(found->value, QString(MathDsl::QuantSp), normalizedUnit);
+    const QString expression = item->data(0, Qt::UserRole).toString();
+    m_finishing = true;
+    s_completionMouseSelectionOwner = m_editor;
+    QTimer::singleShot(250, m_editor, [editor = m_editor]() {
+        if (s_completionMouseSelectionOwner == editor)
+            s_completionMouseSelectionOwner = nullptr;
+    });
+    m_popup->hide();
     emit selectedCompletion(expression);
+    restoreEditorFocus();
 }
 
 void ConstantCompletion::showCompletion()
 {
+    m_finishing = false;
     applyThemeColors();
-
+    m_popup->ensurePolished();
+    const int rowHeight = qMax(m_constantWidget->sizeHintForRow(0), m_constantWidget->fontMetrics().height());
+    m_popupSize.setHeight(rowHeight * 7 + m_search->sizeHint().height() + 22);
     prepareCompletionPopup(m_popup, m_editor, m_editor->textCursor(), m_popupSize, m_cornerRadius);
     const QRect geometry = completionPopupGeometry(m_editor, m_editor->textCursor(), m_popupSize);
     if (!geometry.isValid()) {
-        m_popup->hide();
+        emit canceledCompletion();
         return;
     }
-
-    // Start with category.
-    m_categoryWidget->setFocus();
-    setHorizontalPosition(0);
-
     m_popup->setGeometry(geometry);
-    m_categoryWidget->resize(geometry.size());
-    m_constantWidget->resize(geometry.size());
     ToolTipStyleUtils::applyRoundedPopupMask(m_popup, m_cornerRadius);
     m_popup->show();
-}
-
-void ConstantCompletion::setHorizontalPosition(int x)
-{
-    m_categoryWidget->move(-x, 0);
-    m_constantWidget->move(m_popup->width() - x, 0);
+    m_search->setFocus(Qt::PopupFocusReason);
 }

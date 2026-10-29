@@ -35,6 +35,18 @@ Name           Also known as       Exponent bits  Significand bits
 In many programming languages, the ``binary32`` format is available as ``float``
 and ``binary64`` is available as ``double``.
 
+These functions convert between bit patterns and SpeedCrunch's own number
+format. They do not make SpeedCrunch use IEEE-754 arithmetic internally.
+Infinity decodes as ``NaN``. Both signs of zero decode as ``0``, and NaN signs,
+payloads and the distinction between quiet and signaling NaNs are not preserved.
+
+Very small finite values can appear as ``0`` in fixed-point notation because
+the displayed result is rounded. The stored value is still nonzero. Use
+:func:`sci` or select scientific notation to see these values, for example::
+
+    sci(ieee754_double_decode(0x0000000000000001))
+    = 4.94065645841246544177e-324
+
 
 .. function:: ieee754_encode(x; exponent_bits; significand_bits [; exponent_bias])
 

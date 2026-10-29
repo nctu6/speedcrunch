@@ -3,9 +3,11 @@
 
 
 #include "gui/constantswidget.h"
+#include "gui/constantbrowserutils.h"
 
 #include "core/constants.h"
 #include "core/settings.h"
+#include "core/startupdiagnostics.h"
 #include "core/unicodechars.h"
 #include "core/mathdsl.h"
 #include "gui/dockliststyle.h"
@@ -22,36 +24,21 @@
 #include <QPalette>
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QSignalBlocker>
 #include <QTimer>
 #include <QComboBox>
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <QHeaderView>
 #include <QLabel>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QShortcut>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
 #include <algorithm>
-
-static QString constantExpression(const Constant& constant)
-{
-    if (constant.domainType == ConstantDomain::Mathematics
-        && constant.unit.isEmpty()
-        && constant.value == QStringLiteral("3.14159265358979323846264338327950288419716939937511"))
-        return QString(UnicodeChars::Pi);
-    if (constant.domainType == ConstantDomain::Mathematics
-        && constant.unit.isEmpty()
-        && constant.value == QStringLiteral("2.71828182845904523536028747135266249775724709369996"))
-        return QStringLiteral("e");
-
-    QString unit = constant.unit;
-    unit.replace(UnicodeChars::MiddleDot, MathDsl::MulDotOp);
-    return constant.unit.isEmpty()
-        ? constant.value
-        : QStringLiteral("%1%2[%3]")
-            .arg(constant.value, QString(MathDsl::QuantSp), unit);
-}
+#include <utility>
 
 static QString displayValue(const Constant& constant)
 {
@@ -65,11 +52,16 @@ static QString displayValue(const Constant& constant)
     return constant.value.left(qMin(constant.value.length(), dotPos + 16));
 }
 
-ConstantsWidget::ConstantsWidget(QWidget* parent)
+static bool hasLineBreak(const QString& text)
+{
+    return text.contains(QLatin1Char('\n')) || text.contains(QLatin1Char('\r'))
+        || text.contains(QChar::LineSeparator) || text.contains(QChar::ParagraphSeparator);
+}
+
+ConstantsWidget::ConstantsWidget(QWidget* parent, const InitialState& state)
     : QWidget(parent)
 {
     constexpr int kControlRowHorizontalPadding = 8;
-    constexpr int kControlRowVerticalPadding = 6;
 
     m_domainLabel = new QLabel(this);
     m_domain = new QComboBox(this);
@@ -84,29 +76,13 @@ ConstantsWidget::ConstantsWidget(QWidget* parent)
     connect(m_subdomain, SIGNAL(activated(int)), SLOT(filter()));
 
     m_domainBox = new QWidget(this);
-    m_domainLayout = new QHBoxLayout;
+    m_domainLayout = new QGridLayout;
     m_domainBox->setLayout(m_domainLayout);
     m_domainLayout->setContentsMargins(kControlRowHorizontalPadding,
-                                       kControlRowVerticalPadding,
+                                       UiConfig::DockSearchRowVerticalPadding,
                                        kControlRowHorizontalPadding,
-                                       kControlRowVerticalPadding);
+                                       0);
     m_domainLayout->setSpacing(6);
-
-    m_domainRow1 = new QWidget(this);
-    m_domainRow1Layout = new QHBoxLayout;
-    m_domainRow1->setLayout(m_domainRow1Layout);
-    m_domainRow1Layout->setContentsMargins(0, 0, 0, 0);
-    m_domainRow1Layout->setSpacing(6);
-    m_domainRow1Layout->addWidget(m_domainLabel);
-    m_domainRow1Layout->addWidget(m_domain);
-
-    m_domainRow2 = new QWidget(this);
-    m_domainRow2Layout = new QHBoxLayout;
-    m_domainRow2->setLayout(m_domainRow2Layout);
-    m_domainRow2Layout->setContentsMargins(0, 0, 0, 0);
-    m_domainRow2Layout->setSpacing(6);
-    m_domainRow2Layout->addWidget(m_subdomainLabel);
-    m_domainRow2Layout->addWidget(m_subdomain);
 
     m_label = new QLabel(this);
 
@@ -119,12 +95,13 @@ ConstantsWidget::ConstantsWidget(QWidget* parent)
     QWidget* searchBox = new QWidget(this);
     QHBoxLayout* searchLayout = new QHBoxLayout;
     searchBox->setLayout(searchLayout);
+    searchLayout->setSpacing(6);
     searchLayout->addWidget(m_label);
     searchLayout->addWidget(m_filter);
     searchLayout->setContentsMargins(kControlRowHorizontalPadding,
-                                     kControlRowVerticalPadding,
+                                     UiConfig::DockSearchRowVerticalPadding,
                                      kControlRowHorizontalPadding,
-                                     kControlRowVerticalPadding);
+                                     UiConfig::DockSearchRowVerticalPadding);
 
     m_list = new QTreeWidget(this);
     m_list->setAutoScroll(true);
@@ -151,16 +128,16 @@ ConstantsWidget::ConstantsWidget(QWidget* parent)
     connect(m_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(handleItem(QTreeWidgetItem*)));
     QShortcut* returnShortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);
     returnShortcut->setContext(Qt::WidgetWithChildrenShortcut);
-    connect(returnShortcut, &QShortcut::activated, this, [this]() {
+    const auto activateCurrent = [this]() {
+        if (m_filterTimer->isActive())
+            filter();
         if (QTreeWidgetItem* current = m_list->currentItem())
             handleItem(current);
-    });
+    };
+    connect(returnShortcut, &QShortcut::activated, this, activateCurrent);
     QShortcut* enterShortcut = new QShortcut(QKeySequence(Qt::Key_Enter), this);
     enterShortcut->setContext(Qt::WidgetWithChildrenShortcut);
-    connect(enterShortcut, &QShortcut::activated, this, [this]() {
-        if (QTreeWidgetItem* current = m_list->currentItem())
-            handleItem(current);
-    });
+    connect(enterShortcut, &QShortcut::activated, this, activateCurrent);
 
     QVBoxLayout* layout = new QVBoxLayout;
     setLayout(layout);
@@ -180,13 +157,14 @@ ConstantsWidget::ConstantsWidget(QWidget* parent)
     m_noMatchLabel->adjustSize();
     m_noMatchLabel->hide();
 
-    retranslateText();
+    translateControls(ListUpdate::DeferPopulation);
     updateDomainLayout();
 
     QWidget::setTabOrder(m_filter, m_list);
     setFocusProxy(m_filter);
 
-    filter();
+    restoreState(state.domain, state.subdomain, state.searchText);
+    m_filter->installEventFilter(this);
 }
 
 ConstantsWidget::~ConstantsWidget()
@@ -207,6 +185,8 @@ QString ConstantsWidget::selectedSubdomain() const { return m_subdomain->current
 QString ConstantsWidget::searchText() const { return m_filter->text(); }
 void ConstantsWidget::restoreState(const QString& domain, const QString& subdomain, const QString& searchText)
 {
+    StartupDiagnostics::AppearanceContext context("Restore constants dock filters");
+    const QSignalBlocker searchBlocker(m_filter);
     if (!searchText.isNull())
         m_filter->setText(searchText);
     if (!domain.isEmpty()) {
@@ -237,10 +217,16 @@ void ConstantsWidget::setSummaryPopupThemeColors(const QColor& background,
 
 void ConstantsWidget::handleRadixCharacterChange()
 {
+    StartupDiagnostics::AppearanceContext context("Constants dock radix change");
     updateList();
 }
 
 void ConstantsWidget::retranslateText()
+{
+    translateControls(ListUpdate::Populate);
+}
+
+void ConstantsWidget::translateControls(ListUpdate mode)
 {
     m_domainLabel->setText(tr("Domain"));
     m_subdomainLabel->setText(tr("Subdomain"));
@@ -258,66 +244,91 @@ void ConstantsWidget::retranslateText()
     m_list->setHeaderLabels(titles);
 
     updateDomainLabelAlignment();
-    updateList();
+    refreshList(mode);
 }
 
 void ConstantsWidget::filter()
 {
     const QList<Constant> &clist = Constants::instance()->list();
     const char radixChar = Settings::instance()->radixCharacter();
-    QString term = m_filter->text();
+    const QString term = m_filter->text();
 
     m_filterTimer->stop();
-    setUpdatesEnabled(false);
 
     const QString chosenDomain = m_domain->currentText();
     const QString chosenSubdomain = m_subdomain->currentText();
+    const QString all = tr("All");
+    const bool rightToLeft = layoutDirection() == Qt::RightToLeft;
 
+    // Compare the translated content itself, including fallback translations.
+    QStringList inputs {all, chosenDomain, chosenSubdomain, term,
+                        QString(QChar::fromLatin1(radixChar)), QString::number(layoutDirection())};
+    inputs.reserve(inputs.size() + clist.size() * 6);
+    for (const Constant& constant : clist) {
+        inputs << constant.name << constant.domain << constant.subdomain
+               << constant.value << constant.unit << QString::number(int(constant.domainType));
+    }
+    const bool unchanged = inputs == m_populatedInputs;
+    StartupDiagnostics::AppearanceScope timing(unchanged
+        ? "Skip unchanged constants dock list" : "Populate constants dock list", this);
+    if (unchanged)
+        return;
+
+    setUpdatesEnabled(false);
     hideSummaryPopup();
-    m_list->clear();
-    for (int k = 0; k < clist.count(); ++k) {
-        QStringList str;
-        str << clist.at(k).name;
-        const QString value = displayValue(clist.at(k));
-        QString radCh = (radixChar != MathDsl::DotSep) ?
-            QString(value).replace(MathDsl::DotSep, radixChar)
-            : value;
+    {
+        StartupDiagnostics::AppearanceScope phase("Clear constants dock rows", this);
+        m_list->clear();
+    }
+    struct PreparedRow {
+        const Constant* constant;
+        QStringList text;
+    };
+    QList<PreparedRow> rows;
+    bool uniformRowHeights = true;
+    {
+        StartupDiagnostics::AppearanceScope phase("Filter and format constants dock rows", this);
+        rows.reserve(clist.size());
+        for (const Constant& constant : clist) {
+            if (!ConstantBrowserUtils::matches(constant, term,
+                    chosenDomain == all ? QString() : chosenDomain,
+                    chosenSubdomain == all ? QString() : chosenSubdomain)) {
+                continue;
+            }
 
-        if (layoutDirection() == Qt::RightToLeft) {
-            QString normalizedUnit = clist.at(k).unit;
-            normalizedUnit.replace(UnicodeChars::MiddleDot, MathDsl::MulDotOp);
-            str << normalizedUnit + UnicodeChars::LeftToRightMark;
-            str << radCh;
-        } else {
-            str << radCh;
-            QString normalizedUnit = clist.at(k).unit;
-            normalizedUnit.replace(UnicodeChars::MiddleDot, MathDsl::MulDotOp);
-            str << normalizedUnit;
+            const QString value = displayValue(constant);
+            const QString radCh = (radixChar != MathDsl::DotSep)
+                ? QString(value).replace(MathDsl::DotSep, radixChar) : value;
+            const QString normalizedUnit = ConstantBrowserUtils::unit(constant);
+            QStringList str {constant.name};
+            if (rightToLeft)
+                str << normalizedUnit + UnicodeChars::LeftToRightMark << radCh;
+            else
+                str << radCh << normalizedUnit;
+
+            // Keep variable heights if a translation introduces multiple lines.
+            if (uniformRowHeights)
+                uniformRowHeights = std::none_of(str.cbegin(), str.cend(), hasLineBreak);
+            rows.append({&constant, std::move(str)});
         }
-
-        bool include = (chosenDomain == tr("All")) ?
-            true : (clist.at(k).domain == chosenDomain);
-        if (include && chosenSubdomain != tr("All"))
-            include = (clist.at(k).subdomain == chosenSubdomain);
-
-        if (!include)
-            continue;
-
-        QTreeWidgetItem* item = nullptr;
-        if (term.isEmpty())
-            item = new QTreeWidgetItem(m_list, str);
-        else if (clist.at(k).name.contains(term, Qt::CaseInsensitive))
-            item = new QTreeWidgetItem(m_list, str);
-        if (item) {
-            item->setData(0, Qt::UserRole, constantExpression(clist.at(k)));
+    }
+    {
+        StartupDiagnostics::AppearanceScope phase("Create constants dock rows and tooltips", this);
+        // Single-line rows share a font and have no icons or per-item size hints.
+        // Reuse their height during layout without changing content-based widths.
+        m_list->setUniformRowHeights(uniformRowHeights);
+        for (const auto& row : rows) {
+            const Constant& constant = *row.constant;
+            QTreeWidgetItem* item = new QTreeWidgetItem(m_list, row.text);
+            item->setData(0, Qt::UserRole, ConstantBrowserUtils::expression(constant));
 
             QString tip;
             tip += QString(UnicodeChars::LeftToRightMark);
             tip += QString("<b>%1</b><br>%2")
-                .arg(clist.at(k).name, clist.at(k).value);
+                .arg(constant.name, constant.value);
             tip += QString(UnicodeChars::LeftToRightMark);
-            if (!clist.at(k).unit.isEmpty())
-                tip.append(" ").append(QString(clist.at(k).unit).replace(
+            if (!constant.unit.isEmpty())
+                tip.append(" ").append(QString(constant.unit).replace(
                     UnicodeChars::MiddleDot, MathDsl::MulDotOp));
             if (radixChar != MathDsl::DotSep)
                 tip.replace(MathDsl::DotSep, radixChar);
@@ -326,7 +337,7 @@ void ConstantsWidget::filter()
             item->setToolTip(1, tip);
             item->setToolTip(2, tip);
 
-            if (layoutDirection() == Qt::RightToLeft) {
+            if (rightToLeft) {
                 item->setTextAlignment(1, Qt::AlignRight);
                 item->setTextAlignment(2, Qt::AlignLeft);
             } else {
@@ -337,21 +348,22 @@ void ConstantsWidget::filter()
     }
 
     const bool hasMatches = m_list->topLevelItemCount() > 0;
-    m_list->header()->setStretchLastSection(false);
-    m_list->header()->setSectionResizeMode(2, QHeaderView::Interactive);
-    m_list->resizeColumnToContents(0);
-    m_list->resizeColumnToContents(1);
-    m_list->resizeColumnToContents(2);
+    m_columnsNeedResize = true;
+    if (m_list->isVisible())
+        resizeColumnsToContents();
 
     if (hasMatches) {
         m_noMatchLabel->hide();
+        StartupDiagnostics::AppearanceScope phase("Sort constants dock rows", this);
         m_list->sortItems(0, Qt::AscendingOrder);
+        m_list->setCurrentItem(m_list->topLevelItem(0));
     } else {
         updateEmptyHeaderStretch();
         scheduleEmptyHeaderStretch();
         DockListStyle::showCenteredNoMatchLabel(m_list, m_noMatchLabel);
     }
 
+    m_populatedInputs = std::move(inputs);
     setUpdatesEnabled(true);
 }
 
@@ -367,6 +379,11 @@ void ConstantsWidget::triggerFilter()
 }
 
 void ConstantsWidget::updateList()
+{
+    refreshList(ListUpdate::Populate);
+}
+
+void ConstantsWidget::refreshList(ListUpdate mode)
 {
     const int chosenDomainIndex = m_domain->currentIndex();
     const QString chosenDomain = m_domain->currentText();
@@ -403,11 +420,13 @@ void ConstantsWidget::updateList()
     if (subdomainIndex >= 0)
         m_subdomain->setCurrentIndex(subdomainIndex);
 
-    filter();
+    if (mode == ListUpdate::Populate)
+        filter();
 }
 
 void ConstantsWidget::handleDomainChanged()
 {
+    StartupDiagnostics::AppearanceContext context("Constants dock domain change");
     refreshSubdomains();
     filter();
 }
@@ -421,6 +440,7 @@ void ConstantsWidget::refreshSubdomains()
         m_subdomain->setCurrentIndex(0);
         m_subdomainLabel->setVisible(true);
         m_subdomain->setVisible(true);
+        updateDomainLayout();
         return;
     }
 
@@ -432,20 +452,37 @@ void ConstantsWidget::refreshSubdomains()
     const bool hasConfiguredSubdomains = !subdomains.isEmpty();
     m_subdomainLabel->setVisible(hasConfiguredSubdomains);
     m_subdomain->setVisible(hasConfiguredSubdomains);
+    updateDomainLayout();
 }
 
 void ConstantsWidget::changeEvent(QEvent* e)
 {
     if (e->type() == QEvent::LanguageChange) {
-        Constants::instance()->retranslateText();
+        StartupDiagnostics::AppearanceContext context("Constants dock LanguageChange");
         retranslateText();
     }
-    else
+    else {
         QWidget::changeEvent(e);
+        if (e->type() == QEvent::LayoutDirectionChange)
+            retranslateText();
+        if (e->type() == QEvent::FontChange)
+            QTimer::singleShot(0, this, [this]() { updateDomainLayout(); });
+    }
 }
 
 bool ConstantsWidget::eventFilter(QObject* watched, QEvent* event)
 {
+    if (watched == m_filter && event->type() == QEvent::KeyPress) {
+        const int key = static_cast<QKeyEvent*>(event)->key();
+        if (key == Qt::Key_Up || key == Qt::Key_Down) {
+            if (m_filterTimer->isActive())
+                filter();
+            ConstantBrowserUtils::moveSelection(m_list, key);
+            return true;
+        }
+    }
+    if (watched == m_list && event->type() == QEvent::Show && m_columnsNeedResize)
+        resizeColumnsToContents();
     if (watched == m_list || watched == m_list->viewport()) {
         switch (event->type()) {
         case QEvent::ToolTip: {
@@ -558,6 +595,12 @@ void ConstantsWidget::showSummaryPopup(QTreeWidgetItem* item,
 void ConstantsWidget::updateSummaryPopupForViewportPosition(const QPoint& viewportPos,
                                                             const QPoint& globalPos)
 {
+    // QTreeView can return the first row for positions above the viewport.
+    if (!m_list->viewport()->rect().contains(viewportPos)) {
+        hideSummaryPopup();
+        return;
+    }
+
     const QModelIndex index = m_list->indexAt(viewportPos);
     QTreeWidgetItem* item = index.isValid() ? m_list->itemAt(viewportPos) : nullptr;
     if (item == nullptr) {
@@ -609,6 +652,17 @@ void ConstantsWidget::updateEmptyHeaderStretch()
     header->resizeSection(2, qMax(header->sectionSizeHint(2), targetWidth - fixedWidth));
 }
 
+void ConstantsWidget::resizeColumnsToContents()
+{
+    StartupDiagnostics::AppearanceScope phase("Size constants dock columns", this);
+    m_columnsNeedResize = false;
+    m_list->header()->setStretchLastSection(false);
+    m_list->header()->setSectionResizeMode(2, QHeaderView::Interactive);
+    for (int column = 0; column < m_list->columnCount(); ++column)
+        m_list->resizeColumnToContents(column);
+    updateEmptyHeaderStretch();
+}
+
 void ConstantsWidget::updateDomainLayout()
 {
     const int minInlineWidthByControls =
@@ -620,25 +674,22 @@ void ConstantsWidget::updateDomainLayout()
     const int practicalInlineWidth = 560;
     const int availableWidth = m_domainBox->width() > 0 ? m_domainBox->width() : width();
     const bool compact = availableWidth < std::max(minInlineWidthByControls, practicalInlineWidth);
-    if (m_domainLayoutInitialized && compact == m_isCompactDomainLayout)
+    m_domainLayout->setColumnStretch(3, compact || m_subdomain->isHidden() ? 0 : 1);
+    if (m_domainLayoutInitialized && compact == m_isCompactDomainLayout) {
+        updateDomainLabelAlignment();
         return;
+    }
 
     m_domainLayoutInitialized = true;
     m_isCompactDomainLayout = compact;
     while (QLayoutItem* item = m_domainLayout->takeAt(0))
         delete item;
 
-    if (compact) {
-        QVBoxLayout* stacked = new QVBoxLayout;
-        stacked->setContentsMargins(0, 0, 0, 0);
-        stacked->setSpacing(4);
-        stacked->addWidget(m_domainRow1);
-        stacked->addWidget(m_domainRow2);
-        m_domainLayout->addLayout(stacked);
-    } else {
-        m_domainLayout->addWidget(m_domainRow1);
-        m_domainLayout->addWidget(m_domainRow2);
-    }
+    m_domainLayout->setColumnStretch(1, 1);
+    m_domainLayout->addWidget(m_domainLabel, 0, 0);
+    m_domainLayout->addWidget(m_domain, 0, 1);
+    m_domainLayout->addWidget(m_subdomainLabel, compact ? 1 : 0, compact ? 0 : 2);
+    m_domainLayout->addWidget(m_subdomain, compact ? 1 : 0, compact ? 1 : 3);
 
     updateDomainLabelAlignment();
 }
@@ -646,13 +697,16 @@ void ConstantsWidget::updateDomainLayout()
 void ConstantsWidget::updateDomainLabelAlignment()
 {
     if (m_isCompactDomainLayout) {
-        const int labelWidth = std::max(m_domainLabel->sizeHint().width(),
-                                        m_subdomainLabel->sizeHint().width());
+        const int labelWidth = std::max({m_domainLabel->sizeHint().width(),
+                                        m_subdomainLabel->sizeHint().width(),
+                                        m_label->sizeHint().width()});
         m_domainLabel->setFixedWidth(labelWidth);
         m_subdomainLabel->setFixedWidth(labelWidth);
+        m_label->setFixedWidth(labelWidth);
     } else {
-        m_domainLabel->setMinimumWidth(0);
-        m_domainLabel->setMaximumWidth(QWIDGETSIZE_MAX);
+        const int labelWidth = std::max(m_domainLabel->sizeHint().width(), m_label->sizeHint().width());
+        m_domainLabel->setFixedWidth(labelWidth);
+        m_label->setFixedWidth(labelWidth);
         m_subdomainLabel->setMinimumWidth(0);
         m_subdomainLabel->setMaximumWidth(QWIDGETSIZE_MAX);
     }

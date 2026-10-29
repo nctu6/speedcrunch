@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSpacerItem>
+#include <QSysInfo>
 #include <QTextEdit>
 
 #define THANKS(name) #name"<br>"
@@ -22,12 +23,16 @@ AboutBox::AboutBox(QWidget* parent, Qt::WindowFlags f)
     msg += "<img src=\":/speedcrunch.png\"><br>";
     msg += "<b>SpeedCrunch " SPEEDCRUNCH_VERSION;
 #ifdef SPEEDCRUNCH_PORTABLE
-    msg += " (Portable Edition)";
+    msg += " Portable";
 #endif
-    msg += "</b><br>(Qt " + QLatin1String(QT_VERSION_STR) + ")<br>";
+    msg += "</b><br>";
+    const QString osName = QSysInfo::prettyProductName()
+        .remove(QLatin1Char('(')).remove(QLatin1Char(')'));
+    msg += osName.toHtmlEscaped() + "<br>";
+    msg += "Qt " + QLatin1String(QT_VERSION_STR) + "<br>";
 
     const QString authors = "<p><b>%1</b><br>%2";
-    msg += authors.arg(tr("Main author | Logo | Maintainer"), "Helder Correia (@heldercorreia)");
+    msg += authors.arg(tr("Main author | Logo | Maintainer"), "Helder Correia");
 
     msg += "<p>" + QString("<b>%1</b><br>").arg(tr("Core developers"));
     msg +=
@@ -50,26 +55,34 @@ AboutBox::AboutBox(QWidget* parent, Qt::WindowFlags f)
         THANKS(Alexey Kouznetsov)
         THANKS(Anders Lund)
         THANKS(Andreas Scherer)
+        THANKS(Antonio Mannella)
         THANKS(Artem Golovinsky)
         THANKS(Aur&eacute;lien G&acirc;teau)
         THANKS(Bart Martens)
+        THANKS(Benjamin Robin)
         THANKS(Bernhard Schiffner)
+        THANKS(Brian Hale)
         THANKS(Christian Ehrlich)
         THANKS(Damir Perisa)
         THANKS(Daniel Sch&auml;ufele)
+        THANKS(@ddidderr)
         THANKS(Derek O&#39;Connor)
+        THANKS(D.J.L. Sales)
         THANKS(Enrico R&oacute;s)
         THANKS(Eugeniu Plamadeala)
         THANKS(F Chris Carrera)
         THANKS(Francesco di Cugno)
+        THANKS(Francis Tseng)
+        THANKS(@FrankMountainFace)
         THANKS(Gary Cramblitt)
         THANKS(Henrik Nordstrom)
         THANKS(Henrique Pinto)
         THANKS(James Yuzwalk)
-        THANKS(Jean-Remy Falleri)
         THANKS(Jean-Michel Frouin)
-        THANKS(Johannes Lange)
+        THANKS(Jean-Remy Falleri)
+        THANKS(@jetp250)
         THANKS(Johan Thelin)
+        THANKS(Johannes Lange)
         THANKS(Jonathan Avraham)
         THANKS(Jonathan Riddell)
         THANKS(Lars Ivar Igesund)
@@ -77,28 +90,42 @@ AboutBox::AboutBox(QWidget* parent, Qt::WindowFlags f)
         THANKS(Luigi Toscano)
         THANKS(Maciek Borowka)
         THANKS(Marco Wegner)
+        THANKS(@Matth7878)
         THANKS(Matthew J Smith)
+        THANKS(Matthias Prager)
         THANKS(Melchior Franz)
         THANKS(Michael Pyne)
         THANKS(Mikko Syrj&auml;)
         THANKS(Mohamed Eldesoky)
         THANKS(Nelson Almeida)
+        THANKS(@nfshr)
         THANKS(Nikolay Zlatev)
         THANKS(Noah Davis)
         THANKS(Oliver Gubler)
+        THANKS(@pandora1986)
+        THANKS(Pedro Montes Alcalde)
         THANKS(Petri Damst&eacute;n)
         THANKS(Philippe Fremy)
         THANKS(Pieter Pareit)
+        THANKS(@playerofgames)
+        THANKS(@rafa4mat)
+        THANKS(Rafael Fraga)
+        THANKS(@RedNova84)
         THANKS(Roberto Alsina)
-        THANKS(Roland &#39;liquidat&#39; Wolters)
+        THANKS(Rodrigo Pedra)
         THANKS(Roger Sachan)
+        THANKS(Roland &#39;liquidat&#39; Wolters)
+        THANKS(@Sacryn)
         THANKS(Sarah Hobbs)
         THANKS(S&eacute;bastien Szymanski)
         THANKS(Stephan Binner)
         THANKS(Steven Honeyman)
+        THANKS(Theodore R. Smith)
         THANKS(Thomas Luebking)
         THANKS(Thomas Nagy)
+        THANKS(@tosione)
         THANKS(Vibet Alexis)
+        THANKS(Vitaly Zaitsev)
         THANKS(Vladimir Pouzanov)
         THANKS(Wictor Lund)
         THANKS(Witold Wysota)

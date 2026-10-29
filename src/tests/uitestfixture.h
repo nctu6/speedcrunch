@@ -49,6 +49,19 @@ int run(int argc, char** argv)
     qputenv("SPEEDCRUNCH_TEST_SKIP_UPDATE_CHECK", "1");
     if (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
         qputenv("QT_QPA_PLATFORM", "offscreen");
+#if defined(Q_OS_WIN)
+    // Windows offscreen uses FreeType, which does not discover system fonts.
+    // Keep an explicit font directory when the caller supplies one.
+    if (qgetenv("QT_QPA_PLATFORM").startsWith("offscreen")
+        && qEnvironmentVariableIsEmpty("QT_QPA_FONTDIR")) {
+        const QString windowsDirectory = qEnvironmentVariable("SystemRoot");
+        if (!windowsDirectory.isEmpty()) {
+            const QString fonts = QDir(windowsDirectory).filePath(QStringLiteral("Fonts"));
+            if (QDir(fonts).exists())
+                qputenv("QT_QPA_FONTDIR", fonts.toUtf8());
+        }
+    }
+#endif
     QApplication app(argc, argv);
     for (const QString& path : {Settings::getConfigPath(), Settings::getDataPath(),
                                 Settings::getCachePath()}) {

@@ -100,6 +100,7 @@ private:
     void setTranslatableFunctionUsages();
 
     QHash<QString, Function*> m_functions;
+    mutable QStringList m_identifiers;
 };
 
 #endif // CORE_FUNCTION_H

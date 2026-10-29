@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "core/constants.h"
 
 #include "core/numberformatter.h"
@@ -121,6 +123,7 @@ static QString subdomainToDisplay(ConstantSubdomain subdomain)
 
 void Constants::Private::populate()
 {
+    StartupDiagnostics::Scope timing("Populate and translate constants");
     domains.clear();
     list.clear();
 
@@ -608,6 +611,7 @@ Constants* Constants::instance()
 Constants::Constants()
     : d(new Constants::Private)
 {
+    StartupDiagnostics::Scope timing("Initialize built-in constants");
     setObjectName("Constants");
     d->retranslateText();
 }

@@ -9,6 +9,7 @@
 
 class QFocusEvent;
 class QPaintEvent;
+class QStyle;
 class QTimer;
 
 class ThemedLineEdit : public QLineEdit {
@@ -29,6 +30,7 @@ private:
     QRect themedCursorRect() const;
 
     QColor m_cursorColor;
+    QStyle* m_cursorStyle;
     QTimer* m_cursorBlinkTimer;
     bool m_cursorVisible = false;
 };

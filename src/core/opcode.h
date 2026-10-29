@@ -13,9 +13,10 @@ class Opcode
 public:
     enum  Type { Nop, Load, Ref, Function, List, Add, Sub, Neg, BNot, Mul, Div, Pow,
            Fact, Modulo, IntDiv, LSh, RSh, BAnd, BOr, Conv, Percent, Phasor,
-           UnitRef, Unit };
+           UnitRef, Unit, DivUnit };
 
     Type type;
+    // DivUnit uses index to record whether the divisor is negated.
     unsigned index;
 
     // TODO: this is only needed for Conv Op. Maybe refactor this to a smarter place?

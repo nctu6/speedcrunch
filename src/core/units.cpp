@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "core/units.h"
 
 #include "core/unicodechars.h"
@@ -483,6 +485,7 @@ QString applySuperscriptStyleToUnitName(QString unitName)
     return normalized;
 }
     const UnitRegistry& s_unitRegistry();
+    QHash<QMap<UnitQuantity, Rational>, Unit> s_canonicalMatchLookup();
 
     enum class UnitFamily {
         SiBase,
@@ -495,10 +498,10 @@ QString applySuperscriptStyleToUnitName(QString unitName)
         UnitId id;
         QString longName;
         QString localized;
-        Quantity value;
         QString shortName;
         QString alternateShortName;
         int prefixPolicy;
+        bool planeAngle;
     };
 
     struct AffineDefinition {
@@ -742,35 +745,18 @@ const std::array<DimensionKeyEntry, 8>& s_dimensionKeyEntries()
     X(Robi, robi, "robi", "Ri", 90) \
     X(Quebi, quebi, "quebi", "Qi", 100)
 
+struct UnitDefinition {
+    UnitId id;
+    // Prefix lists have static storage and never change after initialization.
+    const PrefixSpec* prefix = nullptr;
+};
+
 struct UnitRegistry {
-    /*
-        - valuesByIdentifier:
-            Flat identifier->value map consumed by evaluator/unit lookup clients
-            via Units::builtInUnitValues() and Units::builtInUnitLookup().
-
-        - displaySymbolsByIdentifier:
-            Maps canonical/alias identifiers to preferred short display symbols
-            (e.g. "ohm" -> "Ω"), consumed by unit display-format helpers.
-
-        - prefixedIdentifiers:
-            Generated decimal/binary prefix identifiers whose authored token is
-            itself the preferred display spelling.
-
-        - affineByIdentifier:
-            Affine conversion metadata for identifiers like degree_celsius and
-            degree_fahrenheit, used by affine conversion helpers.
-
-        - canonicalMatchLookup:
-            Dimension-to-canonical-unit map used by Units::findUnit() to select
-            preferred display units for computed dimensions.
-     */
-    QHash<QString, Quantity> valuesByIdentifier;
-    QHash<QString, UnitId> idsByIdentifier;
+    QHash<QString, UnitDefinition> definitionsByIdentifier;
     QHash<QString, QString> localizedByIdentifier;
-    QHash<QString, QString> displaySymbolsByIdentifier;
     QSet<QString> prefixedIdentifiers;
+    QSet<QString> angleIdentifiers;
     QHash<QString, AffineDefinition> affineByIdentifier;
-    QHash<QMap<UnitQuantity, Rational>, Unit> canonicalMatchLookup;
 };
 
 // Returns the stable textual key for a base dimension quantity.
@@ -1211,7 +1197,8 @@ bool tryGetPrefixedExplicitAngleUnitValueForMode(const QString& identifier,
 
 QString unitName(UnitId id)
 {
-    return s_unitSpecs().value(id).name;
+    const auto it = s_unitSpecs().constFind(id);
+    return it == s_unitSpecs().constEnd() ? QString() : it.value().name;
 }
 
 const char* unitLocalizedName(UnitId id)
@@ -1454,8 +1441,10 @@ template <typename Builder>
 const Quantity s_cachedUnit(QMap<QString, Quantity>& cache, const QString& name, Builder&& builder)
 {
     auto it = cache.constFind(name);
-    if (it == cache.cend())
+    if (it == cache.cend()) {
+        StartupDiagnostics::Scope timing("Construct built-in unit value");
         it = cache.insert(name, builder());
+    }
     return it.value();
 }
 
@@ -1464,7 +1453,7 @@ Quantity s_baseUnitFromDefinitions(const QString& canonicalName)
 {
     const QHash<UnitId, UnitSpec>& specs = s_unitSpecs();
     for (const UnitId id : s_unitSpecOrder()) {
-        const UnitSpec& spec = specs.value(id);
+        const UnitSpec& spec = specs.constFind(id).value();
         if (spec.name != canonicalName)
             continue;
         if (spec.quantities.isEmpty())
@@ -1485,7 +1474,7 @@ Quantity s_unitValueFromDefinitions(const QString& canonicalName,
     // the fallback builder expression for compatibility.
     const QHash<UnitId, UnitSpec>& specs = s_unitSpecs();
     for (const UnitId id : s_unitSpecOrder()) {
-        const UnitSpec& spec = specs.value(id);
+        const UnitSpec& spec = specs.constFind(id).value();
         if (spec.name != canonicalName)
             continue;
         if (spec.linearValue && spec.linearValue != selfGetter)
@@ -1536,9 +1525,10 @@ void Units::pushUnit(Quantity q, QString name)
 // Initialize the lookup table for automatic matching.
 void Units::initTable()
 {
+    StartupDiagnostics::Scope timing("Initialize unit lookup tables");
     // Base canonicalization map derived from unit specs.
     // Entries in this map are preferred renderings for matching dimensions.
-    m_matchLookup = s_unitRegistry().canonicalMatchLookup;
+    m_matchLookup = s_canonicalMatchLookup();
 
     // Additional preferred canonical renderings for composite dimensions that
     // are not represented by a single unit spec row.
@@ -2147,23 +2137,35 @@ void Units::findUnit(Quantity& q)
 
 namespace {
 
-// Builds runtime lookup registries from declarative unit specs:
-// identifiers, display symbols, affine converters and canonical matches.
+Quantity s_scaleUnitForPrefix(const Quantity& value, const Quantity& prefix)
+{
+    // Registry values without a display unit only need numeric scaling.
+    // The full product also checks display rules for user expressions.
+    if (!value.hasUnit())
+        return value * prefix.numericValue();
+    return prefix * value;
+}
+
+// Register names without constructing quantities. Completion and identifier
+// checks need this metadata even when no calculation uses a unit.
 static UnitRegistry s_buildUnitRegistry()
 {
+    StartupDiagnostics::Scope timing("Build built-in unit registry");
     UnitRegistry registry;
     QList<UnitAliasSpec> unitAliasSpecs;
+    const QHash<UnitId, UnitSpec>& specs = s_unitSpecs();
+    unitAliasSpecs.reserve(specs.size());
 
     const auto addUnique = [&](const QString& name,
-                               const Quantity& value,
+                               UnitDefinition definition,
                                const QString& localizedName = QString(),
-                               UnitId id = UnitId::Unknown,
-                               bool prefixedIdentifier = false) {
-        if (name.isEmpty() || registry.valuesByIdentifier.contains(name))
+                               bool prefixedIdentifier = false,
+                               bool planeAngle = false) {
+        if (name.isEmpty() || registry.definitionsByIdentifier.contains(name))
             return;
-        registry.valuesByIdentifier.insert(name, value);
-        if (id != UnitId::Unknown)
-            registry.idsByIdentifier.insert(name, id);
+        registry.definitionsByIdentifier.insert(name, definition);
+        if (planeAngle)
+            registry.angleIdentifiers.insert(name);
         if (!localizedName.isEmpty())
             registry.localizedByIdentifier.insert(name, localizedName);
         if (prefixedIdentifier)
@@ -2177,32 +2179,25 @@ static UnitRegistry s_buildUnitRegistry()
     const auto prefixedLocalizedName = [](const QString& prefix, const QString& base) -> QString {
         if (prefix.isEmpty() || base.isEmpty())
             return QString();
-        QString loweredBase = base;
-        loweredBase[0] = loweredBase.at(0).toLower();
-        return prefix + loweredBase;
+        return prefix + base;
     };
 
-    const QHash<UnitId, UnitSpec>& specs = s_unitSpecs();
+    StartupDiagnostics::Scope phaseTiming("Register built-in unit definitions");
     for (const UnitId id : s_unitSpecOrder()) {
-        const UnitSpec& spec = specs.value(id);
+        const UnitSpec& spec = specs.constFind(id).value();
         // Spec -> runtime registry:
         // canonical name/symbol/aliases are all registered from this single source.
-        const Quantity value = spec.linearValue ? spec.linearValue() : Quantity(1);
         const QString localized = localizedFromSpec(spec);
-        addUnique(spec.name, value, localized, id);
+        const bool planeAngle = spec.quantities.contains(UnitQuantity::PlaneAngle);
+        addUnique(spec.name, {id}, localized, false, planeAngle);
         const QString symbol = spec.symbol;
 
-        if (!symbol.isEmpty()) {
-            addUnique(symbol, value, localized, id);
-            registry.displaySymbolsByIdentifier.insert(spec.name, symbol);
-            registry.displaySymbolsByIdentifier.insert(symbol, symbol);
-        }
+        if (!symbol.isEmpty())
+            addUnique(symbol, {id}, localized, false, planeAngle);
         for (const QString& alias : spec.aliases) {
             if (alias.isEmpty())
                 continue;
-            addUnique(alias, value, localized, id);
-            if (!symbol.isEmpty())
-                registry.displaySymbolsByIdentifier.insert(alias, symbol);
+            addUnique(alias, {id}, localized, false, planeAngle);
         }
 
         // Prefix generation currently consumes one alternate short alias
@@ -2210,14 +2205,17 @@ static UnitRegistry s_buildUnitRegistry()
         const QString primaryAlias = spec.aliases.isEmpty()
             ? QString()
             : spec.aliases.first();
+        QString prefixLocalized = localized;
+        if (!prefixLocalized.isEmpty())
+            prefixLocalized[0] = prefixLocalized.at(0).toLower();
         unitAliasSpecs.append({
             id,
             spec.name,
-            localized,
-            value,
+            prefixLocalized,
             symbol,
             primaryAlias,
-            spec.prefixPolicy
+            spec.prefixPolicy,
+            planeAngle
         });
 
         if (spec.affine.toBase && spec.affine.fromBase) {
@@ -2229,9 +2227,62 @@ static UnitRegistry s_buildUnitRegistry()
                     continue;
                 registry.affineByIdentifier.insert(alias, spec.affine);
             }
-            continue;
         }
+    }
 
+    // Automatic SI-prefixed aliases for every prefixable unit.
+    // Example: kilo + m² => km², kilo + m³ => km³.
+    // This is spec-driven via UnitAliasSpec built above from unit specs.
+    phaseTiming.next("Generate SI-prefixed unit aliases");
+    for (const PrefixSpec& prefix : s_siPrefixes()) {
+        for (const UnitAliasSpec& unit : unitAliasSpecs) {
+            if (!unitPrefixPolicyAllows(unit.prefixPolicy, prefix))
+                continue;
+            if (unit.id == UnitId::SquareMetre || unit.id == UnitId::CubicMetre)
+                continue;
+            const QString localized = prefixedLocalizedName(prefix.longName, unit.localized);
+            const bool keepPrefixedDisplay = prefix.power > 0 && prefix.power < 3;
+            // Long form: kilo + metre => kilometre
+            addUnique(prefix.longName + unit.longName, {unit.id, &prefix}, localized, keepPrefixedDisplay, unit.planeAngle);
+            if (!unit.shortName.isEmpty()
+                && shouldAddSiPrefixedShortAlias(prefix.symbol, unit.shortName))
+                // Symbol form: k + m => km; k + m² => km²; k + m³ => km³
+                addUnique(prefix.symbol + unit.shortName, {unit.id, &prefix}, localized, keepPrefixedDisplay, unit.planeAngle);
+            if (!unit.alternateShortName.isEmpty()
+                && shouldAddSiPrefixedShortAlias(prefix.symbol, unit.alternateShortName))
+                addUnique(prefix.symbol + unit.alternateShortName, {unit.id, &prefix}, localized, keepPrefixedDisplay, unit.planeAngle);
+        }
+    }
+
+    // Automatic binary-prefixed aliases are generated from unit specs.
+    // Standalone binary prefixes (kibi/mebi/...) are not registered as units.
+    phaseTiming.next("Generate binary-prefixed unit aliases");
+    for (const PrefixSpec& prefix : s_binaryPrefixes()) {
+        for (const UnitAliasSpec& unit : unitAliasSpecs) {
+            if (!unitPrefixPolicyAllows(unit.prefixPolicy, prefix, true))
+                continue;
+            const QString localized = prefixedLocalizedName(prefix.longName, unit.localized);
+            addUnique(prefix.longName + unit.longName, {unit.id, &prefix}, localized, false, unit.planeAngle);
+            if (!unit.shortName.isEmpty())
+                addUnique(prefix.symbol + unit.shortName, {unit.id, &prefix}, localized, false, unit.planeAngle);
+        }
+    }
+
+    return registry;
+}
+
+const UnitRegistry& s_unitRegistry()
+{
+    static const UnitRegistry registry = s_buildUnitRegistry();
+    return registry;
+}
+
+QHash<QMap<UnitQuantity, Rational>, Unit> s_canonicalMatchLookup()
+{
+    QHash<QMap<UnitQuantity, Rational>, Unit> lookup;
+    const auto& specs = s_unitSpecs();
+    for (const UnitId id : s_unitSpecOrder()) {
+        const UnitSpec& spec = specs.constFind(id).value();
         // Build canonical dimension->unit lookup from declarative spec.
         // Keep only unambiguous SI base/derived rows and preserve first-in wins.
         if ((spec.family == UnitFamily::SiBase
@@ -2252,172 +2303,203 @@ static UnitRegistry s_buildUnitRegistry()
             {
                 continue;
             }
-            Quantity canonicalValue = value;
+            Quantity canonicalValue = unitValue(id);
             canonicalValue.cleanDimension();
             const QMap<UnitQuantity, Rational> dim = canonicalValue.getDimensionByQuantity();
-            if (!dim.isEmpty() && !registry.canonicalMatchLookup.contains(dim)) {
-                registry.canonicalMatchLookup.insert(
+            if (!dim.isEmpty() && !lookup.contains(dim)) {
+                lookup.insert(
                     dim,
                     Unit(spec.name, canonicalValue));
             }
         }
     }
 
-    // Automatic SI-prefixed aliases for every prefixable unit.
-    // Example: kilo + m² => km², kilo + m³ => km³.
-    // This is spec-driven via UnitAliasSpec built above from unit specs.
-    for (const PrefixSpec& prefix : s_siPrefixes()) {
-        for (const UnitAliasSpec& unit : unitAliasSpecs) {
-            if (!unitPrefixPolicyAllows(unit.prefixPolicy, prefix))
-                continue;
-            if (unit.id == UnitId::SquareMetre || unit.id == UnitId::CubicMetre)
-                continue;
-            const Quantity prefixedValue = prefix.value * unit.value;
-            const QString localized = prefixedLocalizedName(prefix.longName, unit.localized);
-            const bool keepPrefixedDisplay = prefix.power > 0 && prefix.power < 3;
-            // Long form: kilo + metre => kilometre
-            addUnique(prefix.longName + unit.longName, prefixedValue, localized, unit.id, keepPrefixedDisplay);
-            if (!unit.shortName.isEmpty()
-                && shouldAddSiPrefixedShortAlias(prefix.symbol, unit.shortName))
-                // Symbol form: k + m => km; k + m² => km²; k + m³ => km³
-                addUnique(prefix.symbol + unit.shortName, prefixedValue, localized, unit.id, keepPrefixedDisplay);
-            if (!unit.alternateShortName.isEmpty()
-                && shouldAddSiPrefixedShortAlias(prefix.symbol, unit.alternateShortName))
-                addUnique(prefix.symbol + unit.alternateShortName, prefixedValue, localized, unit.id, keepPrefixedDisplay);
-        }
-    }
-
-    // Automatic binary-prefixed aliases are generated from unit specs.
-    // Standalone binary prefixes (kibi/mebi/...) are not registered as units.
-    for (const PrefixSpec& prefix : s_binaryPrefixes()) {
-        for (const UnitAliasSpec& unit : unitAliasSpecs) {
-            if (!unitPrefixPolicyAllows(unit.prefixPolicy, prefix, true))
-                continue;
-            const Quantity prefixedValue = prefix.value * unit.value;
-            const QString localized = prefixedLocalizedName(prefix.longName, unit.localized);
-            addUnique(prefix.longName + unit.longName, prefixedValue, localized, unit.id);
-            if (!unit.shortName.isEmpty())
-                addUnique(prefix.symbol + unit.shortName, prefixedValue, localized, unit.id);
-        }
-    }
-
-    return registry;
+    return lookup;
 }
 
-const UnitRegistry& s_unitRegistry()
+Quantity s_rawUnitValue(const UnitDefinition& definition)
 {
-    static const UnitRegistry registry = s_buildUnitRegistry();
-    return registry;
+    const Quantity value = unitValue(definition.id);
+    return definition.prefix ? s_scaleUnitForPrefix(value, definition.prefix->value) : value;
 }
 
 } // namespace
 
-// Returns built-in unit identifiers mapped to their base quantity values.
+const QStringList& Units::builtInUnitIdentifiers()
+{
+    static const QStringList identifiers = [] {
+        QStringList names = s_unitRegistry().definitionsByIdentifier.keys();
+        names.sort();
+        return names;
+    }();
+    return identifiers;
+}
+
+bool Units::isBuiltInUnitIdentifier(const QString& identifier)
+{
+    return s_unitRegistry().definitionsByIdentifier.contains(identifier);
+}
+
+bool Units::tryGetBuiltInUnitValue(const QString& identifier, Quantity* valueOut)
+{
+    const auto& definitions = s_unitRegistry().definitionsByIdentifier;
+    const auto it = definitions.constFind(identifier);
+    if (it == definitions.constEnd())
+        return false;
+    if (valueOut)
+        *valueOut = s_rawUnitValue(it.value());
+    return true;
+}
+
 const QHash<QString, Quantity>& Units::builtInUnitValues()
 {
-    return s_unitRegistry().valuesByIdentifier;
+    static const QHash<QString, Quantity> values = [] {
+        StartupDiagnostics::Scope timing("Materialize all built-in unit values");
+        QHash<QString, Quantity> result;
+        const auto& definitions = s_unitRegistry().definitionsByIdentifier;
+        result.reserve(definitions.size());
+        for (auto it = definitions.constBegin(); it != definitions.constEnd(); ++it)
+            result.insert(it.key(), s_rawUnitValue(it.value()));
+        return result;
+    }();
+    return values;
+}
+
+namespace {
+
+Quantity s_displayUnitValue(const QString& identifier, const UnitDefinition& definition)
+{
+    Quantity value = s_rawUnitValue(definition);
+    const UnitId id = definition.id;
+    const UnitSpec& spec = s_unitSpecs().constFind(id).value();
+    const bool isCanonicalIdentifier = identifier == spec.name;
+    const bool isInformationUnit =
+        value.getDimensionByQuantity().contains(UnitQuantity::Information);
+    const bool isNonSiIdentifier =
+        spec.family != UnitFamily::SiBase
+        && spec.family != UnitFamily::SiDerived
+        && id != UnitId::Second
+        && id != UnitId::Minute
+        && id != UnitId::Hour
+        && id != UnitId::Day
+        && id != UnitId::Week;
+    const bool keepDisplayUnit =
+        id == UnitId::Steradian
+        || s_unitRegistry().prefixedIdentifiers.contains(identifier)
+        || ((id == UnitId::Hertz
+          || id == UnitId::Becquerel
+          || id == UnitId::Gray
+          || id == UnitId::Sievert
+          || id == UnitId::Pascal
+          || id == UnitId::Newton
+          || id == UnitId::Metre)
+            && isCanonicalIdentifier)
+        || isInformationUnit
+        || isNonSiIdentifier;
+    if (keepDisplayUnit)
+        value.setDisplayUnit(value.numericValue(), identifier);
+
+    // These symbols use a canonical display name. Affine aliases keep the
+    // temperature spelling while their stored quantity remains in kelvin.
+    static const QHash<QString, QString> displayNames = [] {
+        QHash<QString, QString> names;
+        for (UnitId id : {UnitId::Joule, UnitId::Watt, UnitId::Volt,
+                          UnitId::Farad, UnitId::Henry, UnitId::Tesla,
+                          UnitId::Newton, UnitId::Pascal, UnitId::Ohm,
+                          UnitId::Second, UnitId::Hertz, UnitId::Becquerel})
+            names.insert(unitSymbol(id), unitName(id));
+        names.insert(unitName(UnitId::Ohm), unitName(UnitId::Ohm));
+        names.insert(UnitSymbol::Hour, UnitSymbol::Hour);
+        for (UnitId id : {UnitId::DegreeCelsius, UnitId::DegreeFahrenheit}) {
+            const UnitSpec& spec = s_unitSpecs().constFind(id).value();
+            names.insert(spec.name, spec.name);
+            if (!spec.symbol.isEmpty())
+                names.insert(spec.symbol, spec.symbol);
+            for (const QString& alias : spec.aliases) {
+                if (!alias.isEmpty())
+                    names.insert(alias, spec.symbol.isEmpty() ? spec.name : spec.symbol);
+            }
+        }
+        return names;
+    }();
+    const auto displayName = displayNames.constFind(identifier);
+    if (displayName != displayNames.constEnd())
+        value.setDisplayUnit(value.numericValue(), displayName.value());
+    return value;
+}
+
+QHash<QString, Quantity> s_buildUnitDisplayLookup()
+{
+    StartupDiagnostics::Scope timing("Prepare built-in unit display lookup");
+    QHash<QString, Quantity> lookup;
+    const auto& definitions = s_unitRegistry().definitionsByIdentifier;
+    lookup.reserve(definitions.size());
+    for (auto it = definitions.constBegin(); it != definitions.constEnd(); ++it)
+        lookup.insert(it.key(), s_displayUnitValue(it.key(), it.value()));
+    return lookup;
+}
+
+} // namespace
+
+void Units::setRuntimeAngleMode(char angleMode)
+{
+    s_runtimeAngleModeForUnits = angleMode;
+}
+
+bool Units::tryGetBuiltInUnitQuantity(const QString& identifier, char angleMode,
+                                     Quantity* valueOut)
+{
+    const UnitRegistry& registry = s_unitRegistry();
+    const auto definition = registry.definitionsByIdentifier.constFind(identifier);
+    if (definition == registry.definitionsByIdentifier.constEnd())
+        return false;
+    setRuntimeAngleMode(angleMode);
+    if (!valueOut)
+        return true;
+
+    static QHash<QString, Quantity> ordinaryValues;
+    static QHash<QString, Quantity> angleValues;
+    static char cachedAngleMode = '\0';
+    const bool angleDependent = registry.angleIdentifiers.contains(identifier)
+        || definition.value().id == UnitId::RevolutionPerMinute;
+    auto& cache = angleDependent ? angleValues : ordinaryValues;
+    if (angleDependent && cachedAngleMode != angleMode) {
+        angleValues.clear();
+        cachedAngleMode = angleMode;
+    }
+    auto cached = cache.constFind(identifier);
+    if (cached == cache.constEnd()) {
+        StartupDiagnostics::Scope timing("Initialize requested built-in unit");
+        Quantity value;
+        if (angleDependent
+            && tryGetPrefixedExplicitAngleUnitValueForMode(identifier, angleMode, &value)) {
+            // Prefixed arcsecond aliases take precedence over the plain-angle
+            // spelling, matching the complete lookup table.
+        } else if (definition.value().id == UnitId::RevolutionPerMinute) {
+            value = angleUnitValueForMode(AngleUnitKind::Turn, angleMode) / Units::minute();
+            value.setDisplayUnit(value.unit(),
+                                 composeAnglePerSecondUnitName(angleModeUnitSymbol(angleMode)));
+        } else {
+            const AngleUnitKind kind = angleDependent
+                ? angleUnitKindFromName(identifier) : AngleUnitKind::None;
+            value = kind != AngleUnitKind::None
+                ? angleUnitValueForMode(kind, angleMode)
+                : s_displayUnitValue(identifier, definition.value());
+        }
+        cached = cache.insert(identifier, value);
+    }
+    *valueOut = cached.value();
+    return true;
 }
 
 QHash<QString, Quantity> Units::builtInUnitLookup(char angleMode)
 {
     s_runtimeAngleModeForUnits = angleMode;
-    QHash<QString, Quantity> lookup;
-
-    const auto& unitValues = Units::builtInUnitValues();
-    for (auto it = unitValues.constBegin(); it != unitValues.constEnd(); ++it) {
-        const QString& identifier = it.key();
-        const Quantity& value = it.value();
-        Quantity unitValue = value;
-        const UnitId id = s_unitRegistry().idsByIdentifier.value(
-            identifier,
-            unitId(normalizeUnitName(identifier)));
-        const bool isCanonicalIdentifier =
-            id != UnitId::Unknown && identifier == unitName(id);
-        const bool isInformationUnit =
-            unitValue.getDimensionByQuantity().contains(UnitQuantity::Information);
-        const auto specIt = s_unitSpecs().constFind(id);
-        const bool isNonSiIdentifier =
-            specIt != s_unitSpecs().constEnd()
-            && specIt.value().family != UnitFamily::SiBase
-            && specIt.value().family != UnitFamily::SiDerived
-            && id != UnitId::Second
-            && id != UnitId::Minute
-            && id != UnitId::Hour
-            && id != UnitId::Day
-            && id != UnitId::Week;
-        const bool keepDisplayUnit =
-            (id == UnitId::Steradian)
-            || s_unitRegistry().prefixedIdentifiers.contains(identifier)
-            || ((id == UnitId::Hertz
-              || id == UnitId::Becquerel
-              || id == UnitId::Gray
-              || id == UnitId::Sievert
-              || id == UnitId::Pascal
-              || id == UnitId::Newton
-              || id == UnitId::Metre)
-            && isCanonicalIdentifier)
-            || isInformationUnit
-            || isNonSiIdentifier;
-        if (keepDisplayUnit)
-            unitValue.setDisplayUnit(value.numericValue(), identifier);
-        lookup.insert(identifier, unitValue);
-    }
-
-    const auto insertDisplayed = [&](const QString& key,
-                                     const Quantity& value,
-                                     const QString& displayName) {
-        Quantity q(value);
-        q.setDisplayUnit(value.numericValue(), displayName);
-        lookup.insert(key, q);
-    };
-
-    // Force display-name preservation for short symbols/aliases that are
-    // intentionally user-facing spellings. Without this, some lookups keep
-    // value equivalence but lose the authored display token.
-    insertDisplayed(UnitSymbol::Joule, unitValue(UnitId::Joule), unitName(UnitId::Joule));
-    insertDisplayed(UnitSymbol::Watt, unitValue(UnitId::Watt), unitName(UnitId::Watt));
-    insertDisplayed(UnitSymbol::Volt, unitValue(UnitId::Volt), unitName(UnitId::Volt));
-    insertDisplayed(UnitSymbol::Farad, unitValue(UnitId::Farad), unitName(UnitId::Farad));
-    insertDisplayed(UnitSymbol::Henry, unitValue(UnitId::Henry), unitName(UnitId::Henry));
-    insertDisplayed(UnitSymbol::Tesla, unitValue(UnitId::Tesla), unitName(UnitId::Tesla));
-    insertDisplayed(UnitSymbol::Newton, unitValue(UnitId::Newton), unitName(UnitId::Newton));
-    insertDisplayed(UnitSymbol::Pascal, unitValue(UnitId::Pascal), unitName(UnitId::Pascal));
-    insertDisplayed(UnitName::Ohm, unitValue(UnitId::Ohm), unitName(UnitId::Ohm));
-    insertDisplayed(UnitSymbol::Ohm, unitValue(UnitId::Ohm), unitName(UnitId::Ohm));
-    insertDisplayed(UnitSymbol::Second, unitValue(UnitId::Second), unitName(UnitId::Second));
-    insertDisplayed(UnitSymbol::Hour, unitValue(UnitId::Hour), UnitSymbol::Hour);
-    const auto insertAffineDisplayAliases = [&](UnitId id) {
-        const auto specIt = s_unitSpecs().constFind(id);
-        if (specIt == s_unitSpecs().constEnd())
-            return;
-        const UnitSpec& spec = specIt.value();
-        if (!(spec.affine.toBase && spec.affine.fromBase))
-            return;
-
-        insertDisplayed(spec.name, unitValue(UnitId::Kelvin), spec.name);
-        if (!spec.symbol.isEmpty())
-            insertDisplayed(spec.symbol, Units::kelvin(), spec.symbol);
-        for (const QString& alias : spec.aliases) {
-            if (alias.isEmpty())
-                continue;
-            insertDisplayed(alias, Units::kelvin(),
-                            spec.symbol.isEmpty() ? spec.name : spec.symbol);
-        }
-    };
-    insertAffineDisplayAliases(UnitId::DegreeCelsius);
-    insertAffineDisplayAliases(UnitId::DegreeFahrenheit);
-
-    {
-        Quantity hz = unitValue(UnitId::Hertz);
-        hz.setDisplayUnit(unitValue(UnitId::Hertz).numericValue(), unitName(UnitId::Hertz));
-        lookup.insert(UnitSymbol::Hertz, hz);
-    }
-    {
-        Quantity bq = unitValue(UnitId::Becquerel);
-        bq.setDisplayUnit(unitValue(UnitId::Becquerel).numericValue(), unitName(UnitId::Becquerel));
-        lookup.insert(UnitSymbol::Becquerel, bq);
-    }
-
+    // Display rules for non-angle units stay the same across angle modes.
+    // QHash shares this table until the angle overrides detach the copy.
+    static const QHash<QString, Quantity> displayLookup = s_buildUnitDisplayLookup();
+    StartupDiagnostics::Scope timing("Apply angle mode to unit lookup");
+    QHash<QString, Quantity> lookup = displayLookup;
     lookup.insert(unitName(UnitId::Radian), angleUnitValueForMode(AngleUnitKind::Radian, angleMode));
     lookup.insert(UnitSymbol::Radian, angleUnitValueForMode(AngleUnitKind::Radian, angleMode));
     lookup.insert(unitName(UnitId::Degree), angleUnitValueForMode(AngleUnitKind::Degree, angleMode));
@@ -2449,10 +2531,12 @@ QHash<QString, Quantity> Units::builtInUnitLookup(char angleMode)
     lookup.insert(UnitSymbol::Microarcsecond, angleUnitValueForMode(AngleUnitKind::Microarcsecond, angleMode));
     lookup.insert(UnitAltSymbol::MicroarcsecondAscii, angleUnitValueForMode(AngleUnitKind::Microarcsecond, angleMode));
 
-    for (auto it = lookup.begin(); it != lookup.end(); ++it) {
+    // Only angle identifiers can need a prefixed angle conversion. Avoid
+    // testing every ordinary unit against the full list of SI prefixes.
+    for (const QString& identifier : s_unitRegistry().angleIdentifiers) {
         Quantity prefixedAngleValue;
-        if (tryGetPrefixedExplicitAngleUnitValueForMode(it.key(), angleMode, &prefixedAngleValue))
-            it.value() = prefixedAngleValue;
+        if (tryGetPrefixedExplicitAngleUnitValueForMode(identifier, angleMode, &prefixedAngleValue))
+            lookup.insert(identifier, prefixedAngleValue);
     }
 
     return lookup;
@@ -2465,8 +2549,8 @@ bool Units::isExplicitAngleUnitName(const QString& unitName)
 
 bool Units::isAffineUnitName(const QString& unitName)
 {
-    return s_unitRegistry().affineByIdentifier.contains(
-        UnicodeChars::normalizeUnitSymbolAliases(unitName.trimmed()));
+    const QString normalized = UnicodeChars::normalizeUnitSymbolAliases(unitName.trimmed());
+    return !normalized.isEmpty() && s_unitRegistry().affineByIdentifier.contains(normalized);
 }
 
 bool Units::tryConvertAffineToBase(const QString& unitName,
@@ -2477,6 +2561,8 @@ bool Units::tryConvertAffineToBase(const QString& unitName,
         return false;
 
     const QString normalized = UnicodeChars::normalizeUnitSymbolAliases(unitName.trimmed());
+    if (normalized.isEmpty())
+        return false;
     const auto it = s_unitRegistry().affineByIdentifier.constFind(normalized);
     if (it == s_unitRegistry().affineByIdentifier.constEnd() || !it.value().toBase)
         return false;
@@ -2492,6 +2578,8 @@ bool Units::tryConvertAffineFromBase(const QString& unitName,
         return false;
 
     const QString normalized = UnicodeChars::normalizeUnitSymbolAliases(unitName.trimmed());
+    if (normalized.isEmpty())
+        return false;
     const auto it = s_unitRegistry().affineByIdentifier.constFind(normalized);
     if (it == s_unitRegistry().affineByIdentifier.constEnd() || !it.value().fromBase)
         return false;

@@ -1,0 +1,29 @@
+SpeedCrunch @speedcrunch_VERSION@
+==============================
+
+SpeedCrunch is free software under the GNU General Public License, version 2
+or, at your option, any later version. See SpeedCrunch-GPL-2.0.txt.
+
+Source code and build instructions:
+https://www.speedcrunch.org/source.html
+
+Qt @Qt6_VERSION@
+===============
+
+This application uses dynamically linked Qt libraries and plugins.
+Copyright (C) The Qt Company Ltd. and other contributors.
+
+@speedcrunch_qt_notice@
+
+Qt source code:
+https://download.qt.io/archive/qt/
+https://code.qt.io/cgit/qt/
+
+@speedcrunch_qt_replacement_notice@
+
+Source distribution
+===================
+
+Distributors must provide the corresponding source code as required by the
+applicable licenses. The project links above identify the upstream sources.
+They are not a written source offer from the distributor.

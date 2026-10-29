@@ -3,6 +3,7 @@
 
 #include "gui/dockliststyle.h"
 
+#include "core/settings.h"
 #include "gui/uiconfig.h"
 
 #include <QAbstractItemView>
@@ -154,6 +155,10 @@ public:
     void paint(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const override
     {
+        if (Settings::instance()->dockAppearance == Settings::DockAppearanceSystem) {
+            QStyledItemDelegate::paint(painter, option, index);
+            return;
+        }
         QStyleOptionViewItem opt(option);
         initStyleOption(&opt, index);
         const bool selected = opt.state & QStyle::State_Selected;
@@ -257,12 +262,13 @@ namespace DockListStyle {
 
 void apply(QAbstractItemView* view)
 {
+    // The dock already provides a boundary around its content.
+    view->setFrameShape(QFrame::NoFrame);
     view->setAlternatingRowColors(false);
     view->setMouseTracking(true);
     view->viewport()->setMouseTracking(true);
     view->viewport()->setAttribute(Qt::WA_Hover, true);
     view->viewport()->setCursor(Qt::ArrowCursor);
-    view->setFrameShape(QFrame::NoFrame);
     view->setProperty("dockListHoveredRow", -1);
     view->setItemDelegate(new DockListItemDelegate(view));
     DockListCursorFilter* cursorFilter = new DockListCursorFilter(view);

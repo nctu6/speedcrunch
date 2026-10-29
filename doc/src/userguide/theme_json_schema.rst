@@ -98,6 +98,9 @@ Notes
   used by dock titles, controls and headers, and content areas. Scrollbar
   colors are generated from the background of the surface that owns each
   scrollbar, so theme files do not include a separate key for them.
+  Text colors for these surfaces target at least 10:1 contrast while keeping
+  the background's hue where possible. If that ratio cannot be reached,
+  SpeedCrunch uses black or white, whichever gives better contrast.
 * ``primary`` is optional. When present, it overrides the generated
   primary/accent color used for active selections, focused editor outlines,
   cursor accents, pane splitters, and primary-hue keypad fills. When omitted,

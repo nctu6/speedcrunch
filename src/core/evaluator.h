@@ -5,6 +5,9 @@
 #ifndef CORE_EVALUATOR_H
 #define CORE_EVALUATOR_H
 
+// Uncomment to trace scanning and parsing to the terminal and eval.log.
+// #define EVALUATOR_DEBUG
+
 #include "core/functions.h"
 #include "core/opcode.h"
 #include "core/symbolcontext.h"
@@ -69,6 +72,8 @@ public:
     Type type() const { return m_type; }
     int minPrecedence() const { return m_minPrecedence; }
     void setMinPrecedence(int value) { m_minPrecedence = value; }
+    bool hasExplicitUnitAttachment() const { return m_explicitUnitAttachment; }
+    void setExplicitUnitAttachment(bool value) { m_explicitUnitAttachment = value; }
 
     Token& operator=(const Token&);
 
@@ -86,6 +91,9 @@ protected:
     // represents a single token).
     QString m_text;
     Type m_type;
+    // True only for a value followed directly by a unit block. Grouping or
+    // another completed operation makes its meaning as a power base explicit.
+    bool m_explicitUnitAttachment;
 };
 
 class Tokens : public QVector<Token> {
@@ -124,6 +132,7 @@ public:
     static QString formatInterpretedExpressionSimplifiedForDisplay(const QString&);
     static QString formatInterpretedExpressionSimplifiedForDisplay(const QString&, const Evaluator*);
     static QString fixNumberRadix(const QString&);
+    static QString expandSuperscriptPowers(const QString&);
     static QString fixSexagesimal(const QString&, QString& unit);
     static QStringList builtInUnitIdentifiers();
 

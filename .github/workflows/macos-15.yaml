@@ -1,0 +1,101 @@
+name: macOS 15
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_ui_tests:
+        description: Run native macOS UI tests
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6.12.0
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.12.0'
+          host: mac
+          target: desktop
+          arch: clang_64
+          # aqtinstall 3.3.0 does not support Qt 6.12's repository layout.
+          aqtsource: 'git+https://github.com/miurahr/aqtinstall.git@076e1659807d0b362a3ed684d54c2e9c775eb9c7'
+          cache: 'true'
+          cache-key-prefix: macos-15-arm64-qt-v1
+
+      - name: Verify toolchain
+        run: |
+          test "$(uname -m)" = arm64
+          test "$(sw_vers -productVersion | cut -d . -f 1)" = 15
+          test "$(xcodebuild -version | head -n 1)" = 'Xcode 16.4'
+          test "$("$QT_ROOT_DIR/bin/qmake" -query QT_VERSION)" = 6.12.0
+          xcodebuild -version
+          xcrun clang --version
+          xcrun --sdk macosx --show-sdk-version
+          "$QT_ROOT_DIR/bin/qmake" -query QT_VERSION
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+          -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=14.4
+          "-DCMAKE_C_COMPILER=$(xcrun --find clang)"
+          "-DCMAKE_CXX_COMPILER=$(xcrun --find clang++)"
+          "-DCMAKE_OBJCXX_COMPILER=$(xcrun --find clang++)"
+          "-DCMAKE_PREFIX_PATH=$QT_ROOT_DIR"
+
+      - name: Build
+        run: cmake --build build --parallel 4
+
+      - name: Run non-UI tests
+        run: >-
+          ctest --test-dir build -C Release -LE '^ui$'
+          --no-tests=error --output-on-failure --test-output-size-failed 0
+          --output-log "$GITHUB_WORKSPACE/non-ui-tests.log"
+          --output-junit "$GITHUB_WORKSPACE/test-results.xml"
+
+      - name: Run native macOS UI tests
+        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_tests
+        timeout-minutes: 15
+        env:
+          QT_QPA_PLATFORM: cocoa
+        run: >-
+          ctest --test-dir build -C Release -L '^ui$' --parallel 1
+          --timeout 180 --no-tests=error --output-on-failure
+          --test-output-size-failed 0
+          --output-log "$GITHUB_WORKSPACE/ui-tests.log"
+          --output-junit "$GITHUB_WORKSPACE/ui-test-results.xml"
+
+      - name: Upload test logs
+        if: failure() || (github.event_name == 'workflow_dispatch' && inputs.run_ui_tests)
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-15-test-logs
+          path: |
+            build/Testing/Temporary/LastTest.log
+            non-ui-tests.log
+            test-results.xml
+            ui-tests.log
+            ui-test-results.xml
+          if-no-files-found: ignore

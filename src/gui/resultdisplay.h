@@ -45,8 +45,10 @@ public:
     void setEditingHistoryIndex(int index);
     void setLoadedSessionCount(int count);
     void setCloseSessionEnabled(bool enabled);
-    void setSession(const Session* session);
+    // With deferred rendering, call refresh() before restoring the viewport.
+    void setSession(const Session* session, bool renderHistory = true);
     void setThemeSurfaceColor(const QColor& color);
+    void applyEditorDisplayStyle();
     void setThemeToolTipColors(const QColor& background,
                                const QColor& foreground,
                                const QColor& outline);
@@ -79,6 +81,8 @@ signals:
     void removeHistoryEntriesAboveRequested(int index);
     void removeHistoryEntriesBelowRequested(int index);
     void newSessionRequested();
+    void newPrivateSessionRequested();
+    void convertSessionPrivacyRequested();
     void openSessionRequested();
     void importSessionRequested();
     void exportSessionJsonRequested();
@@ -156,6 +160,7 @@ protected:
     void markHistoryBlockIndexCacheDirty();
     void markSimplifiedExpressionBlock(int blockNumber);
     void markSimplifiedExpressionBlocks();
+    void markSimplifiedExpressionBlocks(const QVector<QStringList>& renderedEntries);
     void ensureHistoryBlockIndexCache() const;
 
 private:

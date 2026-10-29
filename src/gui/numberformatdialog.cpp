@@ -18,7 +18,7 @@ NumberFormatDialog::NumberFormatDialog(QWidget* parent)
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     QLabel* intro = new QLabel(
-        tr("<b>Select the number format for display.</b><br/><br/>Note: for input numbers, obvious formats are accepted even when they differ from the selected display format.<br/>"),
+        tr("<b>Select the number format for results and input digit grouping.</b><br/><br/>Note: for input numbers, obvious formats are accepted even when they differ from the selected display format.<br/>"),
         this);
     intro->setWordWrap(true);
     layout->addWidget(intro);

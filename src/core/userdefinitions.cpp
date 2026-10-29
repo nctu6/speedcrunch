@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "core/userdefinitions.h"
 
 #include "core/settings.h"
@@ -22,6 +24,7 @@ QString startupDefinitionsPath()
 
 void UserDefinitions::loadInto(Settings* settings)
 {
+    StartupDiagnostics::Scope timing("Load global definitions");
     if (!settings)
         return;
 

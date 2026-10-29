@@ -4,7 +4,7 @@
   <div class="container-fluid">
     <div class="row">
       {% if win -%}
-        <div class="col-lg-4 center-div">
+        <div class="col-lg-{{ 4 if linux else 6 }} center-div">
           <p><i class="fa fa-windows" style="vertical-align:middle; font-size:8em;"></i></p>
           <p><b>Windows</b></p>
           <p>
@@ -24,13 +24,13 @@
         </div>
       {%- endif %}
 
-      <div class="col-lg-4 center-div">
+      <div class="col-lg-{{ 4 if linux else 6 }} center-div">
         <p><i class="fa fa-apple" style="vertical-align:middle; font-size:8em;"></i></p>
         <p><b>macOS</b></p>
         {% if osx -%}
           <p>
             {% for (name, path) in osx -%}
-              <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
+              <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-{{ 'usb' if name == _('Portable') else 'laptop' }} fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
             {%- endfor %}
           </p>
         {%- else %}
@@ -44,18 +44,17 @@
         </div>
       </div>
 
-      <div class="col-lg-4 center-div">
-        <p><i class="fa fa-linux" style="vertical-align:middle; font-size:8em;"></i></p>
-        <p><b>Linux</b></p>
+      {% if linux -%}
+        <div class="col-lg-4 center-div">
+          <p><i class="fa fa-linux" style="vertical-align:middle; font-size:8em;"></i></p>
+          <p><b>Linux</b></p>
 
-        {% if linux -%}
           <p>
             {% if not linux_dropdown -%}
               {% for (name, path) in linux -%}
                 {% if name == 'Flathub' -%}
-                  <img width="180" alt="{{ _('Download on Flathub') }}" src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
-                  <br/>
-                  <small>{% trans %}Currently unavailable.{% endtrans %}</small>
+                  <a href="{{ path }}"><img width="180" alt="{{ _('Download on Flathub') }}" src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+                  <br/><small>{% trans %}Official SpeedCrunch build.{% endtrans %}</small>
                 {%- else -%}
                   <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
                 {%- endif %}
@@ -73,29 +72,24 @@
               </div>
             {%- endif %}
           </p>
-        {%- else -%}
-          <p>
-            <a class="btn btn-primary btn-md dl-button disabled"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;Download</a>
-          </p>
-        {%- endif %}
 
-        <p>
-          {% trans %}If available, we recommend installing SpeedCrunch directly via your distribution's package manager.{% endtrans %}
-          {% trans %}Note that the latest version may not be available.{% endtrans %}
-        </p>
-      </div>
+          <p>
+            {% trans %}If available, you can also install this SpeedCrunch version directly with your distribution's package manager.{% endtrans %}
+          </p>
+        </div>
+      {%- endif %}
     </div><!-- /.row -->
   </div>
 {%- endmacro %}
 
 {% macro oldVersion(version, id) -%} {#, *args, **kwargs #}
   <div class="panel panel-default">
-    <div class="panel-heading" role="tab">
+    <div id="heading{{ id }}" class="panel-heading" role="tab">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ id }}" aria-expanded="true" aria-controls="collapse{{ id }}">{{ _('Version') }} {{ version }}</a>
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ id }}" aria-expanded="false" aria-controls="collapse{{ id }}">{{ _('Version') }} {{ version }}</a>
       </h4>
     </div>
-    <div id="collapse{{ id }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{ id }}" style="margin-top: 1em">
+    <div id="collapse{{ id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ id }}" style="margin-top: 1em">
       {{ downloads(*args, **kwargs) }}
     </div>
   </div>
@@ -113,111 +107,235 @@
     <div class="container">
       <h1>{% trans %}Download SpeedCrunch{% endtrans %}</h1>
       <p>{% trans %}Free, open-source scientific calculator for Windows, macOS and Linux.{% endtrans %}</p>
-      <h2>{% trans %}Version 1.0{% endtrans %}</h2>
-      {{ downloads(
-        win=[
-          (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.0.0/speedcrunch-1.0-win64.exe'),
-          (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.0.0/speedcrunch-1.0-win64.zip'),],
+      <section aria-labelledby="version-1-1">
+        <h2 id="version-1-1" style="scroll-margin-top: 80px;">{% trans %}Version 1.1{% endtrans %}</h2>
+        {{ downloads(
+          win=[
+            (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-windows-x64.exe'),
+            (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-windows-x64.zip'),],
 
-        osx=[(_('Download'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.0.0/SpeedCrunch-1.0-arm64.dmg')],
+          osx=[
+            (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-macos-arm64.dmg'),
+            (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-macos-arm64.zip'),],
 
-        linux=[('Flathub', 'https://flathub.org/apps/details/org.speedcrunch.SpeedCrunch'),],
-        linux_dropdown=False,
-      ) }}
-      <hr/>
+          linux=[('Flathub', 'https://flathub.org/apps/org.speedcrunch.SpeedCrunch'),],
+          linux_dropdown=False,
+        ) }}
+        <hr/>
 
-      <p>
-        {% trans %}Unsure about the installation?{% endtrans %}
-        <a href="{{ pathto('userguide/installation') }}">{% trans %}Have a look at the instructions.{% endtrans %}</a>
-      </p>
-      <p><a href="#older-versions">{% trans %}Older versions (0.12){% endtrans %}</a></p>
-      <hr/>
+        <p>
+          {% trans %}Unsure about the installation?{% endtrans %}
+          <a href="{{ pathto('userguide/installation') }}">{% trans %}Have a look at the instructions.{% endtrans %}</a>
+        </p>
+        <p>{% trans %}Older versions:{% endtrans %} <a href="#version-1-0">1.0</a>, <a href="#older-versions">0.12</a></p>
+        <hr/>
 
-      <section aria-labelledby="whats-new-in-1-0">
-        <h2 id="whats-new-in-1-0" style="scroll-margin-top: 80px;">{% trans %}What's new in 1.0{% endtrans %}</h2>
-        <ul class="list-inline">
-          <li><a href="#release-1-0-workspace">{% trans %}Workspace and history{% endtrans %}</a></li>
-          <li><a href="#release-1-0-expressions">{% trans %}Expressions and editing{% endtrans %}</a></li>
-          <li><a href="#release-1-0-results">{% trans %}Results and formatting{% endtrans %}</a></li>
-          <li><a href="#release-1-0-functions">{% trans %}New functions{% endtrans %}</a></li>
-          <li><a href="#release-1-0-units">{% trans %}Units{% endtrans %}</a></li>
-          <li><a href="#release-1-0-settings">{% trans %}Appearance and settings{% endtrans %}</a></li>
-        </ul>
+        <section aria-labelledby="whats-new-in-1-1">
+          <h3 id="whats-new-in-1-1" style="scroll-margin-top: 80px;">{% trans %}What's new in 1.1{% endtrans %}</h3>
+          <ul class="list-inline">
+            <li><a href="#release-1-1-functions">{% trans %}Functions{% endtrans %}</a></li>
+            <li><a href="#release-1-1-constants-units">{% trans %}Constants and units{% endtrans %}</a></li>
+            <li><a href="#release-1-1-input">{% trans %}Input{% endtrans %}</a></li>
+            <li><a href="#release-1-1-results">{% trans %}Results{% endtrans %}</a></li>
+            <li><a href="#release-1-1-sessions">{% trans %}Sessions and settings{% endtrans %}</a></li>
+            <li><a href="#release-1-1-appearance">{% trans %}Appearance and panels{% endtrans %}</a></li>
+            <li><a href="#release-1-1-keypad">{% trans %}Keypad{% endtrans %}</a></li>
+            <li><a href="#release-1-1-other">{% trans %}Other improvements{% endtrans %}</a></li>
+          </ul>
 
-        <h3 id="release-1-0-workspace" style="scroll-margin-top: 80px;">{% trans %}Workspace and history{% endtrans %}</h3>
-        <ul>
-          <li>{% trans %}Work in tabs and split panes to keep several calculations open side by side.{% endtrans %}</li>
-          <li>{% trans %}Save calculation history between launches and set a history size limit.{% endtrans %}</li>
-          <li>{% trans %}Load your own functions and variables at startup.{% endtrans %}</li>
-          <li>{% trans %}Choose a keypad preset or build a custom keypad.{% endtrans %}</li>
-          <li>{% trans %}Show or hide the main menu. The result display now has a right-click context menu with an entry for the main menu.{% endtrans %}</li>
-          <li>{% trans %}Re-edit an earlier expression and recalculate all the expressions below it.{% endtrans %}</li>
-          <li>{% trans %}Check for updates from within the app.{% endtrans %}</li>
-        </ul>
+          <h4 id="release-1-1-functions" style="scroll-margin-top: 80px;">{% trans %}Functions{% endtrans %}</h4>
+          <ul>
+            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.root"><code>root(n; x)</code></a> {% trans %}for nth roots, including negative values and quantities with units. For example,{% endtrans %} <code>root(5; -32)</code> {% trans %}returns{% endtrans %} <code>-2</code>.</li>
+            <li>{% trans %}Fix factorials in{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#user-functions">{% trans %}user-defined functions{% endtrans %}</a>, {% trans %}such as{% endtrans %} <code>f(n) = n!</code>.</li>
+          </ul>
 
-        <h3 id="release-1-0-expressions" style="scroll-margin-top: 80px;">{% trans %}Expressions and editing{% endtrans %}</h3>
-        <ul>
-          <li>{% trans %}Use lists and matrices in expressions.{% endtrans %}</li>
-          <li>{% trans %}See the interpreted expression alongside the result, with implicit multiplication made explicit.{% endtrans %}</li>
-          <li>{% trans %}Write integer powers with superscript digits.{% endtrans %}</li>
-          <li>{% trans %}Use{% endtrans %} <code>√</code>, <code>∛</code>, <code>Σ</code> {% trans %}(summation), and{% endtrans %} <code>π</code> {% trans %}as aliases. The{% endtrans %} <code>~</code> {% trans %}operator is an alias for{% endtrans %} <code>not()</code>.</li>
-          <li>{% trans %}More symbol aliases are accepted for addition, subtraction, multiplication, and division.{% endtrans %}</li>
-          <li>{% trans %}Autocomplete suggestions now show category icons.{% endtrans %}</li>
-          <li>{% trans %}Pasted numbers are automatically formatted to match the global Number Format setting.{% endtrans %}</li>
-          <li>{% trans %}Insert constants and formula book entries with their units included.{% endtrans %}</li>
-        </ul>
+          <h4 id="release-1-1-constants-units" style="scroll-margin-top: 80px;">{% trans %}Constants and units{% endtrans %}</h4>
+          <ul>
+            <li><a href="{{ pathto('userguide/interface') }}#expression-editor-features">{% trans %}Search constants{% endtrans %}</a> {% trans %}by name or unit with{% endtrans %} <kbd>Ctrl+Space</kbd>. {% trans %}Select a result with the arrow keys and insert it with Enter, Tab, or a click.{% endtrans %}</li>
+            <li>{% trans %}Improve searching and keyboard selection in the Constants panel.{% endtrans %}</li>
+            <li>{% trans %}Correct the units of the muon, proton, and neutron energy equivalents.{% endtrans %}</li>
+            <li>{% trans %}Allow powers of{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#units">{% trans %}grouped quantities{% endtrans %}</a>, {% trans %}such as{% endtrans %} <code>(2[m])^2</code>.</li>
+            <li>{% trans %}Correct results shown in{% endtrans %} <code>J/m²</code> {% trans %}and{% endtrans %} <code>J/m³</code> {% trans %}when using prefixed units.{% endtrans %}</li>
+          </ul>
 
-        <h3 id="release-1-0-results" style="scroll-margin-top: 80px;">{% trans %}Results and formatting{% endtrans %}</h3>
-        <ul>
-          <li>{% trans %}Show a calculation in several result formats at once. Number-format choices include Indian 3-2-2 digit grouping.{% endtrans %}</li>
-          <li>{% trans %}Show rational results as fractions, or use sexagesimal notation for angles and time.{% endtrans %}</li>
-          <li>{% trans %}Show angles as multiples of pi in radian mode or through an explicit conversion.{% endtrans %}</li>
-          <li>{% trans %}Choose how complex numbers are displayed, with polar forms and options for the imaginary unit.{% endtrans %}</li>
-          <li>{% trans %}Set a custom precision with the Custom... option.{% endtrans %}</li>
-          <li>{% trans %}Choose from five rounding modes.{% endtrans %}</li>
-          <li>{% trans %}Changing the primary result format updates only the last expression. Earlier history entries keep their formatting.{% endtrans %}</li>
-        </ul>
+          <h4 id="release-1-1-input" style="scroll-margin-top: 80px;">{% trans %}Input{% endtrans %}</h4>
+          <ul>
+            <li>{% trans %}Fix undo and redo, and copy and paste.{% endtrans %}</li>
+            <li>{% trans %}Fix clipped text and excess space in wrapped input with different fonts.{% endtrans %}</li>
+            <li>{% trans %}Fix crashes when typing operators in long, wrapped expressions.{% endtrans %}</li>
+            <li>{% trans %}Restore{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}digit grouping while typing{% endtrans %}</a>, {% trans %}following the selected number format.{% endtrans %}</li>
+            <li>{% trans %}Add an option to turn off{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}automatic input adjustments{% endtrans %}</a>, {% trans %}such as operator replacements and closing brackets.{% endtrans %}</li>
+            <li>{% trans %}Add optional{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}Enter-to-accept autocomplete and Escape-to-clear behavior{% endtrans %}</a>.</li>
+            <li>{% trans %}Add an option to use a steady cursor instead of a blinking one.{% endtrans %}</li>
+            <li>{% trans %}Preserve{% endtrans %} <a href="{{ pathto('userguide/syntax') }}#comments">{% trans %}comments{% endtrans %}</a> {% trans %}as written and prevent them from affecting result formatting.{% endtrans %}</li>
+            <li>{% trans %}Improve recalling expressions from history and focus the editor after startup.{% endtrans %}</li>
+            <li>{% trans %}Remove the empty-history hint.{% endtrans %}</li>
+          </ul>
 
-        <h3 id="release-1-0-functions" style="scroll-margin-top: 80px;">{% trans %}New functions{% endtrans %}</h3>
-        <ul>
-          <li><strong>{% trans %}Integer arithmetic:{% endtrans %}</strong> <a href="{{ pathto('reference/integer') }}#powmod"><code>powmod</code></a> {% trans %}for modular exponentiation,{% endtrans %} <a href="{{ pathto('reference/integer') }}#emod"><code>emod</code></a> {% trans %}for Euclidean modulo,{% endtrans %} <a href="{{ pathto('reference/integer') }}#lcm"><code>lcm</code></a> {% trans %}for least common multiples, and{% endtrans %} <a href="{{ pathto('reference/integer') }}#popcount"><code>popcount</code></a> {% trans %}for counting set bits.{% endtrans %}</li>
-          <li><strong>{% trans %}Number formatting:{% endtrans %}</strong> <a href="{{ pathto('reference/integer') }}#binpad"><code>binpad</code></a>, <a href="{{ pathto('reference/integer') }}#octpad"><code>octpad</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/integer') }}#hexpad"><code>hexpad</code></a> {% trans %}for padded binary, octal, and hexadecimal output. Use{% endtrans %} <a href="{{ pathto('reference/integer') }}#sci"><code>sci</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/integer') }}#eng"><code>eng</code></a> {% trans %}for scientific and engineering notation.{% endtrans %}</li>
-          <li><strong>{% trans %}Random numbers:{% endtrans %}</strong> <a href="{{ pathto('reference/statistical') }}#rand"><code>rand</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/statistical') }}#randint"><code>randint</code></a> {% trans %}generate random decimals and integers.{% endtrans %}</li>
-          <li><strong>{% trans %}Dates and time:{% endtrans %}</strong> <a href="{{ pathto('reference/basic') }}#datetime"><code>datetime</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#epoch"><code>epoch</code></a> {% trans %}convert between date/time values and Unix timestamps.{% endtrans %}</li>
-          <li><strong>{% trans %}Summation:{% endtrans %}</strong> <a href="{{ pathto('reference/statistical') }}#summation"><code>sigma</code></a>, {% trans %}also written as{% endtrans %} <code>Σ</code>.</li>
-          <li><strong>{% trans %}Complex numbers:{% endtrans %}</strong> <a href="{{ pathto('reference/basic') }}#conj"><code>conj</code></a> {% trans %}for complex conjugates and{% endtrans %} <a href="{{ pathto('reference/basic') }}#cis"><code>cis</code></a> {% trans %}for constructing a complex number from an angle. Choose rectangular, exponential, or phasor output with{% endtrans %} <a href="{{ pathto('reference/basic') }}#rectform"><code>rectform</code></a>, <a href="{{ pathto('reference/basic') }}#expform"><code>expform</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#phasorform"><code>phasorform</code></a>.</li>
-          <li><strong>{% trans %}IEEE 754:{% endtrans %}</strong> <a href="{{ pathto('reference/ieee754') }}#ieee754_round_half"><code>ieee754_round_*</code></a> {% trans %}rounds to a floating-point format, and{% endtrans %} <a href="{{ pathto('reference/ieee754') }}#ieee754_half_residual"><code>ieee754_*_residual(x)</code></a> {% trans %}returns the rounding residual. Both families support{% endtrans %} <code>half</code>, <code>float</code>, <code>double</code>, {% trans %}and{% endtrans %} <code>quad</code>.</li>
-          <li><strong>{% trans %}Chemistry:{% endtrans %}</strong> <a href="{{ pathto('reference/basic') }}#molmass"><code>molmass</code></a>, <a href="{{ pathto('reference/basic') }}#mass"><code>mass</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#molarity"><code>molarity</code></a> {% trans %}for molar mass, mass from an amount of substance, and solution molarity.{% endtrans %}</li>
-          <li><strong>{% trans %}Linear algebra and data:{% endtrans %}</strong> {% trans %}List and matrix support with{% endtrans %} <a href="{{ pathto('reference/basic') }}#cols"><code>cols</code></a>, <a href="{{ pathto('reference/basic') }}#corrp"><code>corrp</code></a>, <a href="{{ pathto('reference/basic') }}#corrs"><code>corrs</code></a>, <a href="{{ pathto('reference/basic') }}#covp"><code>covp</code></a>, <a href="{{ pathto('reference/basic') }}#covs"><code>covs</code></a>, <a href="{{ pathto('reference/basic') }}#cross"><code>cross</code></a>, <a href="{{ pathto('reference/basic') }}#det"><code>det</code></a>, <a href="{{ pathto('reference/basic') }}#dot"><code>dot</code></a>, <a href="{{ pathto('reference/basic') }}#flatten"><code>flatten</code></a>, <a href="{{ pathto('reference/basic') }}#inv"><code>inv</code></a>, <a href="{{ pathto('reference/basic') }}#norm"><code>norm</code></a>, <a href="{{ pathto('reference/basic') }}#rank"><code>rank</code></a>, <a href="{{ pathto('reference/basic') }}#rows"><code>rows</code></a>, <a href="{{ pathto('reference/basic') }}#shape"><code>shape</code></a>, <a href="{{ pathto('reference/basic') }}#trace"><code>trace</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#transpose"><code>transpose</code></a>.</li>
-          <li><strong>{% trans %}Statistics:{% endtrans %}</strong> <a href="{{ pathto('reference/statistical') }}#stdevp"><code>stdevp</code></a>, <a href="{{ pathto('reference/statistical') }}#stdevs"><code>stdevs</code></a>, <a href="{{ pathto('reference/statistical') }}#varp"><code>varp</code></a>, <a href="{{ pathto('reference/statistical') }}#vars"><code>vars</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/statistical') }}#mad"><code>mad</code></a>, {% trans %}with list and matrix support.{% endtrans %}</li>
-        </ul>
+          <h4 id="release-1-1-results" style="scroll-margin-top: 80px;">{% trans %}Results{% endtrans %}</h4>
+          <ul>
+            <li>{% trans %}Restore free copying.{% endtrans %}</li>
+            <li><a href="{{ pathto('userguide/interface') }}#result-display-interactions">{% trans %}Copy a whole calculation{% endtrans %}</a>, {% trans %}including all displayed result formats, either across multiple lines or as a single line.{% endtrans %}</li>
+            <li>{% trans %}Add optional{% endtrans %} <a href="{{ pathto('userguide/interface') }}#results">{% trans %}removal of trailing decimal zeroes{% endtrans %}</a>.</li>
+            <li>{% trans %}Simplify live previews to show just the results.{% endtrans %}</li>
+            <li>{% trans %}Keep live result previews above the editor when recalling long expressions from history.{% endtrans %}</li>
+            <li>{% trans %}Avoid unnecessary extra simplification lines.{% endtrans %}</li>
+            <li>{% trans %}Restore the{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keyboard-shortcuts">{% trans %}F2-F5 and F7-F10 notation shortcuts{% endtrans %}</a>.</li>
+          </ul>
 
-        <h3 id="release-1-0-units" style="scroll-margin-top: 80px;">{% trans %}Units{% endtrans %}</h3>
-        <p>{% trans %}Use square brackets to identify units explicitly in expressions, such as{% endtrans %} <code>[m]</code> {% trans %}or{% endtrans %} <code>[s]</code>. {% trans %}New units and aliases include:{% endtrans %}</p>
-        <ul>
-          <li><strong>{% trans %}Angles:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#plane-angle"><code>gradian</code></a> (<code>gon</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>turn</code></a> (<code>tr</code>, <code>pla</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>revolution</code></a> (<code>rev</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>degree</code></a> (<code>°</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>arcmin</code></a> (<code>′</code>), {% trans %}and{% endtrans %} <a href="{{ pathto('reference/units') }}#plane-angle"><code>arcsec</code></a> (<code>″</code>).</li>
-          <li><strong>{% trans %}Time:{% endtrans %}</strong> {% trans %}Julian century{% endtrans %} (<a href="{{ pathto('reference/units') }}#time"><code>cy_jul</code></a>).</li>
-          <li><strong>{% trans %}Area and mass:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#area"><code>hectare</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/units') }}#mass"><code>tonne</code></a>.</li>
-          <li><strong>{% trans %}Speed:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#speed"><code>kph</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/units') }}#speed"><code>mph</code></a>.</li>
-          <li><strong>{% trans %}Energy:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#amount-of-heat"><code>quad</code></a>, {% trans %}equal to{% endtrans %} 10<sup>15</sup> <code>[Btu]</code>.</li>
-        </ul>
+          <h4 id="release-1-1-sessions" style="scroll-margin-top: 80px;">{% trans %}Sessions and settings{% endtrans %}</h4>
+          <ul>
+            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#private-sessions">{% trans %}private tabs{% endtrans %}</a> {% trans %}that discard their contents when closed and are not restored on the next launch. Use{% endtrans %} <kbd>Ctrl+Shift+N</kbd> (<kbd>Cmd+Shift+N</kbd> {% trans %}on macOS) to open one.{% endtrans %}</li>
+            <li>{% trans %}Allow switching between private and saved sessions, and optionally open a private tab at startup.{% endtrans %}</li>
+            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#resetting-settings">{% trans %}Reset All Settings...{% endtrans %}</a>, {% trans %}keeping sessions, history, and user definitions.{% endtrans %}</li>
+            <li>{% trans %}Fix global{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-definitions">{% trans %}user definitions{% endtrans %}</a> {% trans %}missing from restored sessions.{% endtrans %}</li>
+            <li>{% trans %}Make{% endtrans %} <a href="{{ pathto('userguide/interface') }}#session-tabs-and-panes">{% trans %}session renaming, cloning, closed-tab recovery, and pane controls{% endtrans %}</a> {% trans %}easier to find in the menus. Cloning also copies unfinished input.{% endtrans %}</li>
+            <li>{% trans %}Organize the result context menu into Copy, Remove, Split, and Session groups.{% endtrans %}</li>
+            <li>{% trans %}Move{% endtrans %} <a href="{{ pathto('userguide/interface') }}#number-format">{% trans %}Number Format...{% endtrans %}</a> {% trans %}directly under Settings and simplify the result and appearance menus.{% endtrans %}</li>
+            <li>{% trans %}Apply font changes across all windows and fix font selection on macOS 27 and later.{% endtrans %}</li>
+            <li>{% trans %}Fix commands acting on the wrong window when used from a floating panel.{% endtrans %}</li>
+          </ul>
 
-        <h3 id="release-1-0-settings" style="scroll-margin-top: 80px;">{% trans %}Appearance and settings{% endtrans %}</h3>
-        <ul>
-          <li>{% trans %}Choose from more built-in themes or create a custom theme.{% endtrans %}</li>
-          <li>{% trans %}Interface scaling now applies to the expression editor too.{% endtrans %}</li>
-        </ul>
+          <h4 id="release-1-1-appearance" style="scroll-margin-top: 80px;">{% trans %}Appearance and panels{% endtrans %}</h4>
+          <ul>
+            <li>{% trans %}Add separate{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}system and SpeedCrunch theme choices{% endtrans %}</a> {% trans %}for menus, panels, and the status bar.{% endtrans %}</li>
+            <li>{% trans %}Add a compact{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic layout for input and results{% endtrans %}</a>. {% trans %}Modern remains the default.{% endtrans %}</li>
+            <li>{% trans %}Improve text contrast, menu readability, and panel button visibility.{% endtrans %}</li>
+            <li>{% trans %}Match menu icons to the theme and dim disabled menu items and shortcuts.{% endtrans %}</li>
+            <li>{% trans %}Tidy panel spacing, borders, and rounded corners.{% endtrans %}</li>
+            <li>{% trans %}Keep side panels at full height and remember table column order.{% endtrans %}</li>
+            <li>{% trans %}Preserve floating panel positions and visibility across restarts, and prevent floating panels from being grouped unexpectedly.{% endtrans %}</li>
+          </ul>
+
+          <h4 id="release-1-1-keypad" style="scroll-margin-top: 80px;">{% trans %}Keypad{% endtrans %}</h4>
+          <ul>
+            <li>{% trans %}Add a compact{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic keypad appearance{% endtrans %}</a> {% trans %}and 50% zoom.{% endtrans %}</li>
+            <li>{% trans %}Restore Zoom in the keypad's right-click menu and fix inconsistent sizing when changing zoom levels.{% endtrans %}</li>
+            <li>{% trans %}Update{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keypad">{% trans %}scientific layouts{% endtrans %}</a> {% trans %}with nth-root, square, and argument-separator buttons, and group related operations together.{% endtrans %}</li>
+            <li>{% trans %}Replace the obsolete{% endtrans %} <code>lg</code> {% trans %}button with{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.log10"><code>log10</code></a>.</li>
+          </ul>
+
+          <h4 id="release-1-1-other" style="scroll-margin-top: 80px;">{% trans %}Other improvements{% endtrans %}</h4>
+          <ul>
+            <li>{% trans %}Reduce startup delays when restoring sessions, history, and panels.{% endtrans %}</li>
+            <li>{% trans %}Make update checks more responsive and prevent them from delaying window closure.{% endtrans %}</li>
+            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#help">{% trans %}Help &gt; App Diagnostics{% endtrans %}</a> {% trans %}with a report that can be copied when asking for help. Show operating system details in About SpeedCrunch.{% endtrans %}</li>
+            <li>{% trans %}Fix a crash when closing windows with certain panels open.{% endtrans %}</li>
+            <li>{% trans %}Add portable macOS ZIP packages that keep settings and sessions beside the app in a{% endtrans %} <code>SpeedCrunch-data</code> {% trans %}folder.{% endtrans %}</li>
+            <li>{% trans %}Set the default macOS minimum version to 14.4 on Apple Silicon.{% endtrans %}</li>
+          </ul>
+        </section>
+        <hr/>
+        <section aria-labelledby="contributors-1-1">
+          <h3 id="contributors-1-1" style="scroll-margin-top: 80px;">{% trans %}Contributors{% endtrans %}</h3>
+          <p>{% trans %}Thank you to everyone who contributed to SpeedCrunch 1.1.{% endtrans %}</p>
+          <p>Helder Correia, Vitaly Zaitsev, Rodrigo Pedra, Pedro Montes Alcalde, Francis Tseng, Antonio Mannella, Benjamin Robin, Brian Hale, D.J.L. Sales, Matthias Prager, Rafael Fraga, Theodore R. Smith, @ddidderr, @FrankMountainFace, @jetp250, @Matth7878, @nfshr, @pandora1986, @playerofgames, @rafa4mat, @RedNova84, @Sacryn, @tosione.</p>
+        </section>
       </section>
       <hr/>
 
-      <section aria-labelledby="contributors">
-        <h2 id="contributors" style="scroll-margin-top: 80px;">{% trans %}Contributors{% endtrans %}</h2>
-        <p>{% trans %}Thank you to the authors who have contributed since November 30, 2016.{% endtrans %}</p>
-        <p>Helder Correia, Felix Krull, Mikko Syrjä, Tey / Teyut, Samuel Gaist, Hadrien Theveneau, Pol Welter, Matthew Di Nardo, Chris Roberts, Alan Birtles, Chuvke, Jean-Michel Frouin, Jonas Nyrup, Nikolay Zlatev, Roger Sachan, rewq.</p>
+      <section class="panel panel-default" aria-labelledby="version-1-0">
+        <div class="panel-heading">
+          <h2 id="version-1-0" class="panel-title" style="scroll-margin-top: 80px;">
+            <a class="collapsed" role="button" data-toggle="collapse" href="#release-1-0" aria-expanded="false" aria-controls="release-1-0">{% trans %}Version 1.0{% endtrans %}</a>
+          </h2>
+        </div>
+        <div id="release-1-0" class="panel-collapse collapse" role="region" aria-labelledby="version-1-0">
+          <div class="panel-body">
+            {{ downloads(
+              win=[
+                (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.0.0/speedcrunch-1.0-win64.exe'),
+                (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.0.0/speedcrunch-1.0-win64.zip'),],
+
+              osx=[(_('Download'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.0.0/SpeedCrunch-1.0-arm64.dmg')],
+
+            ) }}
+            <hr/>
+            <h3 id="whats-new-in-1-0" style="scroll-margin-top: 80px;">{% trans %}What's new in 1.0{% endtrans %}</h3>
+            <ul class="list-inline">
+              <li><a href="#release-1-0-workspace">{% trans %}Workspace and history{% endtrans %}</a></li>
+              <li><a href="#release-1-0-expressions">{% trans %}Expressions and editing{% endtrans %}</a></li>
+              <li><a href="#release-1-0-results">{% trans %}Results and formatting{% endtrans %}</a></li>
+              <li><a href="#release-1-0-functions">{% trans %}New functions{% endtrans %}</a></li>
+              <li><a href="#release-1-0-units">{% trans %}Units{% endtrans %}</a></li>
+              <li><a href="#release-1-0-settings">{% trans %}Appearance and settings{% endtrans %}</a></li>
+            </ul>
+
+            <h4 id="release-1-0-workspace" style="scroll-margin-top: 80px;">{% trans %}Workspace and history{% endtrans %}</h4>
+            <ul>
+              <li>{% trans %}Work in tabs and split panes to keep several calculations open side by side.{% endtrans %}</li>
+              <li>{% trans %}Save calculation history between launches and set a history size limit.{% endtrans %}</li>
+              <li>{% trans %}Load your own functions and variables at startup.{% endtrans %}</li>
+              <li>{% trans %}Choose a keypad preset or build a custom keypad.{% endtrans %}</li>
+              <li>{% trans %}Show or hide the main menu. The result display now has a right-click context menu with an entry for the main menu.{% endtrans %}</li>
+              <li>{% trans %}Re-edit an earlier expression and recalculate all the expressions below it.{% endtrans %}</li>
+              <li>{% trans %}Check for updates from within the app.{% endtrans %}</li>
+            </ul>
+
+            <h4 id="release-1-0-expressions" style="scroll-margin-top: 80px;">{% trans %}Expressions and editing{% endtrans %}</h4>
+            <ul>
+              <li>{% trans %}Use lists and matrices in expressions.{% endtrans %}</li>
+              <li>{% trans %}See the interpreted expression alongside the result, with implicit multiplication made explicit.{% endtrans %}</li>
+              <li>{% trans %}Write integer powers with superscript digits.{% endtrans %}</li>
+              <li>{% trans %}Use{% endtrans %} <code>√</code>, <code>∛</code>, <code>Σ</code> {% trans %}(summation), and{% endtrans %} <code>π</code> {% trans %}as aliases. The{% endtrans %} <code>~</code> {% trans %}operator is an alias for{% endtrans %} <code>not()</code>.</li>
+              <li>{% trans %}More symbol aliases are accepted for addition, subtraction, multiplication, and division.{% endtrans %}</li>
+              <li>{% trans %}Autocomplete suggestions now show category icons.{% endtrans %}</li>
+              <li>{% trans %}Pasted numbers are automatically formatted to match the global Number Format setting.{% endtrans %}</li>
+              <li>{% trans %}Insert constants and formula book entries with their units included.{% endtrans %}</li>
+            </ul>
+
+            <h4 id="release-1-0-results" style="scroll-margin-top: 80px;">{% trans %}Results and formatting{% endtrans %}</h4>
+            <ul>
+              <li>{% trans %}Show a calculation in several result formats at once. Number-format choices include Indian 3-2-2 digit grouping.{% endtrans %}</li>
+              <li>{% trans %}Show rational results as fractions, or use sexagesimal notation for angles and time.{% endtrans %}</li>
+              <li>{% trans %}Show angles as multiples of pi in radian mode or through an explicit conversion.{% endtrans %}</li>
+              <li>{% trans %}Choose how complex numbers are displayed, with polar forms and options for the imaginary unit.{% endtrans %}</li>
+              <li>{% trans %}Set a custom precision with the Custom... option.{% endtrans %}</li>
+              <li>{% trans %}Choose from five rounding modes.{% endtrans %}</li>
+              <li>{% trans %}Changing the primary result format updates only the last expression. Earlier history entries keep their formatting.{% endtrans %}</li>
+            </ul>
+
+            <h4 id="release-1-0-functions" style="scroll-margin-top: 80px;">{% trans %}New functions{% endtrans %}</h4>
+            <ul>
+              <li><strong>{% trans %}Integer arithmetic:{% endtrans %}</strong> <a href="{{ pathto('reference/integer') }}#sc.powmod"><code>powmod</code></a> {% trans %}for modular exponentiation,{% endtrans %} <a href="{{ pathto('reference/integer') }}#sc.emod"><code>emod</code></a> {% trans %}for Euclidean modulo,{% endtrans %} <a href="{{ pathto('reference/integer') }}#sc.lcm"><code>lcm</code></a> {% trans %}for least common multiples, and{% endtrans %} <a href="{{ pathto('reference/integer') }}#sc.popcount"><code>popcount</code></a> {% trans %}for counting set bits.{% endtrans %}</li>
+              <li><strong>{% trans %}Number formatting:{% endtrans %}</strong> <a href="{{ pathto('reference/integer') }}#sc.binpad"><code>binpad</code></a>, <a href="{{ pathto('reference/integer') }}#sc.octpad"><code>octpad</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/integer') }}#sc.hexpad"><code>hexpad</code></a> {% trans %}for padded binary, octal, and hexadecimal output. Use{% endtrans %} <a href="{{ pathto('reference/integer') }}#sc.sci"><code>sci</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/integer') }}#sc.eng"><code>eng</code></a> {% trans %}for scientific and engineering notation.{% endtrans %}</li>
+              <li><strong>{% trans %}Random numbers:{% endtrans %}</strong> <a href="{{ pathto('reference/statistical') }}#sc.rand"><code>rand</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/statistical') }}#sc.randint"><code>randint</code></a> {% trans %}generate random decimals and integers.{% endtrans %}</li>
+              <li><strong>{% trans %}Dates and time:{% endtrans %}</strong> <a href="{{ pathto('reference/basic') }}#sc.datetime"><code>datetime</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.epoch"><code>epoch</code></a> {% trans %}convert between date/time values and Unix timestamps.{% endtrans %}</li>
+              <li><strong>{% trans %}Summation:{% endtrans %}</strong> <a href="{{ pathto('reference/statistical') }}#sc.summation"><code>sigma</code></a>, {% trans %}also written as{% endtrans %} <code>Σ</code>.</li>
+              <li><strong>{% trans %}Complex numbers:{% endtrans %}</strong> <a href="{{ pathto('reference/basic') }}#sc.conj"><code>conj</code></a> {% trans %}for complex conjugates and{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.cis"><code>cis</code></a> {% trans %}for constructing a complex number from an angle. Choose rectangular, exponential, or phasor output with{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.rectform"><code>rectform</code></a>, <a href="{{ pathto('reference/basic') }}#sc.expform"><code>expform</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.phasorform"><code>phasorform</code></a>.</li>
+              <li><strong>{% trans %}IEEE 754:{% endtrans %}</strong> <a href="{{ pathto('reference/ieee754') }}#sc.ieee754_round_half"><code>ieee754_round_*</code></a> {% trans %}rounds to a floating-point format, and{% endtrans %} <a href="{{ pathto('reference/ieee754') }}#sc.ieee754_half_residual"><code>ieee754_*_residual(x)</code></a> {% trans %}returns the rounding residual. Both families support{% endtrans %} <code>half</code>, <code>float</code>, <code>double</code>, {% trans %}and{% endtrans %} <code>quad</code>.</li>
+              <li><strong>{% trans %}Chemistry:{% endtrans %}</strong> <a href="{{ pathto('reference/basic') }}#sc.molmass"><code>molmass</code></a>, <a href="{{ pathto('reference/basic') }}#sc.mass"><code>mass</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.molarity"><code>molarity</code></a> {% trans %}for molar mass, mass from an amount of substance, and solution molarity.{% endtrans %}</li>
+              <li><strong>{% trans %}Linear algebra and data:{% endtrans %}</strong> {% trans %}List and matrix support with{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.cols"><code>cols</code></a>, <a href="{{ pathto('reference/basic') }}#sc.corrp"><code>corrp</code></a>, <a href="{{ pathto('reference/basic') }}#sc.corrs"><code>corrs</code></a>, <a href="{{ pathto('reference/basic') }}#sc.covp"><code>covp</code></a>, <a href="{{ pathto('reference/basic') }}#sc.covs"><code>covs</code></a>, <a href="{{ pathto('reference/basic') }}#sc.cross"><code>cross</code></a>, <a href="{{ pathto('reference/basic') }}#sc.det"><code>det</code></a>, <a href="{{ pathto('reference/basic') }}#sc.dot"><code>dot</code></a>, <a href="{{ pathto('reference/basic') }}#sc.flatten"><code>flatten</code></a>, <a href="{{ pathto('reference/basic') }}#sc.inv"><code>inv</code></a>, <a href="{{ pathto('reference/basic') }}#sc.norm"><code>norm</code></a>, <a href="{{ pathto('reference/basic') }}#sc.rank"><code>rank</code></a>, <a href="{{ pathto('reference/basic') }}#sc.rows"><code>rows</code></a>, <a href="{{ pathto('reference/basic') }}#sc.shape"><code>shape</code></a>, <a href="{{ pathto('reference/basic') }}#sc.trace"><code>trace</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.transpose"><code>transpose</code></a>.</li>
+              <li><strong>{% trans %}Statistics:{% endtrans %}</strong> <a href="{{ pathto('reference/statistical') }}#sc.stdevp"><code>stdevp</code></a>, <a href="{{ pathto('reference/statistical') }}#sc.stdevs"><code>stdevs</code></a>, <a href="{{ pathto('reference/statistical') }}#sc.varp"><code>varp</code></a>, <a href="{{ pathto('reference/statistical') }}#sc.vars"><code>vars</code></a>, {% trans %}and{% endtrans %} <a href="{{ pathto('reference/statistical') }}#sc.mad"><code>mad</code></a>, {% trans %}with list and matrix support.{% endtrans %}</li>
+            </ul>
+
+            <h4 id="release-1-0-units" style="scroll-margin-top: 80px;">{% trans %}Units{% endtrans %}</h4>
+            <p>{% trans %}Use square brackets to identify units explicitly in expressions, such as{% endtrans %} <code>[m]</code> {% trans %}or{% endtrans %} <code>[s]</code>. {% trans %}New units and aliases include:{% endtrans %}</p>
+            <ul>
+              <li><strong>{% trans %}Angles:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#plane-angle"><code>gradian</code></a> (<code>gon</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>turn</code></a> (<code>tr</code>, <code>pla</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>revolution</code></a> (<code>rev</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>degree</code></a> (<code>°</code>), <a href="{{ pathto('reference/units') }}#plane-angle"><code>arcmin</code></a> (<code>′</code>), {% trans %}and{% endtrans %} <a href="{{ pathto('reference/units') }}#plane-angle"><code>arcsec</code></a> (<code>″</code>).</li>
+              <li><strong>{% trans %}Time:{% endtrans %}</strong> {% trans %}Julian century{% endtrans %} (<a href="{{ pathto('reference/units') }}#time"><code>cy_jul</code></a>).</li>
+              <li><strong>{% trans %}Area and mass:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#area"><code>hectare</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/units') }}#mass"><code>tonne</code></a>.</li>
+              <li><strong>{% trans %}Speed:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#speed"><code>kph</code></a> {% trans %}and{% endtrans %} <a href="{{ pathto('reference/units') }}#speed"><code>mph</code></a>.</li>
+              <li><strong>{% trans %}Energy:{% endtrans %}</strong> <a href="{{ pathto('reference/units') }}#amount-of-heat"><code>quad</code></a>, {% trans %}equal to{% endtrans %} 10<sup>15</sup> <code>[Btu]</code>.</li>
+            </ul>
+
+            <h4 id="release-1-0-settings" style="scroll-margin-top: 80px;">{% trans %}Appearance and settings{% endtrans %}</h4>
+            <ul>
+              <li>{% trans %}Choose from more built-in themes or create a custom theme.{% endtrans %}</li>
+              <li>{% trans %}Interface scaling now applies to the expression editor too.{% endtrans %}</li>
+            </ul>
+            <hr/>
+            <section aria-labelledby="contributors">
+              <h3 id="contributors" style="scroll-margin-top: 80px;">{% trans %}Contributors{% endtrans %}</h3>
+              <p>{% trans %}Thank you to the authors who have contributed since November 30, 2016.{% endtrans %}</p>
+              <p>Helder Correia, Felix Krull, Mikko Syrjä, Tey / Teyut, Samuel Gaist, Hadrien Theveneau, Pol Welter, Matthew Di Nardo, Chris Roberts, Alan Birtles, Chuvke, Jean-Michel Frouin, Jonas Nyrup, Nikolay Zlatev, Roger Sachan, rewq.</p>
+            </section>
+          </div>
+        </div>
       </section>
       <hr/>
 
-      <h2 id="older-versions" style="scroll-margin-top: 80px;">{% trans %}Older Versions{% endtrans %}</h2>
+      <div id="older-versions" style="scroll-margin-top: 80px;">
       <div id="accordion" role="tablist" aria-multiselectable="true">
         {{ oldVersion('0.12', '012',
           win=[
@@ -235,6 +353,7 @@
             (_('64-bit Generic'), 'https://bitbucket.org/heldercorreia/speedcrunch/downloads/SpeedCrunch-0.12-linux64.tar.bz2'),],
         ) }}
 
+      </div>
       </div>
     </div>
   </div>

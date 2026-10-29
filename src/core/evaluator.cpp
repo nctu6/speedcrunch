@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "core/evaluator.h"
 #include "core/constants.h"
 #include "core/regexpatterns.h"
@@ -390,53 +392,14 @@ static bool s_isClosingListBraceToken(const Token& token)
            && token.text() == QLatin1String("}");
 }
 
-static bool s_tokenSourceContainsExplicitUnitAttachment(const Token& token,
-                                                        const QString& expression)
-{
-    if (!token.isOperand())
-        return false;
-    if (token.pos() < 0 || token.size() <= 0)
-        return false;
-    if (token.pos() + token.size() > expression.size())
-        return false;
-
-    const QString source = expression.mid(token.pos(), token.size());
-    return source.contains(MathDsl::UnitStart) && source.contains(MathDsl::UnitEnd);
-}
-
-static QHash<QString, Quantity> s_buildBuiltInUnitLookup(char angleMode)
-{
-    return Units::builtInUnitLookup(angleMode);
-}
-
-static const QHash<QString, Quantity>& s_builtInUnitLookup()
-{
-    static char cachedAngleMode = '\0';
-    static QHash<QString, Quantity> cache;
-
-    const char angleMode = Settings::instance()->angleUnit;
-    if (cache.isEmpty() || cachedAngleMode != angleMode) {
-        cache = s_buildBuiltInUnitLookup(angleMode);
-        cachedAngleMode = angleMode;
-    }
-
-    return cache;
-}
-
 static bool s_tryGetBuiltInUnitQuantity(const QString& identifier, Quantity* valueOut)
 {
-    const auto& lookup = s_builtInUnitLookup();
-    const auto it = lookup.constFind(identifier);
-    if (it == lookup.constEnd())
-        return false;
-    if (valueOut)
-        *valueOut = it.value();
-    return true;
+    return Units::tryGetBuiltInUnitQuantity(identifier, Settings::instance()->angleUnit, valueOut);
 }
 
 static bool s_isBuiltInUnitIdentifier(const QString& identifier)
 {
-    return s_builtInUnitLookup().contains(identifier);
+    return Units::isBuiltInUnitIdentifier(identifier);
 }
 
 static QString rewriteListBracesToInternalCalls(const QString& text)
@@ -1111,6 +1074,7 @@ Token::Token(Type type, const QString& text, int pos, int size)
     m_pos = pos;
     m_size = size;
     m_minPrecedence = MAX_PRECEDENCE;
+    m_explicitUnitAttachment = false;
 }
 
 Token::Token(const Token& token)
@@ -1120,6 +1084,7 @@ Token::Token(const Token& token)
     m_pos = token.m_pos;
     m_size = token.m_size;
     m_minPrecedence = token.m_minPrecedence;
+    m_explicitUnitAttachment = token.m_explicitUnitAttachment;
 }
 
 Token& Token::operator=(const Token& token)
@@ -1129,6 +1094,7 @@ Token& Token::operator=(const Token& token)
     m_pos = token.m_pos;
     m_size = token.m_size;
     m_minPrecedence = token.m_minPrecedence;
+    m_explicitUnitAttachment = token.m_explicitUnitAttachment;
     return*this;
 }
 
@@ -2789,7 +2755,7 @@ static QString simplifyRepeatedBasesInMultiplicativeTermForDisplay(const QString
     };
     rebuilt = simplifyParenthesizedDenominators(rebuilt);
 
-    auto simplifyAlgebraicMulDivChain = [&negativeUnitFactorCount](const QString& text) {
+    auto simplifyAlgebraicMulDivChain = [&negativeUnitFactorCount, &workingTerm](const QString& text) {
         if (RegExpPatterns::simpleParenthesizedDenominatorQuotient().match(text).hasMatch())
             return text;
 
@@ -2968,6 +2934,9 @@ static QString simplifyRepeatedBasesInMultiplicativeTermForDisplay(const QString
         QHash<QString, QString> representativeBaseByKey;
         QVector<QString> baseOrder;
         double numericCoefficient = 1.0;
+        int numericFactorCount = 0;
+        bool hasAlgebraicReduction = text != workingTerm;
+        const int previousNegativeFactorCount = negativeUnitFactorCount;
         bool hasNonNumericBase = false;
         bool hasOnlyUnitBases = true;
         auto combineMulDivOps = [](const QString& outerOp, const QString& innerOp) {
@@ -3021,8 +2990,10 @@ static QString simplifyRepeatedBasesInMultiplicativeTermForDisplay(const QString
                 return text;
 
             QString foldedNumericFactor;
-            if (tryFoldParenthesizedNumericAddSubFactor(unsignedFactor, &foldedNumericFactor))
+            if (tryFoldParenthesizedNumericAddSubFactor(unsignedFactor, &foldedNumericFactor)) {
+                hasAlgebraicReduction |= foldedNumericFactor != unsignedFactor;
                 unsignedFactor = foldedNumericFactor;
+            }
 
             if (factorSign < 0)
                 ++negativeUnitFactorCount;
@@ -3037,8 +3008,10 @@ static QString simplifyRepeatedBasesInMultiplicativeTermForDisplay(const QString
             for (int j = 0; j < chainFactors.size(); ++j) {
                 QString chainFactor = chainFactors.at(j).trimmed();
                 QString foldedChainFactor;
-                if (tryFoldParenthesizedNumericAddSubFactor(chainFactor, &foldedChainFactor))
+                if (tryFoldParenthesizedNumericAddSubFactor(chainFactor, &foldedChainFactor)) {
+                    hasAlgebraicReduction |= foldedChainFactor != chainFactor;
                     chainFactor = foldedChainFactor;
+                }
 
                 QString base;
                 int exponent = 0;
@@ -3053,13 +3026,18 @@ static QString simplifyRepeatedBasesInMultiplicativeTermForDisplay(const QString
                     const double value = base.toDouble(&ok);
                     if (!ok)
                         return text;
+                    ++numericFactorCount;
+                    hasAlgebraicReduction |= numericFactorCount > 1 || value == 1.0 || exponent != 1;
                     numericCoefficient *= std::pow(value, sign * exponent);
                 } else if (!isUnsignedDecimalNumberText(base)) {
                     const QString baseKey = canonicalSimplifiableBaseKeyForDisplay(base);
                     if (!exponentByBase.contains(baseKey)) {
                         baseOrder.append(baseKey);
                         representativeBaseByKey.insert(baseKey, base);
+                    } else {
+                        hasAlgebraicReduction = true;
                     }
+                    hasAlgebraicReduction |= exponent == 0;
                     exponentByBase[baseKey] += sign * exponent;
                     hasNonNumericBase = true;
                     if (hasOnlyUnitBases && !isUnitOnlyBase(base))
@@ -3072,6 +3050,13 @@ static QString simplifyRepeatedBasesInMultiplicativeTermForDisplay(const QString
 
         if (!hasNonNumericBase)
             return formatSimplifiedDecimal(numericCoefficient);
+
+        // Moving a denominator into a leading coefficient does not simplify
+        // anything. Keep the existing form unless factors actually reduce.
+        if (!hasAlgebraicReduction) {
+            negativeUnitFactorCount = previousNegativeFactorCount;
+            return text;
+        }
 
         QStringList positiveFactors;
         QStringList negativeFactors;
@@ -3675,14 +3660,11 @@ static QString formatInterpretedExpressionForDisplayImpl(const QString& expressi
             || hasTrigFunction);
 
     auto scanForDisplay = [](const QString& text) {
-        // Interpreted expressions are internally dot-based. For comma-based
-        // display styles, scanning with a strict single-radix setting can
-        // misclassify '.' as grouping separator and corrupt token structure.
-        // For display-only tokenization we temporarily enable "both radix
-        // chars accepted" mode, scan, then restore the previous setting.
-        // This keeps display formatting stable without changing evaluation
-        // behavior or persisted style.
+        // Interpreted expressions already use ungrouped dot-decimal numbers.
+        // Scan with that format so a comma-decimal display cannot reinterpret
+        // an internal value such as 0.123 as the grouped integer 0123.
         Settings* settings = Settings::instance();
+        const auto previousStyle = settings->numberFormatStyle;
         char previousRadix = 0;
         if (settings->isRadixCharacterBoth()) {
             previousRadix = MathDsl::MulOpAl1.toLatin1();
@@ -3690,8 +3672,10 @@ static QString formatInterpretedExpressionForDisplayImpl(const QString& expressi
             previousRadix = settings->radixCharacter();
         }
 
+        settings->numberFormatStyle = Settings::NumberFormatNoGroupingDot;
         settings->setRadixCharacter(MathDsl::MulOpAl1.toLatin1());
         const Tokens tokens = Evaluator::instance()->scan(text);
+        settings->numberFormatStyle = previousStyle;
         settings->setRadixCharacter(previousRadix);
         return tokens;
     };
@@ -4423,10 +4407,9 @@ QString Evaluator::simplifyInterpretedExpression(const QString& expression)
     }
 
     auto scanForDisplay = [](const QString& text) {
-        // Same display-tokenization strategy as above:
-        // force temporary dual-radix scan mode so internal dot-decimal
-        // interpreted text is tokenized correctly under comma-style displays.
+        // Simplification also scans internal, ungrouped dot-decimal text.
         Settings* settings = Settings::instance();
+        const auto previousStyle = settings->numberFormatStyle;
         char previousRadix = 0;
         if (settings->isRadixCharacterBoth()) {
             previousRadix = MathDsl::MulOpAl1.toLatin1();
@@ -4434,8 +4417,10 @@ QString Evaluator::simplifyInterpretedExpression(const QString& expression)
             previousRadix = settings->radixCharacter();
         }
 
+        settings->numberFormatStyle = Settings::NumberFormatNoGroupingDot;
         settings->setRadixCharacter(MathDsl::MulOpAl1.toLatin1());
         const Tokens tokens = Evaluator::instance()->scan(text);
+        settings->numberFormatStyle = previousStyle;
         settings->setRadixCharacter(previousRadix);
         return tokens;
     };
@@ -4512,12 +4497,14 @@ QString Evaluator::formatInterpretedExpressionForDisplay(const QString& expressi
 
 QString Evaluator::formatInterpretedExpressionSimplifiedForDisplay(const QString& expression)
 {
+    StartupDiagnostics::Scope timing("Simplify expression for display");
     return formatInterpretedExpressionForDisplayImpl(expression, true, nullptr);
 }
 
 QString Evaluator::formatInterpretedExpressionSimplifiedForDisplay(const QString& expression,
                                                                    const Evaluator* evaluator)
 {
+    StartupDiagnostics::Scope timing("Simplify expression for display");
     return formatInterpretedExpressionForDisplayImpl(expression, true, evaluator);
 }
 
@@ -4861,10 +4848,20 @@ QString Evaluator::fixNumberRadix(const QString& number)
     bool ignoreDot = dotCount != 1;
     bool ignoreComma = commaCount != 1;
     if (!ignoreDot && !ignoreComma) {
-        // If both radix characters are present once,
-        // consider the last one as the radix point.
-        ignoreDot = lastRadixChar != MathDsl::DotSep;
-        ignoreComma = lastRadixChar != ',';
+        // A valid fractional group in the selected format takes priority.
+        // Otherwise the last mark identifies the copied decimal convention.
+        const QChar radix = NumberFormatter::hasFormattedFractionalGrouping(number)
+            ? QChar(Settings::instance()->decimalSeparator()) : lastRadixChar;
+        ignoreDot = radix != MathDsl::DotSep;
+        ignoreComma = radix != MathDsl::CommaSep;
+    }
+
+    // A single mark can also be a thousands separator. Let the selected
+    // format decide when it forms a three-digit group. Keep accepting other
+    // lengths as alternate decimals, such as "1,56" in a dot-decimal format.
+    if (dotCount + commaCount == 1 && NumberFormatter::isSingleGroupedInteger(number)) {
+        ignoreDot = true;
+        ignoreComma = true;
     }
 
     QChar radixChar; // Null character by default.
@@ -4872,6 +4869,9 @@ QString Evaluator::fixNumberRadix(const QString& number)
         radixChar = MathDsl::DotSep;
     else if (!ignoreComma)
         radixChar = ',';
+
+    if (!NumberFormatter::hasValidNumberGrouping(number, radixChar))
+        return QString();
 
     // Second pass: write the result.
     QString result = "";
@@ -4895,9 +4895,8 @@ HNumber getNumber(const QString& number) {
     int endPos = number.indexOf(QRegularExpression(sexagesimalStopChars)); // Stop at sexagesimal separators/markers.
     if (endPos == 0)
         return HNumber(0);
-    if (endPos > 0)
-        return HNumber(Evaluator::fixNumberRadix(number.left(endPos)).toStdString().c_str());
-    return HNumber(Evaluator::fixNumberRadix(number).toStdString().c_str());
+    const QString normalized = Evaluator::fixNumberRadix(endPos > 0 ? number.left(endPos) : number);
+    return normalized.isNull() ? HMath::nan() : HNumber(normalized.toStdString().c_str());
 }
 
 QString Evaluator::fixSexagesimal(const QString& number, QString& unit)
@@ -5013,6 +5012,8 @@ QString Evaluator::fixSexagesimal(const QString& number, QString& unit)
                 }
             }
         }
+        if (mains.isNan() || minutes.isNan() || seconds.isNan())
+            return bad;
         int unitPos = number.indexOf(QRegularExpression(secondMarkClass));  // check digits after seconds unit
         if (unitPos >= 0 && !getNumber(number.mid(unitPos + 1)).isZero())
             return bad;
@@ -5051,9 +5052,7 @@ Evaluator* Evaluator::instance()
 
 QStringList Evaluator::builtInUnitIdentifiers()
 {
-    QStringList identifiers = s_builtInUnitLookup().keys();
-    identifiers.sort();
-    return identifiers;
+    return Units::builtInUnitIdentifiers();
 }
 
 Evaluator::Evaluator()
@@ -5063,6 +5062,7 @@ Evaluator::Evaluator()
 
 void Evaluator::initializeBuiltInVariables()
 {
+    StartupDiagnostics::Scope timing("Initialize evaluator built-in variables");
     setVariable(QLatin1String("e"), DMath::e(), Variable::BuiltIn);
     setVariable(QString::fromUtf8("ℯ"), DMath::e(), Variable::BuiltIn);
 
@@ -5083,9 +5083,8 @@ void Evaluator::initializeBuiltInVariables()
 
 void Evaluator::initializeAngleUnits()
 {
-    // Angle-dependent built-in unit values are resolved from the dedicated
-    // unit lookup table (not from reserved variable names).
-    s_builtInUnitLookup();
+    // Keep formatting in sync without constructing unused unit values.
+    Units::setRuntimeAngleMode(Settings::instance()->angleUnit);
 }
 
 void Evaluator::setExpression(const QString& expr)
@@ -5923,6 +5922,7 @@ void Evaluator::compile(const Tokens& tokens)
                    && s_isOpeningUnitBracketToken(left))
                {
                    ruleFound = true;
+                   lhs.setExplicitUnitAttachment(true);
                    syntaxStack.reduce(3, std::move(lhs), MAX_PRECEDENCE);
 #ifdef EVALUATOR_DEBUG
                    dbg << "\tRule for empty unit attachment X[] -> X\n";
@@ -5942,6 +5942,7 @@ void Evaluator::compile(const Tokens& tokens)
                    && s_isOpeningUnitBracketToken(left))
                {
                    ruleFound = true;
+                   lhs.setExplicitUnitAttachment(true);
                    syntaxStack.reduce(4, std::move(lhs), MAX_PRECEDENCE);
                    m_codes.append(Opcode(Opcode::Unit));
 #ifdef EVALUATOR_DEBUG
@@ -5971,6 +5972,7 @@ void Evaluator::compile(const Tokens& tokens)
                        && innerSource.endsWith(MathDsl::UnitEnd))
                    {
                        ruleFound = true;
+                       lhs.setExplicitUnitAttachment(true);
                        syntaxStack.reduce(5, std::move(lhs), MAX_PRECEDENCE);
                        m_codes.append(Opcode(Opcode::Unit));
 #ifdef EVALUATOR_DEBUG
@@ -6169,7 +6171,7 @@ void Evaluator::compile(const Tokens& tokens)
                Token a = syntaxStack.top(2);
                const bool disallowPowerWithExplicitUnitAttachment =
                    op.asOperator() == Token::Exponentiation
-                   && s_tokenSourceContainsExplicitUnitAttachment(a, m_expression);
+                   && a.hasExplicitUnitAttachment();
                if (disallowPowerWithExplicitUnitAttachment) {
                    m_error = tr("syntax error");
                    m_valid = false;
@@ -6225,9 +6227,25 @@ void Evaluator::compile(const Tokens& tokens)
                    case Token::Multiplication:
                        m_codes.append(Opcode::Mul);
                        break;
-                   case Token::Division:
-                       m_codes.append(Opcode::Div);
+                   case Token::Division: {
+                       // Keep an unparenthesized denominator's unit separate
+                       // until the numerator's value is known at runtime.
+                       int unitIndex = m_codes.size() - 1;
+                       unsigned negateDivisor = 0;
+                       while (unitIndex >= 0 && m_codes.at(unitIndex).type == Opcode::Neg) {
+                           negateDivisor ^= 1;
+                           --unitIndex;
+                       }
+                       if (b.hasExplicitUnitAttachment()
+                           && unitIndex >= 0
+                           && m_codes.at(unitIndex).type == Opcode::Unit) {
+                           m_codes.resize(unitIndex + 1);
+                           m_codes.last() = Opcode(Opcode::DivUnit, negateDivisor);
+                       } else {
+                           m_codes.append(Opcode::Div);
+                       }
                        break;
+                   }
                    case Token::Phasor:
                        m_codes.append(Opcode::Phasor);
                        break;
@@ -6342,7 +6360,9 @@ void Evaluator::compile(const Tokens& tokens)
                    else if (op2.asOperator() == Token::BitwiseLogicalNOT)
                        m_codes.append(Opcode(Opcode::BNot));
 
-                   syntaxStack.reduce(2);
+                   Token reduced(Token::stxAbstract);
+                   reduced.setExplicitUnitAttachment(x.hasExplicitUnitAttachment());
+                   syntaxStack.reduce(2, std::move(reduced));
 #ifdef EVALUATOR_DEBUG
                    dbg << "\tRule for unary operator" << op2.text() << "\n";
 #endif
@@ -6377,7 +6397,9 @@ void Evaluator::compile(const Tokens& tokens)
 #ifdef EVALUATOR_DEBUG
                    dbg << "\tRule for unary operator (auxiliary)" << "\n";
 #endif
-                   syntaxStack.reduce(2);
+                   Token reduced(Token::stxAbstract);
+                   reduced.setExplicitUnitAttachment(x.hasExplicitUnitAttachment());
+                   syntaxStack.reduce(2, std::move(reduced));
                }
            }
 
@@ -6764,6 +6786,19 @@ QString Evaluator::buildInterpretedExpressionFromOpcodes() const
             });
             break;
         }
+        case Opcode::DivUnit: {
+            if (stack.size() < 3)
+                return QString();
+            const RenderNode unit = stack.takeLast();
+            const RenderNode divisor = stack.takeLast();
+            const RenderNode numerator = stack.takeLast();
+            RenderNode denominator = makeBinaryNode(divisor, unit, Opcode::Unit, opcodeIndex);
+            if (opcode.index)
+                denominator = makeUnaryNode(QStringLiteral("-"), denominator,
+                                            opPrecedence(Token::Multiplication));
+            stack.append(makeBinaryNode(numerator, denominator, Opcode::Div, opcodeIndex));
+            break;
+        }
         case Opcode::Add:
         case Opcode::Sub:
         case Opcode::Mul:
@@ -6998,6 +7033,10 @@ Quantity Evaluator::evalNoAssign()
                 m_assignVarDescription = description;
             }
         }
+        // Fallback interpreted text (such as standalone angles) must not
+        // include a comment that will be appended again below.
+        if (commentPos >= 0)
+            expressionToParse = expressionToParse.left(commentPos).trimmed();
         replacePowerOfTenScientificNotationWithDecimalExponent(expressionToParse);
         replaceSuperscriptPowersWithCaretEquivalent(expressionToParse);
         Tokens tokens = scan(expressionToParse);
@@ -7212,6 +7251,19 @@ Quantity Evaluator::exec(const QVector<Opcode>& opcodes,
         }
         return checkOperatorResult(result);
     };
+    auto attachUnit = [&checkOperatorResultWithDeferredNoOperand](const Quantity& value, const Quantity& unit) {
+        HNumber affineBaseValue;
+        if (value.isDimensionless()
+            && value.numericValue().isNearReal()
+            && Units::tryConvertAffineToBase(
+                unit.unitName(), value.numericValue().real, &affineBaseValue))
+        {
+            Quantity absolute = Quantity(affineBaseValue) * Units::kelvin();
+            absolute.setDisplayUnit(CNumber(1), unit.unitName());
+            return checkOperatorResultWithDeferredNoOperand(absolute);
+        }
+        return checkOperatorResultWithDeferredNoOperand(value * unit);
+    };
 
     for (int pc = 0; pc < opcodes.count(); ++pc) {
         const Opcode& opcode = opcodes.at(pc);
@@ -7311,22 +7363,33 @@ Quantity Evaluator::exec(const QVector<Opcode>& opcodes,
                 }
                 popStackValue(val1);
                 popStackValue(val2);
-                {
-                    HNumber affineBaseValue;
-                    if (val2.isDimensionless()
-                        && val2.numericValue().isNearReal()
-                        && Units::tryConvertAffineToBase(
-                            val1.unitName(), val2.numericValue().real, &affineBaseValue))
-                    {
-                        Quantity absolute = Quantity(affineBaseValue) * Units::kelvin();
-                        absolute.setDisplayUnit(CNumber(1), val1.unitName());
-                        val2 = checkOperatorResultWithDeferredNoOperand(absolute);
-                    } else {
-                        val2 = checkOperatorResultWithDeferredNoOperand(val2 * val1);
-                    }
+                val2 = attachUnit(val2, val1);
+                pushStackValue(val2);
+                break;
+
+            case Opcode::DivUnit: {
+                if (stack.count() < 3) {
+                    m_error = tr("invalid expression");
+                    return CMath::nan();
+                }
+                Quantity unit;
+                popStackValue(unit);
+                popStackValue(val1);
+                popStackValue(val2);
+                if (val2.hasUnit() || val2.hasDimension()) {
+                    val1 = attachUnit(val1, unit);
+                    if (index)
+                        val1 = -val1;
+                    val2 = checkOperatorResultWithDeferredNoOperand(val2 / val1);
+                } else {
+                    if (index)
+                        val1 = -val1;
+                    val2 = checkOperatorResultWithDeferredNoOperand(val2 / val1);
+                    val2 = attachUnit(val2, unit);
                 }
                 pushStackValue(val2);
                 break;
+            }
 
             case Opcode::Div:
                 if (stack.count() < 2) {
@@ -8212,6 +8275,14 @@ static void replaceSuperscriptPowersWithCaretEquivalent(QString& expr)
     }
 }
 
+QString Evaluator::expandSuperscriptPowers(const QString& expr)
+{
+    const int commentPos = expr.indexOf(MathDsl::CommentSep);
+    QString expression = commentPos >= 0 ? expr.left(commentPos) : expr;
+    replaceSuperscriptPowersWithCaretEquivalent(expression);
+    return commentPos >= 0 ? expression + expr.mid(commentPos) : expression;
+}
+
 static void normalizeFunctionCaretPowers(QString& expr)
 {
     auto isIdentifierChar = [](const QChar& ch) {
@@ -8440,9 +8511,14 @@ bool Evaluator::tryGetAnyUnitQuantity(const QString& identifier, Quantity* value
 QString Evaluator::autoFix(const QString& expr)
 {
     QString result;
+    // Only expression text needs character cleanup. Preserve whitespace and
+    // symbols inside comments just as they were entered.
+    const int commentPos = expr.indexOf(MathDsl::CommentSep);
+    const QString commentText = commentPos >= 0 ? expr.mid(commentPos + 1).trimmed() : QString();
+    const int expressionLength = commentPos >= 0 ? commentPos : expr.length();
 
     // Strip off all funny characters.
-    for (int c = 0; c < expr.length(); ++c) {
+    for (int c = 0; c < expressionLength; ++c) {
         const QChar ch = expr.at(c);
         if (ch.isSpace()) {
             result.append(QLatin1Char(' '));
@@ -8454,14 +8530,6 @@ QString Evaluator::autoFix(const QString& expr)
 
     // No extra whitespaces at the beginning and at the end.
     result = result.trimmed();
-
-    // Keep comments untouched by expression normalization.
-    QString commentText;
-    const int commentPos = result.indexOf(MathDsl::CommentSep);
-    if (commentPos >= 0) {
-        commentText = result.mid(commentPos + 1).trimmed();
-        result = result.left(commentPos).trimmed();
-    }
 
     // Strip trailing equal sign (=).
     while (result.endsWith("="))
@@ -8599,10 +8667,8 @@ QString Evaluator::autoFix(const QString& expr)
     };
     normalizeParenthesizedUnitAttachment();
 
-    // Normalize "X / N[U]" into "X / N·[U]" when X is not already a
-    // unit-attached term in source text. This aligns editor-entered
-    // "4/2[s]" with implicit-multiplication grouping while preserving
-    // "6[W]/2[s]" as unit-division.
+    // Keep the familiar scalar-literal spelling "4/2·[s]". For other
+    // numerators, evaluation decides the grouping from the value's units.
     auto normalizeDivisionByValueUnitAttachment = [&]() {
         QString rewritten;
         rewritten.reserve(result.size() + 8);
@@ -8614,10 +8680,13 @@ QString Evaluator::autoFix(const QString& expr)
                 continue;
             }
 
-            int left = cursor - 1;
-            while (left >= 0 && result.at(left).isSpace())
-                --left;
-            if (left >= 0 && result.at(left) == MathDsl::UnitEnd) {
+            const Tokens numerator = scan(result.left(cursor));
+            const bool scalarLiteral =
+                (numerator.size() == 1 && numerator.first().isNumber())
+                || (numerator.size() == 2 && numerator.last().isNumber()
+                    && (numerator.first().asOperator() == Token::Addition
+                        || numerator.first().asOperator() == Token::Subtraction));
+            if (!scalarLiteral) {
                 rewritten += result.at(cursor);
                 ++cursor;
                 continue;
@@ -8764,6 +8833,16 @@ QString Evaluator::autoFix(const QString& expr)
                 s_adjacentIdentifiersRE.match(result, offset);
             if (!match.hasMatch())
                 break;
+
+            // A-F groups separated by spaces can belong to one hex number.
+            // Check the lexer before treating them as adjacent identifiers.
+            const Tokens matchedTokens = scan(result.left(match.capturedEnd()));
+            if (!matchedTokens.isEmpty() && matchedTokens.last().isNumber()
+                && matchedTokens.last().pos() <= match.capturedStart()
+                && matchedTokens.last().pos() + matchedTokens.last().size() >= match.capturedEnd()) {
+                offset = match.capturedStart(2);
+                continue;
+            }
 
             const QString left = match.captured(1);
             const QString right = match.captured(2);
@@ -8956,6 +9035,9 @@ QString Evaluator::dump()
                 break;
             case Opcode::Div:
                 code = "Div";
+                break;
+            case Opcode::DivUnit:
+                code = "DivUnit";
                 break;
             case Opcode::Phasor:
                 code = "Phasor";

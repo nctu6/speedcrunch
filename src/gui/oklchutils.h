@@ -5,6 +5,8 @@
 #ifndef OKLCHUTILS_H
 #define OKLCHUTILS_H
 
+#include "gui/uiconfig.h"
+
 #include <QColor>
 #include <QString>
 #include <QVector>
@@ -34,7 +36,7 @@ QColor generatePrimaryFromBackground(
     std::optional<double> fallbackHueDegrees = std::nullopt);
 QColor generateSecondaryLinkFromBackground(const QColor& background,
                                            const QColor& primaryLink,
-                                           double minimumContrast = 7.0);
+                                           double minimumContrast = UiConfig::GeneratedTextMinimumContrast);
 double defaultOklchShadeDistanceFactor();
 
 QVector<QColor> generateOklchShades(const QColor& base,
@@ -46,18 +48,18 @@ QVector<QColor> generateOklchShades(const QColor& base,
                                     double distanceFactor);
 
 QColor aaForegroundForBackground(const QColor& background,
-                                 double minimumContrast = 7.0);
+                                 double minimumContrast = UiConfig::GeneratedTextMinimumContrast);
 QColor aaForegroundForBackground(const QColor& background,
                                  const QColor& preferredTint,
-                                 double minimumContrast = 7.0);
+                                 double minimumContrast = UiConfig::GeneratedTextMinimumContrast);
 
 QVector<QColor> aaForegroundsForBackgrounds(
     const QVector<QColor>& backgrounds,
-    double minimumContrast = 7.0);
+    double minimumContrast = UiConfig::GeneratedTextMinimumContrast);
 QVector<QColor> aaForegroundsForBackgrounds(
     const QVector<QColor>& backgrounds,
     const QColor& preferredTint,
-    double minimumContrast = 7.0);
+    double minimumContrast = UiConfig::GeneratedTextMinimumContrast);
 
 QString writeOklchGenerationHtmlReport(const QColor& base,
                                        int leftShadeCount,

@@ -9,6 +9,7 @@
 #include "core/numberformatter.h"
 #include "gui/dockliststyle.h"
 #include "gui/themedlineedit.h"
+#include "gui/uiconfig.h"
 
 #include <QEvent>
 #include <QTimer>
@@ -36,7 +37,6 @@ VariableListWidget::VariableListWidget(QWidget* parent)
     , m_pendingRefresh(false)
 {
     constexpr int kSearchRowHorizontalPadding = 8;
-    constexpr int kSearchRowVerticalPadding = 6;
 
     m_filterTimer->setInterval(500);
     m_filterTimer->setSingleShot(true);
@@ -61,9 +61,9 @@ VariableListWidget::VariableListWidget(QWidget* parent)
     searchLayout->addWidget(m_searchLabel);
     searchLayout->addWidget(m_searchFilter);
     searchLayout->setContentsMargins(kSearchRowHorizontalPadding,
-                                     kSearchRowVerticalPadding,
+                                     UiConfig::DockSearchRowVerticalPadding,
                                      kSearchRowHorizontalPadding,
-                                     kSearchRowVerticalPadding);
+                                     UiConfig::DockSearchRowVerticalPadding);
     searchBox->setLayout(searchLayout);
 
     QVBoxLayout* layout = new QVBoxLayout;

@@ -18,6 +18,11 @@ class Keypad : public QWidget {
     Q_OBJECT
 
 public:
+    enum Appearance {
+        Modern,
+        Classic
+    };
+
     enum LayoutMode {
         LayoutModeScientificWide = 0,
         LayoutModeBasicWide = 1,
@@ -28,8 +33,8 @@ public:
         Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9,
         KeyEquals, KeyPlus, KeyMinus, KeyTimes, KeyDivide,
         KeyRadixChar, KeyClear, KeyEE, KeyLeftPar, KeyRightPar,
-        KeyRaise, KeySqrt, KeyCbrt, KeyLog10, KeyMod, KeyBackspace, KeyPercent, KeyFactorial, KeyPi, KeyAns,
-        KeyX, KeyXEquals, KeyExp, KeyLn, KeySin, KeyAsin, KeyCos,
+        KeyRaise, KeySqrt, KeyRoot, KeyLog10, KeyMod, KeyBackspace, KeyPercent, KeyFactorial, KeyPi, KeyAns,
+        KeySquare, KeyArgumentSeparator, KeyExp, KeyLn, KeySin, KeyAsin, KeyCos,
         KeyAcos, KeyTan, KeyAtan
     };
 
@@ -48,6 +53,7 @@ public:
 
     explicit Keypad(LayoutMode layoutMode = LayoutModeScientificWide, QWidget* parent = 0, int scalePercent = 100);
     explicit Keypad(const QList<CustomButtonDescription>& customButtons, QWidget* parent = 0, int scalePercent = 100);
+    void setAppearance(Appearance appearance);
     void setThemeButtonColors(const QColor& background,
                               const QColor& foreground,
                               const QColor& hoverBackground,
@@ -104,6 +110,7 @@ private:
     LayoutMode m_layoutMode;
     bool m_isCustom;
     int m_scalePercent;
+    Appearance m_appearance = Modern;
     QColor m_buttonBackground;
     QColor m_buttonForeground;
     QColor m_buttonHoverBackground;

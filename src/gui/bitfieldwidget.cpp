@@ -5,6 +5,9 @@
 #include "bitfieldwidget.h"
 
 #include "core/mathdsl.h"
+#include "core/settings.h"
+#include "gui/menustyleutils.h"
+#include "gui/startupappearance.h"
 #include "gui/tooltipstyleutils.h"
 #include "gui/uiconfig.h"
 #include "math/quantity.h"
@@ -22,6 +25,7 @@
 #include <QPaintEvent>
 #include <QPushButton>
 #include <QRegularExpression>
+#include <QStyle>
 
 namespace {
 
@@ -74,7 +78,7 @@ BitWidget::BitWidget(int bitPosition, QWidget* parent)
     setCursor(Qt::PointingHandCursor);
     setMouseTracking(true);
     setAttribute(Qt::WA_Hover, true);
-    updateStyle();
+    updateStyle(StyleUpdateReason::Theme);
 }
 
 void BitWidget::setState(bool state)
@@ -82,14 +86,14 @@ void BitWidget::setState(bool state)
     if (state != m_state) {
         m_state = state;
         setProperty("bitState", m_state);
-        updateStyle();
+        updateStyle(StyleUpdateReason::Interaction);
         update();
     }
 }
 
-void BitWidget::updateStyle()
+void BitWidget::updateStyle(StyleUpdateReason reason)
 {
-    const QPalette palette = this->palette();
+    const QPalette palette = m_themeBackground.isValid() ? this->palette() : MenuStyle::systemPalette(this);
     const QColor background = m_themeBackground.isValid()
         ? m_themeBackground
         : palette.color(QPalette::Window);
@@ -98,19 +102,19 @@ void BitWidget::updateStyle()
         : palette.color(QPalette::WindowText);
     const QColor hoverBackground = m_themeHoverBackground.isValid()
         ? m_themeHoverBackground
-        : palette.color(QPalette::Highlight);
+        : palette.color(QPalette::Button);
     const QColor hoverForeground = m_themeHoverForeground.isValid()
         ? m_themeHoverForeground
-        : palette.color(QPalette::HighlightedText);
+        : palette.color(QPalette::ButtonText);
     const QColor selectedBackground = m_themeSelectedBackground.isValid()
         ? m_themeSelectedBackground
-        : palette.color(QPalette::Mid);
+        : palette.color(QPalette::Highlight);
     const QColor selectedForeground = m_themeSelectedForeground.isValid()
         ? m_themeSelectedForeground
-        : palette.color(QPalette::ButtonText);
+        : palette.color(QPalette::HighlightedText);
     setProperty("bitState", m_state);
     setProperty("bitPressed", m_pressed);
-    setStyleSheet(
+    const QString style =
         QString("QLabel { background-color: %1; color: %2; }"
                 "QLabel[bitState=\"true\"], QLabel[bitPressed=\"true\"] {"
                 " background-color: %5; color: %6;"
@@ -125,8 +129,18 @@ void BitWidget::updateStyle()
                  hoverBackground.name(),
                  hoverForeground.name(),
                  selectedBackground.name(),
-                 selectedForeground.name())
-    );
+                 selectedForeground.name());
+    if (styleSheet() != style) {
+        StartupDiagnostics::setAppearanceStyleSheet(this, style);
+    } else {
+        StartupDiagnostics::appearanceAssignment(this, false, false, true);
+        if (reason == StyleUpdateReason::Interaction) {
+            // Property selectors must still update when a bit is selected or pressed.
+            this->style()->unpolish(this);
+            this->style()->polish(this);
+            update();
+        }
+    }
 }
 
 void BitWidget::setThemeColors(const QColor& background,
@@ -142,7 +156,8 @@ void BitWidget::setThemeColors(const QColor& background,
     m_themeHoverForeground = hoverForeground;
     m_themeSelectedBackground = selectedBackground;
     m_themeSelectedForeground = selectedForeground;
-    updateStyle();
+    // Native dock restoration can replace the stylesheet without changing these colors.
+    updateStyle(StyleUpdateReason::Theme);
 }
 
 void BitWidget::setToolTipThemeColors(const QColor& background,
@@ -179,7 +194,7 @@ void BitWidget::mousePressEvent(QMouseEvent*)
 {
     hideSummaryPopup();
     m_pressed = true;
-    updateStyle();
+    updateStyle(StyleUpdateReason::Interaction);
 }
 
 void BitWidget::mouseReleaseEvent(QMouseEvent*)
@@ -333,7 +348,7 @@ BitFieldWidget::BitFieldWidget(QWidget* parent) :
 void BitFieldWidget::refreshTheme()
 {
     // Build the CSS border color using 50% opacity (same result as previous method with painting).
-    const QPalette palette = this->palette();
+    const QPalette palette = m_themeBackground.isValid() ? this->palette() : MenuStyle::systemPalette(this);
     const QColor background = m_themeBackground.isValid()
         ? m_themeBackground
         : palette.color(QPalette::Window);
@@ -342,16 +357,16 @@ void BitFieldWidget::refreshTheme()
         : palette.color(QPalette::WindowText);
     const QColor hoverBackground = m_themeHoverBackground.isValid()
         ? m_themeHoverBackground
-        : palette.color(QPalette::Highlight);
+        : palette.color(QPalette::Button);
     const QColor hoverForeground = m_themeHoverForeground.isValid()
         ? m_themeHoverForeground
-        : palette.color(QPalette::HighlightedText);
+        : palette.color(QPalette::ButtonText);
     const QColor pressedBackground = m_themePressedBackground.isValid()
         ? m_themePressedBackground
-        : palette.color(QPalette::Mid);
+        : palette.color(QPalette::Highlight);
     const QColor pressedForeground = m_themePressedForeground.isValid()
         ? m_themePressedForeground
-        : palette.color(QPalette::ButtonText);
+        : palette.color(QPalette::HighlightedText);
     const QColor buttonBackground = m_themeButtonBackground.isValid()
         ? m_themeButtonBackground
         : background;
@@ -377,7 +392,7 @@ void BitFieldWidget::refreshTheme()
         .arg(borderColor.blue())
         .arg(0.5);
 
-    setStyleSheet(QString("QWidget#BitFieldWidget {"
+    const QString style = QString("QWidget#BitFieldWidget {"
                           " background-color: %1; color: %2;"
                           "}"
                           "QLabel#BitWidget, QLabel#FirstBitWidget {"
@@ -393,7 +408,11 @@ void BitFieldWidget::refreshTheme()
                           "}")
                       .arg(background.name(),
                            foreground.name(),
-                           cssBorderColor));
+                           cssBorderColor);
+    if (styleSheet() != style)
+        setStyleSheet(style);
+    // Paint the container too, otherwise the parent window shows through.
+    setAttribute(Qt::WA_StyledBackground, true);
     const QString buttonStyle = bitFieldButtonStyleSheet(buttonBackground,
                                                         buttonForeground,
                                                         buttonHoverBackground,
@@ -406,13 +425,20 @@ void BitFieldWidget::refreshTheme()
                                 m_shiftRightButton}) {
         if (button == nullptr)
             continue;
+        if (Settings::instance()->dockAppearance == Settings::DockAppearanceSystem) {
+            if (!button->styleSheet().isEmpty())
+                button->setStyleSheet(QString());
+            button->setPalette(MenuStyle::systemPalette(button));
+            continue;
+        }
         QPalette buttonPalette = button->palette();
         buttonPalette.setColor(QPalette::Button, buttonBackground);
         buttonPalette.setColor(QPalette::ButtonText, buttonForeground);
         buttonPalette.setColor(QPalette::Highlight, buttonHoverBackground);
         buttonPalette.setColor(QPalette::HighlightedText, buttonHoverForeground);
         button->setPalette(buttonPalette);
-        button->setStyleSheet(buttonStyle);
+        if (button->styleSheet() != buttonStyle)
+            button->setStyleSheet(buttonStyle);
     }
     const QColor selectedBackground = m_themeSelectedBackground.isValid()
         ? m_themeSelectedBackground
@@ -741,7 +767,7 @@ void BitFieldWidget::onBitChanged()
     while (bitsIterator.hasNext())
         expression.prepend(bitsIterator.next()->state() ? "1" : "0");
 
-    QRegularExpression leadingZerosPattern(QString("^0{,%1}").arg(NumberOfBits - 1));
+    QRegularExpression leadingZerosPattern(QString("^0{0,%1}").arg(NumberOfBits - 1));
     expression.remove(leadingZerosPattern);
     expression.prepend(MathDsl::BinPrefix);
 

@@ -20,7 +20,7 @@
   <tr>
     <td width="50%">
       <a class="nav-item nav-item-0"
-         href="../contents.html">SpeedCrunch 1.0 documentation</a> &#187; <a class="nav-item nav-item-1"
+         href="../contents.html">SpeedCrunch 1.1 documentation</a> &#187; <a class="nav-item nav-item-1"
              href="index.html">User Guide</a>
           
     </td>
@@ -357,7 +357,11 @@ or the aliases <code class="docutils literal notranslate"><span class="pre">arcm
 <span class="o">=</span> <span class="mi">3</span>
 </pre></div>
 </div>
-</td></tr></tbody></table><p>A line can also be comment-only. If the first non-space character is <code class="docutils literal notranslate"><span class="pre">?</span></code>, the whole line is treated as a comment:</p>
+</td></tr></tbody></table><p>Comment text is kept as written, including in the result window and when editing
+user definitions. For example, <code class="docutils literal notranslate"><span class="pre">examplevar</span> <span class="pre">=</span> <span class="pre">4</span> <span class="pre">?</span> <span class="pre">2*2</span></code> keeps <code class="docutils literal notranslate"><span class="pre">2*2</span></code> in the
+Description column of the User Variables dock, without changing it to <code class="docutils literal notranslate"><span class="pre">2×2</span></code>.
+The same rule applies to user functions and user units.</p>
+<p>A line can also be comment-only. If the first non-space character is <code class="docutils literal notranslate"><span class="pre">?</span></code>, the whole line is treated as a comment:</p>
 <table class="-x-quark-literal-block"><tbody><tr><td width="100%" class="-x-quark-literal-block-td"><div class="highlight-speedcrunch notranslate"><div class="highlight"><pre><span></span><span class="c">? start algorithm</span>
 
   <span class="c">? this is also a comment-only line</span>
@@ -569,7 +573,7 @@ unit. Both forms are equivalent. See
 </table>
 <p>For negative bases, fractional powers return the principal complex root.
 Use <a class="reference internal" href="../reference/basic.html#sc.cbrt" title="cbrt"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">cbrt()</span></code></a> when you specifically need the real cubic root of a real
-negative value.</p>
+negative value, or <a class="reference internal" href="../reference/basic.html#sc.root" title="root"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">root()</span></code></a> for other odd root indices.</p>
 </section>
 <section id="complex-numbers">
 <h2>Complex Numbers</h2>
@@ -588,9 +592,9 @@ unit as <code class="docutils literal notranslate"><span class="pre">i</span></c
 </td></tr></tbody></table><p>Syntax note: <code class="docutils literal notranslate"><span class="pre">5j</span></code> means <code class="docutils literal notranslate"><span class="pre">5*j</span></code>, while <code class="docutils literal notranslate"><span class="pre">j5</span></code> is a variable named <code class="docutils literal notranslate"><span class="pre">j5</span></code>.
 Write <code class="docutils literal notranslate"><span class="pre">j*5</span></code> explicitly if needed.</p>
 <p>The displayed imaginary-unit symbol is configurable in
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Imaginary Unit</span>.
+<span class="menuselection">Settings ‣ Results ‣ Imaginary Unit</span>.
 The displayed complex form is configurable in
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Form</span>.</p>
+<span class="menuselection">Settings ‣ Results ‣ Complex Form</span>.</p>
 <p>You can enter complex numbers in phasor notation with <code class="docutils literal notranslate"><span class="pre">∠</span></code>. The expression
 <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">∠</span> <span class="pre">θ</span></code> is interpreted as <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">*</span> <span class="pre">cis(θ)</span></code>. The phase follows the current angle
 mode unless it has an explicit angle unit:</p>
@@ -606,6 +610,9 @@ the reference.</p>
 <p>Caution: fractional powers return principal complex roots. For example,
 <code class="docutils literal notranslate"><span class="pre">x^(1/3)</span></code> may be non-real. In contrast, <a class="reference internal" href="../reference/basic.html#sc.cbrt" title="cbrt"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">cbrt()</span></code></a> always returns the real
 cubic root for real inputs.</p>
+<p>For other root indices, use <a class="reference internal" href="../reference/basic.html#sc.root" title="root"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">root()</span></code></a>, for example <code class="docutils literal notranslate"><span class="pre">root(5;</span> <span class="pre">-32)</span> <span class="pre">=</span> <span class="pre">-2</span></code>.
+It returns the real root for real inputs whenever one exists. Negative real
+inputs with an even index return the principal complex root.</p>
 <p><a class="reference internal" href="../reference/constants.html#sc.i" title="i"><code class="xref sc sc-const docutils literal notranslate"><span class="pre">i</span></code></a> and <a class="reference internal" href="../reference/constants.html#sc.j" title="j"><code class="xref sc sc-const docutils literal notranslate"><span class="pre">j</span></code></a> are built-in constants for the imaginary unit.</p>
 </section>
 </section>
@@ -621,7 +628,7 @@ cubic root for real inputs.</p>
   <tr>
     <td width="50%">
       <a class="nav-item nav-item-0"
-         href="../contents.html">SpeedCrunch 1.0 documentation</a> &#187; <a class="nav-item nav-item-1"
+         href="../contents.html">SpeedCrunch 1.1 documentation</a> &#187; <a class="nav-item nav-item-1"
              href="index.html">User Guide</a>
           
     </td>

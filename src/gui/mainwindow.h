@@ -38,7 +38,9 @@ class UserFunctionListWidget;
 class UserUnitListWidget;
 class Variable;
 class VariableListWidget;
+#ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
 class VersionCheck;
+#endif
 
 class QAbstractItemView;
 class QActionGroup;
@@ -58,14 +60,21 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
+    static void initializeApplicationStyle();
     explicit MainWindow(bool restorePreviousSession = true);
     ~MainWindow();
+    void showWhenReady();
     void persistSessionAndSettingsForShutdown();
+    static MainWindow* subsequentLaunchWindow();
+    static bool sessionRestoreInProgress();
+    MainWindow* createNewSessionWindow(bool activate = true);
+    void createNewSessionTab();
 
 signals:
     void angleUnitChanged();
     void complexNumbersChanged();
     void colorSchemeChanged();
+    void menuAppearanceChanged();
     void languageChanged();
     void radixCharacterChanged();
     void resultFormatChanged();
@@ -78,6 +87,7 @@ signals:
     void unitsChanged();
 
 public slots:
+    void setVisible(bool visible) override;
     void copy();
 
 private slots:
@@ -85,6 +95,7 @@ private slots:
     void clearEditorAndBitfield();
     void clearHistory();
     void clearSession();
+    void resetAllSettings();
     void copyResultToClipboard();
     void decreaseDisplayFontPointSize();
     void decreaseOpacity();
@@ -106,6 +117,8 @@ private slots:
     void handleEditorTextChange();
     void handleEditorEscapePressed();
     void showNewSessionDialog();
+    void showNewPrivateSession();
+    void convertSessionPrivacy();
     void showNewSessionWindow();
     void showOpenSessionDialog();
     void showDuplicateSessionDialog();
@@ -116,7 +129,7 @@ private slots:
     void restoreWindowLayoutState(const QByteArray& state);
     void restoreWindowKeypadLayout(bool visible, int mode);
     void restoreWindowKeypadZoom(int zoomPercent);
-    void restoreWindowUiState(const QJsonObject& window);
+    void restoreWindowUiState(const QJsonObject& window, bool restoreLayout = true);
     void showRestoredWindow(const QByteArray& geometry);
     void cycleFocusForward();
     void cycleFocusBackward();
@@ -140,10 +153,13 @@ private slots:
     void insertConstantIntoEditor(const QString&);
     void insertFunctionIntoEditor(const QString&);
     void insertTextIntoEditor(const QString&);
+    void insertHistoryExpressionIntoEditor(const QString&);
     void insertVariableIntoEditor(const QString&);
     void insertUserFunctionIntoEditor(const QString&);
     void insertUserUnitIntoEditor(const QString&);
+#ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
     void checkForUpdates();
+#endif
     void openFeedbackURL();
     void openCommunityURL();
     void openSourceURL();
@@ -159,6 +175,7 @@ private slots:
     void setAutoAnsEnabled(bool);
     void setAutoCalcEnabled(bool);
     void setAutoCompletionEnabled(bool);
+    void setAutoCompletionAcceptWithEnterEnabled(bool);
     void setAutoCompletionBuiltInFunctionsEnabled(bool);
     void setAutoCompletionBuiltInVariablesEnabled(bool);
     void setAutoCompletionLongFormUnitsEnabled(bool);
@@ -172,11 +189,17 @@ private slots:
     void setFunctionsDockVisible(bool, bool takeFocus = true);
     void setHistoryDockVisible(bool, bool takeFocus = true);
     void setKeypadMode(QAction*);
+    void setMenuAppearance(QAction*);
+    void setSystemColorMode(QAction*);
+    void setDockAppearance(QAction*);
+    void setStatusBarAppearance(QAction*);
+    void setKeypadAppearance(QAction*);
+    void applyKeypadAppearance();
+    void setEditorDisplayStyle(QAction*);
     void setKeypadZoom(QAction*);
     void setKeypadVisible(bool);
     void setLeaveLastExpressionEnabled(bool);
     void setUpDownArrowBehavior(QAction*);
-    void setEmptyHistoryHintEnabled(bool);
     void setRadixCharacterAutomatic();
     void setRadixCharacter(char);
     void setRadixCharacterComma();
@@ -209,9 +232,14 @@ private slots:
     void setResultPrecisionCustom();
     void setResultPrecision(int);
     void setResultRoundingMode(QAction*);
+    void setRemoveTrailingZeroesEnabled(bool);
     void setMenuBarVisible(bool);
     void setStatusBarVisible(bool);
     void setSyntaxHighlightingEnabled(bool);
+    void setInputDigitGroupingEnabled(bool);
+    void setAutomaticInputAdjustmentsEnabled(bool);
+    void setCursorBlinkingEnabled(bool);
+    void setEscapeClearsEditorEnabled(bool);
     void setDigitGrouping(QAction*);
     void setDigitGroupingIntegerPartOnlyEnabled(bool);
     void setAutoResultToClipboardEnabled(bool);
@@ -221,8 +249,11 @@ private slots:
     void setUserFunctionsDockVisible(bool, bool takeFocus = true);
     void setUserUnitsDockVisible(bool, bool takeFocus = true);
     void setWindowPositionSaveEnabled(bool);
+    void setOpenPrivateTabOnStartupEnabled(bool);
+    void setSubsequentLaunchAction(QAction*);
     void setWidgetsDirection();
     void showAboutDialog();
+    void showDiagnosticsDialog();
     void showStateLabel(const QString&);
     void showFontDialog();
     void showLanguageChooserDialog();
@@ -231,7 +262,6 @@ private slots:
     void showResultSlotsDialog();
     void showCustomThemeDialog();
     void showContextHelp();
-    void showReadyMessage();
     void showAngleModeContextMenu(const QPoint&);
     void showPrecisionContextMenu(const QPoint&);
     void showKeypadContextMenu(const QPoint&);
@@ -258,6 +288,7 @@ private:
     void clearTextEditSelection(QPlainTextEdit*);
     void hideCurrentResultPreview();
     void addTabifiedDock(QDockWidget*, bool takeFocus, Qt::DockWidgetArea = Qt::RightDockWidgetArea);
+    void applyDockCornerLayout();
     void deleteDock(QDockWidget*);
     void createUi();
     void createActions();
@@ -276,7 +307,9 @@ private:
     void createUserFunctionsDock(bool takeFocus = true);
     void createUserUnitsDock(bool takeFocus = true);
     void createFixedConnections();
-    void applySettings();
+    void applySettings(bool initializing = true);
+    void setDisplayFont(const QFont& font);
+    void applyEditorDisplayStyle();
     void checkInitialResultFormat();
     void checkInitialComplexFormat();
     void checkInitialImaginaryUnit();
@@ -324,6 +357,10 @@ private:
     void cycleFocusRegion(int direction);
     void splitActivePane(Qt::Orientation orientation, bool insertAfter);
     Session* createUntitledSession(bool activateCreatedSession = true);
+    QString firstAvailableSessionNameAcrossWindows(bool privateSession) const;
+    void renameLoadedSession(Session* session, const QString& name);
+    void discardUnusedPrivateSessions();
+    void finishStartupSessionRestore(bool restoredSession);
     QString firstAvailableUntitledSessionNameAcrossWindows(const MainWindow* ignoredWindow = nullptr) const;
     void copyWindowLayoutFrom(const MainWindow* source);
     QList<ResultDisplay*> splitPaneDisplays() const;
@@ -347,6 +384,16 @@ private:
     void removePaneForDisplay(ResultDisplay* display);
     void normalizeSplitContainerTree();
     void applyThemeSurfacePalette();
+    void restoreWindowThemeBackgrounds();
+    void scheduleDockAppearanceRefresh(bool forceNativePolish = false);
+    void applyDockTabBarAppearance();
+    QStringList openDockNames() const;
+    QStringList configuredOpenDockNames() const;
+    void applyOpenDocks(const QStringList& names);
+    void restoreDockLayout(const QByteArray& state, const QStringList& names);
+    QJsonObject dockColumnOrders() const;
+    void restoreDockColumnOrders(const QJsonObject& orders);
+    void restoreDockColumnOrder(QDockWidget* dock);
     void applyKeypadThemeSurfacePalette();
     void scheduleThemeRuntimeDiagnosticsReport();
     void writeThemeRuntimeDiagnosticsReport();
@@ -354,7 +401,7 @@ private:
     void refreshPaneThemes();
     void captureVisibleSessionViewports();
     void restoreVisibleSessionViewports();
-    void saveSessionLayout(bool captureCurrentViewport = true);
+    void saveSessionLayout(bool captureCurrentViewport = true, bool captureEditorState = false);
     void flushPendingSessionSave();
     bool configureCustomKeypad();
     void updateKeypadModeActionState();
@@ -367,6 +414,8 @@ private:
                                           int resultPrecision);
     void syncStatusBarSelectionMenuActionState();
     void syncViewMenuActionState();
+    void syncEditMenuActionState();
+    void syncSessionMenuActionState();
     void updateStatusBarSectionVisibility();
     void updateColorSchemeActionState();
     QString statusBarAngleUnitValue() const;
@@ -394,7 +443,13 @@ private:
 
     struct {
         QAction* sessionOpen;
+        QAction* sessionRename;
+        QAction* sessionClone;
+        QAction* sessionClose;
+        QAction* sessionReopen;
         QAction* sessionNewTab;
+        QAction* sessionNewPrivate;
+        QAction* sessionConvertPrivacy;
         QAction* sessionNewWindow;
         QAction* sessionOpenSessionsFolder;
         QAction* sessionImport;
@@ -403,6 +458,9 @@ private:
         QAction* sessionExportHtml;
         QAction* sessionExportPlainText;
         QAction* sessionQuit;
+        QAction* editUndo;
+        QAction* editRedo;
+        QAction* editCut;
         QAction* editCopy;
         QAction* editCopyLastResult;
         QAction* editPaste;
@@ -435,6 +493,11 @@ private:
         QAction* viewMenuBar;
         QAction* viewFullScreenMode;
         QAction* viewBitfield;
+        QAction* viewSplitLeft;
+        QAction* viewSplitRight;
+        QAction* viewSplitUp;
+        QAction* viewSplitDown;
+        QAction* viewClosePane;
         QAction* settingsResultFormatGeneral;
         QAction* settingsResultFormatFixed;
         QAction* settingsResultFormatEngineering;
@@ -449,6 +512,7 @@ private:
         QAction* settingsResultFormat50Digits;
         QAction* settingsResultFormatCustomDigits;
         QAction* settingsResultRoundingHalfAwayFromZero;
+        QAction* settingsRemoveTrailingZeroes;
         QAction* settingsResultRoundingHalfEven;
         QAction* settingsResultRoundingTowardZero;
         QAction* settingsResultRoundingTowardPositiveInfinity;
@@ -474,14 +538,18 @@ private:
         QAction* settingsBehaviorSaveWindowPositionOnExit;
         QAction* settingsBehaviorPartialResults;
         QAction* settingsBehaviorAutoCompletion;
+        QAction* settingsBehaviorAutoCompletionAcceptWithEnter;
         QAction* settingsBehaviorAutoCompletionBuiltInFunctions;
         QAction* settingsBehaviorAutoCompletionBuiltInVariables;
         QAction* settingsBehaviorAutoCompletionLongFormUnits;
         QAction* settingsBehaviorAutoCompletionUserFunctions;
         QAction* settingsBehaviorAutoCompletionUserVariables;
         QAction* settingsBehaviorSyntaxHighlighting;
+        QAction* settingsEditingInputDigitGrouping;
+        QAction* settingsEditingAutomaticInputAdjustments;
+        QAction* settingsEditingCursorBlinking;
+        QAction* settingsEditingEscapeClearsEditor;
         QAction* settingsBehaviorHoverHighlightResults;
-        QAction* settingsBehaviorEmptyHistoryHint;
         QAction* settingsBehaviorDigitGroupingNone;
         QAction* settingsBehaviorDigitGroupingOneSpace;
         QAction* settingsBehaviorDigitGroupingTwoSpaces;
@@ -490,11 +558,16 @@ private:
         QAction* settingsBehaviorAutoAns;
         QAction* settingsBehaviorLeaveLastExpression;
         QAction* settingsBehaviorNumberFormat;
+        QAction* settingsResetAll;
         QAction* settingsBehaviorResultSlots;
         QAction* settingsBehaviorUpDownArrowNever;
         QAction* settingsBehaviorUpDownArrowAlways;
         QAction* settingsBehaviorUpDownArrowSingleLineOnly;
         QAction* settingsBehaviorAlwaysOnTop;
+        QAction* settingsOpenPrivateTabOnStartup;
+        QAction* settingsLaunchActivate;
+        QAction* settingsLaunchNewWindow;
+        QAction* settingsLaunchNewTab;
         QAction* settingsBehaviorAutoResultToClipboard;
         QAction* settingsBehaviorSimplifyResultExpressions;
         QAction* settingsBehaviorHistorySizeLimit;
@@ -503,24 +576,46 @@ private:
         QAction* settingsDisplayZoomOut;
         QAction* settingsDisplayFont;
         QAction* settingsDisplayColorSchemeCustom;
+        QAction* settingsSystemColorModeFollowSystem;
+        QAction* settingsSystemColorModeLight;
+        QAction* settingsSystemColorModeDark;
+        QAction* settingsMenuAppearanceSystem;
+        QAction* settingsMenuAppearanceSpeedCrunch;
+        QAction* settingsDockAppearanceSystem;
+        QAction* settingsDockAppearanceSpeedCrunch;
+        QAction* settingsStatusBarAppearanceSystem;
+        QAction* settingsStatusBarAppearanceSpeedCrunch;
+        QAction* settingsKeypadAppearanceClassic;
+        QAction* settingsKeypadAppearanceModern;
+        QAction* settingsEditorDisplayClassic;
+        QAction* settingsEditorDisplayModern;
         QVector<QAction*> settingsDisplayColorSchemes;
         QAction* settingsRadixCharDefault;
         QAction* settingsRadixCharDot;
         QAction* settingsRadixCharComma;
         QAction* settingsLanguage;
         QAction* helpManual;
+#ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
         QAction* helpUpdates;
+#endif
         QAction* helpFeedback;
         QAction* helpCommunity;
         QAction* helpSource;
         QAction* helpDonate;
         QAction* helpAbout;
+        QAction* helpDiagnostics;
         QAction* contextHelp;
-    } m_actions;
+    } m_actions{};
 
     struct {
         QActionGroup* angle;
         QActionGroup* colorScheme;
+        QActionGroup* menuAppearance;
+        QActionGroup* systemColorMode;
+        QActionGroup* dockAppearance;
+        QActionGroup* statusBarAppearance;
+        QActionGroup* keypadAppearance;
+        QActionGroup* editorDisplayStyle;
         QActionGroup* digits;
         QActionGroup* resultRoundingMode;
         QActionGroup* resultFormat;
@@ -529,6 +624,7 @@ private:
         QActionGroup* radixChar;
         QActionGroup* digitGrouping;
         QActionGroup* upDownArrowBehavior;
+        QActionGroup* subsequentLaunch;
         QActionGroup* keypad;
         QActionGroup* keypadZoom;
         QActionGroup* unitNegativeExponentStyle;
@@ -538,13 +634,18 @@ private:
         QMenu* angleUnit;
         QMenu* complexForm;
         QMenu* imaginaryUnit;
-        QMenu* complexNumbers;
         QMenu* editing;
         QMenu* autoCompletion;
         QMenu* colorScheme;
         QMenu* decimal;
         QMenu* digitGrouping;
         QMenu* display;
+        QMenu* menuAppearance;
+        QMenu* systemColorMode;
+        QMenu* dockAppearance;
+        QMenu* statusBarAppearance;
+        QMenu* keypadAppearance;
+        QMenu* editorDisplayStyle;
         QMenu* edit;
         QMenu* results;
         QMenu* unitNegativeExponentStyle;
@@ -558,11 +659,12 @@ private:
         QMenu* session;
         QMenu* sessionExport;
         QMenu* settings;
-        QMenu* symbols;
         QMenu* view;
+        QMenu* split;
         QMenu* keypad;
         QMenu* keypadZoom;
         QMenu* window;
+        QMenu* subsequentLaunch;
     } m_menus;
 
     struct {
@@ -581,7 +683,7 @@ private:
         QWidget* root;
         ManualWindow* manual = nullptr;
         BitFieldWidget* bitField = nullptr;
-    } m_widgets;
+    } m_widgets{};
 
     struct {
         BookDock* book;
@@ -594,6 +696,12 @@ private:
         GenericDock<BitFieldWidget>* bitField;
     } m_docks;
     QList<QDockWidget*> m_allDocks;
+    QJsonObject m_dockColumnOrders;
+    bool m_initializingUi = true;
+    bool m_hasRestoredDockLayout = false;
+    bool m_dockAppearanceRefreshPending = false;
+    bool m_dockNativePolishPending = false;
+    bool m_dockVisibilityRefreshPending = false;
     QHash<ResultDisplay*, QString> m_paneSessionNames;
     QHash<ResultDisplay*, QStringList> m_paneSessionTabs;
     QHash<ResultDisplay*, QTabBar*> m_paneTabBars;
@@ -633,7 +741,7 @@ private:
     Constants* m_constants;
     Evaluator* m_evaluator;
     FunctionRepo* m_functions;
-    Settings* m_settings;
+    Settings* m_settings = nullptr;
     Settings::KeypadMode m_keypadMode;
     int m_keypadZoomPercent;
     Session* m_session;
@@ -641,12 +749,18 @@ private:
     QHash<QString, QPair<int, int>> m_sessionViewportAnchors;
     QHash<QString, int> m_sessionScrollValues;
     QTranslator* m_translator;
-    QPlainTextEdit* m_copyWidget;
+    QPlainTextEdit* m_copyWidget = nullptr;
     ManualServer* m_manualServer;
+#ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
     VersionCheck* m_versionCheck;
+#endif
     int m_pendingHistoryEditIndex;
     bool m_shutdownStateSaved;
     bool m_restorePreviousSessionOnStartup;
+    bool m_savedWindowGeometryRestored = false;
+    bool m_sessionRestorePending = false;
+    bool m_showAfterSessionRestore = false;
+    bool m_startupPrivateTabPending = false;
     QTimer* m_deferredSessionSaveTimer;
     bool m_sessionSavePending;
     bool m_bulkEvaluationInProgress;

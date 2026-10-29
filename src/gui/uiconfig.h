@@ -9,19 +9,37 @@ namespace UiConfig {
 
 constexpr int SessionPaneSplitterWidth = 1;
 constexpr int DockSplitterStrokeWidth = 2;
+constexpr int SystemDockSplitterStrokeWidth = 1;
 constexpr int OutlineStrokeWidth = 2;
+constexpr int ControlCornerRadius = 8;
+constexpr int ModernEditorHorizontalMargin = 8;
+constexpr int ModernEditorTopMargin = 4;
+constexpr int ModernEditorBottomMargin = 8;
+constexpr int ModernEditorHorizontalPadding = 6;
+constexpr int ModernEditorVerticalPadding = 6;
+constexpr int ModernEditorCornerRadius = ControlCornerRadius;
+constexpr int ClassicTextInset = 8;
+constexpr int ClassicEditorVerticalPadding = 4;
+constexpr int ClassicUnfocusedSeparatorWidth = 1;
 constexpr int PopupOutlineStrokeWidth = 1;
 constexpr int ActiveSessionTabIndicatorStrokeWidth = 2;
 constexpr int SessionTabHorizontalPadding = 36;
 constexpr int KeypadButtonMargin = 3;
 constexpr int KeypadButtonPadding = 3;
-constexpr int KeypadButtonCornerRadius = 8;
+constexpr int KeypadButtonCornerRadius = ControlCornerRadius;
+constexpr int ClassicKeypadButtonMargin = 1;
+constexpr int ClassicKeypadButtonPadding = 1;
+constexpr int ClassicKeypadButtonCornerRadius = 3;
 // 0 keeps keyed buttons on the normal button surface; 100 gives them the full
 // primary fill. Intermediate values blend in OKLCH while using the primary hue.
 constexpr int KeypadDigitPrimaryHueChromaPercent = 25;
 constexpr int KeypadOperatorPrimaryHueChromaPercent = 50;
 constexpr int KeypadEvaluatePrimaryHueChromaPercent = 90;
 constexpr double KeypadButtonGradientLightnessDelta = 0.035;
+
+// Keep generated text comfortably readable on tinted surfaces. If a surface
+// cannot reach this ratio, use whichever contrasts better, black or white.
+constexpr double GeneratedTextMinimumContrast = 10.0;
 
 // Enables the temporary OKLCH HTML diagnostics report in the system temp
 // directory. Keep disabled for normal builds; it is only useful while tuning
@@ -41,6 +59,7 @@ constexpr int Shade600 = 5;
 constexpr int WindowBackgroundShade = Shade100;
 constexpr int ResultDisplayShade = Shade200;
 constexpr int SplitterShade = Shade300;
+constexpr int ClassicVerticalPaneDividerShade = Shade400;
 constexpr bool SplitterHoverUsesPrimary = true;
 constexpr int SplitterHoverShade = Shade400;
 constexpr int ScrollToBottomButtonBackgroundShade = Shade300;
@@ -48,13 +67,13 @@ constexpr int ScrollToBottomButtonHoverBackgroundShade = Shade400;
 constexpr int ScrollToBottomButtonOutlineShade = Shade400;
 constexpr int ResultTooltipBackgroundShade = Shade400;
 constexpr int ResultTooltipOutlineShade = Shade500;
-constexpr int ResultTooltipCornerRadius = 8;
-constexpr int ResultTooltipStartMargin = 14;
+constexpr int ResultTooltipCornerRadius = ControlCornerRadius;
+constexpr int ResultTooltipStartMargin = ModernEditorHorizontalMargin;
 constexpr int CompletionPopupBackgroundShade = Shade400;
 constexpr int CompletionPopupScrollbarThumbShade = Shade500;
 constexpr int CompletionPopupSelectedRowShade = Shade500;
 constexpr int CompletionPopupOutlineShade = Shade600;
-constexpr int CompletionPopupCornerRadius = 8;
+constexpr int CompletionPopupCornerRadius = ControlCornerRadius;
 constexpr int ResultDisplayScrollbarShade = Shade300;
 constexpr int ResultDisplayScrollbarHoverShade = Shade400;
 constexpr int ResultDisplayScrollbarPressedShade = Shade500;
@@ -70,6 +89,8 @@ constexpr int ConstantsDockDefaultWidth = 320;
 constexpr int DockTextInputShade = Shade300;
 constexpr int DockTextInputOutlineShade = Shade400;
 constexpr int DockTextInputUnfocusedOutlineStrokeWidth = 1;
+constexpr int DockSearchRowVerticalPadding = 6;
+constexpr int DockListPadding = 0;
 constexpr int DockHoveredItemShade = Shade500;
 constexpr int DockHoveredItemCornerRadius = 6;
 constexpr int DockUnfocusedSelectedItemShade = Shade500;

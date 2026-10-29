@@ -20,6 +20,12 @@
 #include "core/mathdsl.h"
 #include "core/units.h"
 #include "tests/testcommon.h"
+#include "tests/numberformatcases.h"
+#include "tests/fractionalgroupingcases.h"
+#include "tests/numbergroupingedgecases.h"
+#include "tests/malformednumbergroupingcases.h"
+#include "tests/decimalinputcases.h"
+#include "tests/interpretednumbercases.h"
 
 #include <QApplication>
 #include <QFontMetrics>
@@ -1284,6 +1290,134 @@ void test_units_short_aliases_and_si_prefixes()
     CHECK_EVAL_FORMAT("[J/(K*mol)]", u8"1[J·mol⁻¹·K⁻¹]");
 }
 
+void test_units_energy_per_geometry_display_scale()
+{
+    CHECK_EVAL("4[J/m^3]", u8"4 joule / metre³");
+    CHECK_EVAL("7[J/m^2]", u8"7 joule / metre²");
+    CHECK_EVAL("4[TJ/m^3]", u8"4000000000000 joule / metre³");
+    CHECK_EVAL("ans in [J/m^3]", u8"4000000000000 J·m⁻³");
+    CHECK_EVAL("7[TJ/m^2]", u8"7000000000000 joule / metre²");
+    CHECK_EVAL("4[mJ/m^3]", u8"0.004 joule / metre³");
+    CHECK_EVAL("7[mJ/m^2]", u8"0.007 joule / metre²");
+    CHECK_EVAL("4[J/cm^3]", u8"4000000 joule / metre³");
+    CHECK_EVAL("7[J/cm^2]", u8"70000 joule / metre²");
+    CHECK_EVAL("4[kJ/cm^3]", u8"4000000000 joule / metre³");
+    CHECK_EVAL("7[kJ/cm^2]", u8"70000000 joule / metre²");
+    CHECK_EVAL("2[kWh/m^3]", u8"7200000 joule / metre³");
+    CHECK_EVAL("2[kWh/m^2]", u8"7200000 joule / metre²");
+    CHECK_EVAL("4[TJ] / 2[m^3]", u8"2000000000000 joule / metre³");
+    CHECK_EVAL("7[TJ] / 2[m^2]", u8"3500000000000 joule / metre²");
+    CHECK_EVAL_FORMAT("4[TJ/m^3]", u8"4000000000000[J / m³]");
+    CHECK_EVAL_FORMAT("7[TJ/m^2]", u8"7000000000000[J / m²]");
+    CHECK_EVAL("4[TJ/m^3] in [TJ/m^3]", u8"4 TJ·m⁻³");
+    CHECK_EVAL("7[TJ/m^2] in [TJ/m^2]", u8"7 TJ·m⁻²");
+}
+
+void test_units_canonical_display_scale()
+{
+    CHECK_EVAL("150[MJ] / 1[s]", "150000000 watt");
+    CHECK_EVAL("ans -> [W]", "150000000 W");
+    CHECK_EVAL_FORMAT("150[MJ] / 1[s]", "150000000[W]");
+    CHECK_EVAL("1[mJ] / 2[ms]", "0.5 watt");
+    CHECK_EVAL("1[kWh] / 2[h]", "500 watt");
+    CHECK_EVAL("-2[kJ] / 4[s]", "-500 watt");
+    CHECK_EVAL("0[MJ] / 1[s]", "0 watt");
+
+    CHECK_EVAL("2[kN] * 3[cm]", u8"60 newton·metre");
+    CHECK_EVAL("ans -> [J]", "60 J");
+    CHECK_EVAL("3[cm] * 2[kN]", u8"60 newton·metre");
+    CHECK_EVAL("2[kPa] * 3[cm^3]", "6 mJ");
+    CHECK_EVAL("3[cm^3] * 2[kPa]", "6 mJ");
+    CHECK_EVAL("2[kW] * 3[ms]", u8"6 watt·second");
+    CHECK_EVAL("3[ms] * 2[kW]", u8"6 watt·second");
+    CHECK_EVAL("2[mC] * 3[kV]", "6 joule");
+    CHECK_EVAL("3[kV] * 2[mC]", "6 joule");
+    CHECK_EVAL("2[kV] * 3[ms]", "6 weber");
+    CHECK_EVAL("3[ms] * 2[kV]", "6 weber");
+    CHECK_EVAL("2[kV] * 3[A]", "6000 watt");
+    CHECK_EVAL("3[A] * 2[kV]", "6000 watt");
+    CHECK_EVAL("2[mF] * 3[kV]", "6 coulomb");
+    CHECK_EVAL("3[kV] * 2[mF]", "6 coulomb");
+    CHECK_EVAL("2[mT] * 3[cm^2]", "0.0000006 weber");
+    CHECK_EVAL("3[cm^2] * 2[mT]", "0.0000006 weber");
+    CHECK_EVAL("2[kPa] * 3[cm^2]", "0.6 newton");
+    CHECK_EVAL("3[cm^2] * 2[kPa]", "0.6 newton");
+    CHECK_EVAL("2[kW] * 3[mV]", u8"6 volt²·ampere");
+    CHECK_EVAL("3[mV] * 2[kW]", u8"6 volt²·ampere");
+    CHECK_EVAL("2[kcd] * 3[sr]", "6000 lumen");
+    CHECK_EVAL("3[sr] * 2[kcd]", "6000 lumen");
+
+    CHECK_EVAL_FORMAT("2[kV] * 3[A]", "6000[W]");
+    CHECK_EVAL_FORMAT("2[kN] * 3[cm]", u8"60[N·m]");
+    CHECK_EVAL_FORMAT("2[kW] * 3[ms]", u8"6[W·s]");
+    CHECK_EVAL_FORMAT("[kT]", "1[kT]");
+    CHECK_EVAL_FORMAT("[fT]", "1[fT]");
+    CHECK_EVAL_FORMAT("[pA]", "1[pA]");
+    CHECK_EVAL_FORMAT("2[kW*h]", u8"2[kW·h]");
+    CHECK_EVAL("ans -> [J]", "7200000 J");
+    CHECK_EVAL("2[kW] * 3[ms] -> [kW*ms]", "6 kW*ms");
+    CHECK_EVAL("2[kN] * 3[cm] -> [kN*cm]", "6 kN*cm");
+}
+
+void test_units_angular_rate_display_scale()
+{
+    CHECK_EVAL("120[rad] / 2[min]", u8"1 rad·second⁻¹");
+    CHECK_EVAL("ans -> [rad/s]", u8"1 rad·s⁻¹");
+    CHECK_EVAL("2[rad] / 4[ms]", u8"500 rad·second⁻¹");
+    CHECK_EVAL("2[rad] * 3[1/ms]", u8"6000 rad·second⁻¹");
+    CHECK_EVAL("3[1/ms] * 2[rad]", u8"6000 rad·second⁻¹");
+}
+
+void test_units_display_scale_round_trip()
+{
+    struct Operation {
+        const char* left;
+        const char* op;
+        const char* right;
+    };
+    const Operation operations[] = {
+        {"N", "*", "m"}, {"Pa", "*", "m^3"}, {"W", "*", "s"},
+        {"C", "*", "V"}, {"V", "*", "s"}, {"V", "*", "A"},
+        {"W", "*", "V"}, {"F", "*", "V"}, {"T", "*", "m^2"},
+        {"Pa", "*", "m^2"}, {"cd", "*", "sr"}, {"J", "/", "s"},
+        {"J", "/", "m^2"}, {"J", "/", "m^3"}, {"V", "/", "A"},
+        {"A", "/", "V"}, {"C", "/", "V"}, {"Wb", "/", "m^2"},
+        {"Wb", "/", "A"}, {"lm", "/", "m^2"}, {"mol", "/", "s"},
+        {"J", "*", "Pa"}, {"N", "*", "W"}, {"rad", "/", "s"}
+    };
+    const QStringList prefixes = {QString(), QStringLiteral("m"),
+                                  QStringLiteral("k"), QStringLiteral("M")};
+    for (const Operation& operation : operations) {
+        for (const QString& leftPrefix : prefixes) {
+            for (const QString& rightPrefix : prefixes) {
+                const QString expression = QStringLiteral("2[%1%2] %3 4[%4%5]")
+                    .arg(leftPrefix, QLatin1String(operation.left), QLatin1String(operation.op),
+                         rightPrefix, QLatin1String(operation.right));
+                ++eval_total_tests;
+                eval->setExpression(expression);
+                const Quantity original = eval->evalUpdateAns();
+                const QString originalError = eval->error();
+                const QString display = NumberFormatter::format(
+                    original, 'g', 50, false, ComplexForm::Rectangular);
+                eval->setExpression(display);
+                const Quantity recalled = eval->evalUpdateAns();
+                if (originalError.isEmpty() && eval->error().isEmpty()
+                    && original.sameDimension(recalled)
+                    && original.numericValue() == recalled.numericValue())
+                {
+                    continue;
+                }
+                ++eval_failed_tests;
+                ++eval_new_failed_tests;
+                cerr << __FILE__ << "[" << __LINE__ << "]\tunit display scale round trip\t[NEW]" << endl
+                     << "\tExpression: " << qPrintable(expression) << endl
+                     << "\tDisplay: " << qPrintable(display) << endl
+                     << "\tError: " << qPrintable(originalError + eval->error()) << endl;
+            }
+        }
+    }
+}
+
 void test_units_named_derived_canonicalization()
 {
     CHECK_EVAL_FORMAT("[kg*m^2/s^2]", "1[J]");
@@ -1622,11 +1756,88 @@ void test_binary()
     test_binary_arithmetic_operator_variants();
 }
 
+void test_unit_division_uses_numerator_quantity()
+{
+    Session session;
+    Evaluator* evaluator = session.evaluator();
+    const auto check = [&](const QString& expression, const QString& expectedExpression) {
+        evaluator->setExpression(expectedExpression);
+        const Quantity expected = evaluator->evalNoAssign();
+        const QString expectedError = evaluator->error();
+        for (bool adjustInput : {false, true}) {
+            ++eval_total_tests;
+            evaluator->setExpression(adjustInput ? evaluator->autoFix(expression) : expression);
+            const Quantity actual = evaluator->evalNoAssign();
+            const QString actualText = evaluator->error().isEmpty()
+                ? DMath::format(actual, Format::Fixed()) : evaluator->error();
+            const QString expectedText = expectedError.isEmpty()
+                ? DMath::format(expected, Format::Fixed()) : expectedError;
+            DisplayErrorOnMismatch(__FILE__, __LINE__, qPrintable(expression),
+                                   actualText.toStdString(), qUtf8Printable(expectedText),
+                                   eval_failed_tests, eval_new_failed_tests);
+        }
+    };
+    const auto define = [&](const QString& expression) {
+        ++eval_total_tests;
+        evaluator->setExpression(evaluator->autoFix(expression));
+        evaluator->evalUpdateAns();
+        DisplayErrorOnMismatch(__FILE__, __LINE__, qPrintable(expression),
+                               evaluator->error().toStdString(), "",
+                               eval_failed_tests, eval_new_failed_tests);
+    };
+
+    define(QStringLiteral("c = 299792458 [m/s]"));
+    check(QStringLiteral("c / 10 [MHz]"), QStringLiteral("29.9792458 [m]"));
+    check(QString::fromUtf8("c ⧸ 10 [MHz]"), QStringLiteral("29.9792458 [m]"));
+    check(QStringLiteral("299792458 [m/s] / 10 [MHz]"), QStringLiteral("29.9792458 [m]"));
+    check(QStringLiteral("(c) / 10 [MHz]"), QStringLiteral("29.9792458 [m]"));
+    check(QStringLiteral("abs(c) / 10 [MHz]"), QStringLiteral("29.9792458 [m]"));
+    define(QStringLiteral("velocity(x) = x [m/s]"));
+    check(QStringLiteral("velocity(299792458) / 10 [MHz]"), QStringLiteral("29.9792458 [m]"));
+
+    // A function's argument can carry units on one call and be scalar on another.
+    define(QStringLiteral("divide(x) = x / 4 [lb]"));
+    define(QStringLiteral("a = 1 [lb]"));
+    check(QStringLiteral("a / 4 [lb]"), QStringLiteral("0.25"));
+    check(QStringLiteral("divide(a)"), QStringLiteral("0.25"));
+    define(QStringLiteral("a = 1"));
+    check(QStringLiteral("a / 4 [lb]"), QStringLiteral("0.25 [lb]"));
+    check(QStringLiteral("1 / 4 [lb]"), QStringLiteral("0.25 [lb]"));
+    check(QStringLiteral("divide(a)"), QStringLiteral("0.25 [lb]"));
+    check(QStringLiteral("a / -4 [lb]"), QStringLiteral("-0.25 [lb]"));
+    check(QStringLiteral("a / 4e0 [lb]"), QStringLiteral("0.25 [lb]"));
+    check(QStringLiteral("a / (2 + 2) [lb]"), QStringLiteral("0.25 [lb]"));
+    check(QStringLiteral("a / [lb]"), QStringLiteral("1 / (1 [lb])"));
+
+    // Use the value of the whole numerator, including unit cancellation.
+    check(QStringLiteral("2 * c / 10 [MHz]"), QStringLiteral("59.9584916 [m]"));
+    check(QStringLiteral("(c / c) / 4 [lb]"), QStringLiteral("0.25 [lb]"));
+    check(QStringLiteral("1 + 4 [m] / 2 [m]"), QStringLiteral("3"));
+    check(QStringLiteral("c / 2 / 10 [MHz]"), QStringLiteral("14.9896229 [m]"));
+    check(QStringLiteral("c / 1e1 [MHz]"), QStringLiteral("29.9792458 [m]"));
+    check(QStringLiteral("c / (5 + 5) [MHz]"), QStringLiteral("29.9792458 [m]"));
+    check(QStringLiteral("c / -10 [MHz]"), QStringLiteral("-29.9792458 [m]"));
+    check(QStringLiteral("c / 10 [MHz] / 2"), QStringLiteral("14.9896229 [m]"));
+    define(QStringLiteral("frequency = 10 [MHz]"));
+    check(QStringLiteral("c / frequency"), QStringLiteral("29.9792458 [m]"));
+
+    // Parentheses and explicit multiplication always keep their stated grouping.
+    check(QStringLiteral("a / (4 [lb])"), QStringLiteral("1 / (4 [lb])"));
+    check(QStringLiteral("(c / 10) [MHz]"), QStringLiteral("c * 0.1 * [MHz]"));
+    check(QStringLiteral("c / 10 * [MHz]"), QStringLiteral("c * 0.1 * [MHz]"));
+    check(QStringLiteral("c / (10 [MHz])"), QStringLiteral("29.9792458 [m]"));
+}
+
 void test_units()
 {
+    test_unit_division_uses_numerator_quantity();
     test_units_conversion_parentheses();
     test_units_display_propagation();
     test_units_short_aliases_and_si_prefixes();
+    test_units_energy_per_geometry_display_scale();
+    test_units_canonical_display_scale();
+    test_units_angular_rate_display_scale();
+    test_units_display_scale_round_trip();
     test_units_named_derived_canonicalization();
     test_units_derived_si_recognition_and_disambiguation();
     test_units_conversion_compatibility_and_canonicalization();
@@ -1659,6 +1870,52 @@ void test_units()
     CHECK_EVAL("numval(3 [m/s])", "3");
     CHECK_EVAL("numval(3 [km/s])", "3000");
     CHECK_EVAL("numval(3 [km/s] -> [cm/s])", "300000");
+}
+
+void test_unit_expression_powers()
+{
+    CHECK_EVAL("(2[m])^2", u8"4 metre²");
+    CHECK_EVAL(QString::fromUtf8("(2[m])²"), u8"4 metre²");
+    CHECK_EVAL("((2[m]))**2", u8"4 metre²");
+    CHECK_EVAL("(2[m])^-2", u8"0.25 metre⁻²");
+    CHECK_EVAL(QString::fromUtf8("(2[m])⁻²"), u8"0.25 metre⁻²");
+    CHECK_EVAL("(2[m]+3[m])^2", u8"25 metre²");
+    CHECK_EVAL("(2[m]/1[m])^2", "4");
+    CHECK_EVAL("(2[m]/1[m])^(-2)", "0.25");
+    CHECK_EVAL("[m]^2", u8"1 metre²");
+    CHECK_EVAL("sqrt(4[m^2])^2", u8"4 metre²");
+    CHECK_EVAL("((2[m/s])^2)/(4[m^2/s^2])", "1");
+    CHECK_EVAL(QString::fromUtf8("(2[m])²+(3[m])²"), u8"13 metre²");
+    CHECK_EVAL(QString::fromUtf8("1 × 10⁻³ + (2[m]/1[m])²"), "4.001");
+
+    CHECK_EVAL_FAIL("2[m]^(-2)");
+    CHECK_EVAL_FAIL(QString::fromUtf8("2[m]⁻²"));
+    CHECK_EVAL_FAIL("(2[m])[s]^2");
+    CHECK_EVAL_FAIL("2[]^2");
+
+    Session reportSession;
+    Evaluator* reportEvaluator = reportSession.evaluator();
+    const auto checkReportExpression = [&](const QString& expression, const char* expected) {
+        ++eval_total_tests;
+        reportEvaluator->setExpression(expression);
+        const Quantity result = reportEvaluator->evalUpdateAns();
+        const QString actual = reportEvaluator->error().isEmpty()
+            ? DMath::format(result, Format::Fixed()) : reportEvaluator->error();
+        DisplayErrorOnMismatch(__FILE__, __LINE__, qPrintable(expression),
+                               actual.toStdString(), expected,
+                               eval_failed_tests, eval_new_failed_tests);
+    };
+    checkReportExpression(QStringLiteral("c=299792458[m/s]"), u8"299792458 metre·second⁻¹");
+    checkReportExpression(
+        QStringLiteral("1+1.602e-19[coulomb]*1[kV]/(9.109e-31[kg]*c^2)"),
+        "1.00195681786123383108");
+    checkReportExpression(
+        QStringLiteral("c*sqrt(1-(1+1.602e-19[coulomb]*1[kV]/(9.109e-31[kg]*c^2))^-2)"),
+        u8"18727260.54958148079607995581 metre·second⁻¹");
+    checkReportExpression(
+        QString::fromUtf8("c × sqrt(1 − (1 + (1.602 × 10⁻¹⁹[coulomb] × 1[kV])"
+                          " / (9.109 × 10⁻³¹[kg] × c²))⁻²)"),
+        u8"18727260.54958148079607995581 metre·second⁻¹");
 }
 
 void test_percent_operator()
@@ -1864,8 +2121,8 @@ void test_radix_char()
     // Test automatic detection of radix point when multiple choices are possible
     CHECK_EVAL("1,234.567", "1234.567");
     CHECK_EVAL("1.234,567", "1234.567");
-    CHECK_EVAL("1,2,3", "123");
-    CHECK_EVAL("1.2.3", "123");
+    CHECK_EVAL_FAIL("1,2,3");
+    CHECK_EVAL_FAIL("1.2.3");
     CHECK_EVAL("1,234,567.89", "1234567.89");
     CHECK_EVAL("1.234.567,89", "1234567.89");
     CHECK_EVAL("1,234.567,89", "1234.56789");
@@ -1879,8 +2136,8 @@ void test_radix_char()
     CHECK_EVAL("1/,1", "10");
     CHECK_EVAL("1,234.567", "1234.567");
     CHECK_EVAL("1.234,567", "1234.567");
-    CHECK_EVAL("1,2,3", "123");
-    CHECK_EVAL("1.2.3", "123");
+    CHECK_EVAL_FAIL("1,2,3");
+    CHECK_EVAL_FAIL("1.2.3");
     CHECK_EVAL("1,234,567.89", "1234567.89");
     CHECK_EVAL("1.234.567,89", "1234567.89");
     CHECK_EVAL("1,234.567,89", "1234.56789");
@@ -1894,8 +2151,8 @@ void test_radix_char()
     CHECK_EVAL("1/,1", "10");
     CHECK_EVAL("1,234.567", "1234.567");
     CHECK_EVAL("1.234,567", "1234.567");
-    CHECK_EVAL("1,2,3", "123");
-    CHECK_EVAL("1.2.3", "123");
+    CHECK_EVAL_FAIL("1,2,3");
+    CHECK_EVAL_FAIL("1.2.3");
     CHECK_EVAL("1,234,567.89", "1234567.89");
     CHECK_EVAL("1.234.567,89", "1234567.89");
     CHECK_EVAL("1,234.567,89", "1234.56789");
@@ -2200,22 +2457,276 @@ void test_tolerant_number_input_all_styles()
         {"1.23456", "1.23456"},
         {"1,234,566.789,012", "1234566.789012"},
         {"1.234.566,789.012", "1234566.789012"},
-        // Ambiguous mixed separators: keep parsing permissive for copy/paste.
-        {"1.123123,123123,32", "1.12312312312332"},
-        {"1,234,566.564,454545,45.23", "12345665644545454523"},
-        {"1.23.23,42342 242.4", "12323.423422424"},
-        {"12,3.23,42342 242.4", "12323423422424"}
+        // Malformed punctuation groups must report an error.
+        {"1.123123,123123,32", nullptr},
+        {"1,234,566.564,454545,45.23", nullptr},
+        {"1.23.23,42342 242.4", nullptr},
+        {"12,3.23,42342 242.4", nullptr}
     };
 
     for (const auto style : styles) {
         settings->numberFormatStyle = style;
         settings->applyNumberFormatStyle();
-        for (const auto& c : cases)
-            CHECK_EVAL(c.expr, c.expected);
+        for (const auto& c : cases) {
+            if (!c.expected) {
+                CHECK_EVAL_FAIL(c.expr);
+                continue;
+            }
+            const bool selectedFraction =
+                (style == Settings::NumberFormatThreeDigitCommaDotFraction && QString::fromLatin1(c.expr) == QStringLiteral("1.234,56"))
+                || (style == Settings::NumberFormatThreeDigitDotCommaFraction && QString::fromLatin1(c.expr) == QStringLiteral("1,234.56"));
+            CHECK_EVAL(c.expr, selectedFraction ? "1.23456" : c.expected);
+        }
     }
 
     settings->numberFormatStyle = oldNumberFormatStyle;
     settings->applyNumberFormatStyle();
+}
+
+void test_single_grouping_separator_uses_number_format()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    for (const auto style : {Settings::NumberFormatThreeDigitCommaDot,
+                             Settings::NumberFormatThreeDigitCommaDotFraction,
+                             Settings::NumberFormatIndianCommaDot,
+                             Settings::NumberFormatThreeDigitDotComma,
+                             Settings::NumberFormatThreeDigitDotCommaFraction}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        const QString grouping = settings->digitGroupingSeparator();
+        const QString decimal(QChar(settings->decimalSeparator()));
+        CHECK_EVAL("1" + grouping + "000*2", "2000");
+        CHECK_EVAL("-12" + grouping + "345", "-12345");
+        CHECK_EVAL("1" + grouping + "234e2", "123400");
+        CHECK_EVAL("0d1" + grouping + "234", "1234");
+        CHECK_EVAL("1" + grouping + "000 [m] / [m]", "1000");
+        CHECK_EVAL("1" + grouping + "000:00 -> [h]", "1000 h");
+        CHECK_EVAL("1" + grouping + QString::fromUtf8("000° -> [degree]"), "1000°");
+        CHECK_EVAL("1" + decimal + "234", "1.234");
+        CHECK_EVAL("0" + decimal + "123", "0.123");
+        CHECK_EVAL(grouping + "123", "0.123");
+        CHECK_EVAL("1" + grouping + "23", "1.23");
+        CHECK_EVAL("1" + grouping + "23456", "1.23456");
+        CHECK_EVAL("1" + grouping + "000" + decimal + "0*2", "2000");
+        CHECK_EVAL("1" + decimal + "000" + grouping + "23",
+                   settings->digitGroupingIntegerPartOnly ? "1000.23" : "1.00023");
+        CHECK_EVAL("1" + decimal + "234" + decimal + "567" + grouping + "12345",
+                   "1234567.12345");
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
+}
+
+void test_grouped_input_without_display_grouping()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    for (const auto style : {Settings::NumberFormatNoGroupingDot,
+                             Settings::NumberFormatNoGroupingComma,
+                             Settings::NumberFormatSIDot,
+                             Settings::NumberFormatSIComma,
+                             Settings::NumberFormatThreeDigitSpaceDot,
+                             Settings::NumberFormatThreeDigitSpaceComma,
+                             Settings::NumberFormatThreeDigitUnderscoreDot,
+                             Settings::NumberFormatThreeDigitUnderscoreDotFraction,
+                             Settings::NumberFormatThreeDigitUnderscoreComma,
+                             Settings::NumberFormatThreeDigitUnderscoreCommaFraction}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        const QString decimal(QChar(settings->decimalSeparator()));
+        const QString grouping = decimal == QStringLiteral(".") ? QStringLiteral(",") : QStringLiteral(".");
+        CHECK_EVAL("1" + grouping + QString::fromUtf8("000 × 2"), "2000");
+        CHECK_EVAL("1" + decimal + QString::fromUtf8("000 × 2"), "2");
+        CHECK_EVAL("12" + grouping + "345e2", "1234500");
+        CHECK_EVAL("1" + grouping + "23", "1.23");
+        CHECK_EVAL("1" + grouping + "000" + decimal + "23", "1000.23");
+        CHECK_EVAL("1" + decimal + "000" + grouping + "23", "1000.23");
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
+}
+
+void test_validated_number_format_examples()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    for (const auto& format : NumberFormatCases::formats) {
+        settings->numberFormatStyle = format.style;
+        settings->applyNumberFormatStyle();
+        for (size_t i = 0; i <= NumberFormatCases::inputs.size(); ++i) {
+            const bool example = i == NumberFormatCases::inputs.size();
+            const char* input = example ? format.example : NumberFormatCases::inputs.at(i);
+            const char* expectedValue = example ? "1234567.12345" : NumberFormatCases::numericValue(format, i);
+            const char* expectedOutput = example ? format.example : format.outputs.at(i);
+            CHECK_EVAL(QString::fromUtf8(input), expectedValue);
+            const Quantity value = eval->getVariable(QStringLiteral("ans")).value();
+            ++eval_total_tests;
+            const QString displayed = DisplayFormatUtils::applyDigitGroupingForDisplay(
+                NumberFormatter::format(value, 'f', -1, false, ComplexForm::Rectangular));
+            const QByteArray label = QStringLiteral("format %1: %2")
+                .arg(QString::fromUtf8(format.example), QString::fromUtf8(input)).toUtf8();
+            DisplayErrorOnMismatch(__FILE__, __LINE__, label.constData(), displayed.toStdString(),
+                                   expectedOutput, eval_failed_tests, eval_new_failed_tests);
+        }
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
+}
+
+void test_ambiguous_fractional_grouping_prefers_ungrouped()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    for (const auto& item : FractionalGroupingCases::cases) {
+        settings->numberFormatStyle = item.style;
+        settings->applyNumberFormatStyle();
+        CHECK_EVAL(QString::fromUtf8(item.input), item.value);
+        const Quantity value = eval->getVariable(QStringLiteral("ans")).value();
+        const QString displayed = DisplayFormatUtils::applyDigitGroupingForDisplay(
+            NumberFormatter::format(value, 'f', -1, false, ComplexForm::Rectangular));
+        const QByteArray label = QStringLiteral("fractional grouping style %1: %2")
+            .arg(int(item.style)).arg(QString::fromUtf8(item.input)).toUtf8();
+        ++eval_total_tests;
+        DisplayErrorOnMismatch(__FILE__, __LINE__, label.constData(), displayed.toStdString(),
+                               item.output, eval_failed_tests, eval_new_failed_tests);
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
+}
+
+void test_number_grouping_edge_cases()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    for (auto style : {Settings::NumberFormatNoGroupingDot, Settings::NumberFormatNoGroupingComma}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        const auto& cases = style == Settings::NumberFormatNoGroupingDot
+            ? NumberGroupingEdgeCases::dotCases : NumberGroupingEdgeCases::commaCases;
+        for (const auto& item : cases) {
+            if (item.value)
+                CHECK_EVAL(item.input, item.value);
+            else
+                CHECK_EVAL_FAIL(item.input);
+        }
+        CHECK_EVAL_FAIL("1,,234:00");
+        CHECK_EVAL("0xffef,ffff,ffff,ffff", "18442240474082181119");
+        CHECK_EVAL("0b1010,1010,1010", "2730");
+        CHECK_EVAL("0o123,456,701", "21913025");
+        QString formatted;
+        const bool ok = NumberFormatter::tryFormatStandaloneNumericLiteralForDisplay(
+            QStringLiteral("0x0bad.f"), &formatted);
+        ++eval_total_tests;
+        DisplayErrorOnMismatch(__FILE__, __LINE__, "hexadecimal mantissa starting with 0b",
+                               ok ? formatted.toStdString() : "<invalid>",
+                               style == Settings::NumberFormatNoGroupingDot ? "0x0bad.f" : "0x0bad,f",
+                               eval_failed_tests, eval_new_failed_tests);
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+}
+
+void test_malformed_number_grouping_all_formats()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    for (const auto& format : NumberFormatCases::formats) {
+        settings->numberFormatStyle = format.style;
+        settings->applyNumberFormatStyle();
+        for (const char* input : MalformedNumberGroupingCases::decimal)
+            CHECK_EVAL_FAIL(input);
+        for (const char* input : MalformedNumberGroupingCases::nondecimal) {
+            CHECK_EVAL_FAIL(input);
+            QString formatted;
+            const bool ok = NumberFormatter::tryFormatStandaloneNumericLiteralForDisplay(
+                QString::fromLatin1(input), &formatted);
+            const QByteArray label = QStringLiteral("malformed standalone grouping, style %1: %2")
+                .arg(int(format.style)).arg(QString::fromLatin1(input)).toUtf8();
+            ++eval_total_tests;
+            DisplayErrorOnMismatch(__FILE__, __LINE__, label.constData(),
+                                   ok ? "accepted" : "rejected", "rejected",
+                                   eval_failed_tests, eval_new_failed_tests);
+        }
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
+}
+
+void test_decimal_input_without_display_grouping()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    settings->numberFormatStyle = Settings::NumberFormatNoGroupingDot;
+    settings->applyNumberFormatStyle();
+    for (const auto& item : DecimalInputCases::cases)
+        CHECK_EVAL(item.input, item.value);
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
+}
+
+void test_decimal_input_all_number_formats()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    for (const auto& format : DecimalInputCases::formats) {
+        settings->numberFormatStyle = format.style;
+        settings->applyNumberFormatStyle();
+        for (size_t i = 0; i < DecimalInputCases::cases.size(); ++i) {
+            const auto& item = DecimalInputCases::cases.at(i);
+            CHECK_EVAL(item.input, item.value);
+            const Quantity value = eval->getVariable(QStringLiteral("ans")).value();
+            const QString displayed = DisplayFormatUtils::applyDigitGroupingForDisplay(
+                NumberFormatter::format(value, 'f', -1, false, ComplexForm::Rectangular));
+            const QByteArray label = QStringLiteral("decimal format %1: %2")
+                .arg(QString::fromUtf8(format.example), QString::fromLatin1(item.input)).toUtf8();
+            ++eval_total_tests;
+            DisplayErrorOnMismatch(__FILE__, __LINE__, label.constData(), displayed.toStdString(),
+                                   format.outputs.at(i), eval_failed_tests, eval_new_failed_tests);
+        }
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
+}
+
+void test_number_input_interpreted_expressions_all_formats()
+{
+    Settings* settings = Settings::instance();
+    const auto oldStyle = settings->numberFormatStyle;
+    const bool oldIntegerOnly = settings->digitGroupingIntegerPartOnly;
+    for (size_t index = 0; index < NumberFormatCases::formats.size(); ++index) {
+        const auto& format = NumberFormatCases::formats.at(index);
+        settings->numberFormatStyle = format.style;
+        settings->applyNumberFormatStyle();
+        for (const auto& item : InterpretedNumberCases::forFormat(index)) {
+            const QByteArray label = QStringLiteral("interpreted number, format %1: %2")
+                .arg(QString::fromUtf8(format.example), item.input).toUtf8();
+            const QByteArray expected = item.interpreted.toUtf8();
+            checkInterpreted(__FILE__, __LINE__, label.constData(), item.input, expected.constData());
+            ++eval_total_tests;
+            const QString displayed = ResultLineFormatUtils::formattedExpressionLineForDisplay(
+                item.input, eval->interpretedExpression(), eval);
+            DisplayErrorOnMismatch(__FILE__, __LINE__, label.constData(), displayed.toStdString(),
+                                   item.displayed.toUtf8().constData(), eval_failed_tests, eval_new_failed_tests);
+        }
+    }
+    settings->numberFormatStyle = oldStyle;
+    settings->applyNumberFormatStyle();
+    settings->digitGroupingIntegerPartOnly = oldIntegerOnly;
 }
 
 void test_settings_default_result_line_behavior()
@@ -2782,14 +3293,14 @@ void test_rational_format()
     const QString dotOperator(MathDsl::MulDotOp);
     const QString dotSpacing = QString(MathDsl::MulDotWrapSp);
     const QString piSymbol = QStringLiteral("pi");
-    const auto piOver = [&](int denominator) {
+    const auto piOver = [&](int denominator) -> QString {
         return piSymbol + slash + QString::number(denominator);
     };
-    const auto nPiOver = [&](int numerator, int denominator) {
+    const auto nPiOver = [&](int numerator, int denominator) -> QString {
         return QString::number(numerator) + dotSpacing + dotOperator + dotSpacing + piSymbol
             + slash + QString::number(denominator);
     };
-    const auto nPi = [&](int numerator) {
+    const auto nPi = [&](int numerator) -> QString {
         return QString::number(numerator) + dotSpacing + dotOperator + dotSpacing + piSymbol;
     };
     const auto signedPiOver = [&](int numerator, int denominator) -> QString {
@@ -2928,6 +3439,92 @@ void test_rational_format()
     Evaluator::instance()->initializeAngleUnits();
 }
 
+void test_function_root()
+{
+    Settings* settings = Settings::instance();
+    const bool oldComplexNumbers = settings->complexNumbers;
+    const bool oldComplexMode = DMath::complexMode;
+
+    for (const bool complex : {false, true}) {
+        settings->complexNumbers = complex;
+        DMath::complexMode = complex;
+        eval->initializeBuiltInVariables();
+
+        CHECK_EVAL("root(5; 32)", "2");
+        CHECK_EVAL("root(32; 1)", "1");
+        CHECK_EVAL("ROOT(4; 81)", "3");
+        CHECK_EVAL("root(5; -32)", "-2");
+        CHECK_EVAL("root(7; -128)", "-2");
+        CHECK_EVAL("root(5; 0.00032)", "0.2");
+        CHECK_EVAL("root(5; -0.00032)", "-0.2");
+        CHECK_EVAL("root(5; 0)", "0");
+        CHECK_EVAL("root(2; 0)", "0");
+        CHECK_EVAL("root(1; -32)", "-32");
+        CHECK_EVAL("root(2; 81)", "9");
+        CHECK_EVAL("root(3; -27)", "-3");
+        CHECK_EVAL("root(2147483648; 1)", "1");
+        CHECK_EVAL("root(2147483649; -1)", "-1");
+        CHECK_EVAL("root(5; 32 [m^5])/(2 [m])", "1");
+        CHECK_EVAL("root(5; -32 [m^5])/(-2 [m])", "1");
+        CHECK_EVAL("root(4; 81 [m^4])/(3 [m])", "1");
+        CHECK_EVAL("root(2; 4 [m^2])/(2 [m])", "1");
+        CHECK_EVAL("root(3; -27 [m^3])/(-3 [m])", "1");
+        CHECK_EVAL("root(1; 7 [cm])/(7 [cm])", "1");
+        CHECK_EVAL("root(5; 32 [cm^5])/(2 [cm])", "1");
+        CHECK_EVAL("root(5; 32 [m^5/s^5])/(2 [m/s])", "1");
+        CHECK_EVAL("root(5; 2)^5", "2");
+
+        // The first argument is always the index, even for the old argument order.
+        CHECK_EVAL_FAIL("root(-32; 5)");
+        CHECK_EVAL_FAIL("root(32)");
+        CHECK_EVAL_FAIL("root(5; 32; 1)");
+        CHECK_EVAL_FAIL("root(0; 32)");
+        CHECK_EVAL_FAIL("root(-5; 32)");
+        CHECK_EVAL_FAIL("root(2.5; 32)");
+        CHECK_EVAL_FAIL("root(5 [m]; 32)");
+        CHECK_EVAL_FAIL("root(2147483648; 1 [m])");
+        CHECK_EVAL_FAIL("root(5; {1; 32})");
+        CHECK_EVAL_FAIL("root({1; 5}; 32)");
+
+        if (complex) {
+            CHECK_EVAL("root(2; -16)", "4i");
+            CHECK_EVAL("root(2; -1)", "1i");
+            CHECK_EVAL("root(2; -81)", "9i");
+            CHECK_EVAL("root(2; -0.25)", "0.5i");
+            CHECK_EVAL("root(4; -1)", "0.7071067811865475244+0.7071067811865475244i");
+            CHECK_EVAL("root(6; -64)", "1.73205080756887729353+1i");
+            CHECK_EVAL("root(8; -256)", "1.84775906502257351226+0.76536686473017954346i");
+            CHECK_EVAL("root(2; 3+4i)", "2+1i");
+            CHECK_EVAL("root(2; 3-4i)", "2-1i");
+            CHECK_EVAL("root(2; -3+4i)", "1+2i");
+            CHECK_EVAL("root(2; -3-4i)", "1-2i");
+            CHECK_EVAL("root(3; -8i)", "1.73205080756887729353-1i");
+            CHECK_EVAL("root(4; 16i)", "1.84775906502257351226+0.76536686473017954346i");
+            CHECK_EVAL("root(4; -16i)", "1.84775906502257351226-0.76536686473017954346i");
+            CHECK_EVAL("root(5; 32i)", "1.90211303259030714423+0.6180339887498948482i");
+            CHECK_EVAL("root(2; -16 [m^2])", "4i metre");
+            CHECK_EVAL("root(2; (3+4i) [m^2])", "(2+1i) metre");
+            CHECK_EVAL("root(2; -1)+root(2; -81)", "10i");
+            CHECK_EVAL("2*root(2; -16)", "8i");
+            CHECK_EVAL("root(4; -16)", "1.4142135623730950488+1.4142135623730950488i");
+            CHECK_EVAL("root(3; 8i)", "1.73205080756887729353+1i");
+            CHECK_EVAL("root(5; 1+i)^5", "1+1i");
+            CHECK_EVAL("phase(root(5; 1+i))*5/phase(1+i)", "1");
+            CHECK_EVAL("root(1; 1+i)", "1+1i");
+            CHECK_EVAL("root(4; -16 [m^4])/(root(4; -16)*1 [m])", "1");
+            CHECK_EVAL_FAIL("root(i; 32)");
+            CHECK_EVAL_FAIL("root(5+i; 32)");
+        } else {
+            CHECK_EVAL_FAIL("root(2; -16)");
+            CHECK_EVAL_FAIL("root(4; -16)");
+        }
+    }
+
+    settings->complexNumbers = oldComplexNumbers;
+    DMath::complexMode = oldComplexMode;
+    eval->initializeBuiltInVariables();
+}
+
 void test_function_basic()
 {
     CHECK_EVAL("ABS(0)", "0");
@@ -2997,6 +3594,23 @@ void test_function_basic()
     CHECK_EVAL("sum(10;1;abs(-100))", "111");
 
     CHECK_EVAL("ieee754_half_decode(0x7E00)", "NaN");
+    // Scaling makes these checks independent of fixed-point display rounding.
+    CHECK_EVAL("ieee754_double_decode(0x0010000000000000) / 2^(-1022)", "1");
+    CHECK_EVAL("ieee754_double_decode(0x8010000000000000) / 2^(-1022)", "-1");
+    CHECK_EVAL("ieee754_double_decode(0x0000000000000001) / 2^(-1074)", "1");
+    CHECK_EVAL("ieee754_double_decode(0x8000000000000001) / 2^(-1074)", "-1");
+    CHECK_EVAL("ieee754_double_decode(0x000fffffffffffff) / ((2^52-1)*2^(-1074))", "1");
+    CHECK_EVAL("ieee754_double_decode(0x800fffffffffffff) / ((2^52-1)*2^(-1074))", "-1");
+    CHECK_EVAL_FORMAT("sci(ieee754_double_decode(0x0000000000000001))", "4.94065645841246544177e-324");
+    CHECK_EVAL("ieee754_double_decode(0xffef ffff ffff ffff) / ieee754_double_decode(0xffefffffffffffff)", "1");
+    CHECK_EVAL("ieee754_double_decode(0xffef,ffff,ffff,ffff) / ieee754_double_decode(0xffefffffffffffff)", "1");
+    CHECK_EVAL("ieee754_double_decode(0xfff0000000000000)", "NaN");
+    CHECK_EVAL("ieee754_double_decode(0x7ff0000000000000)", "NaN");
+    CHECK_EVAL("ieee754_double_decode(0x8000000000000000)", "0");
+    CHECK_EVAL("ieee754_double_decode(0xfff8000000000001)", "NaN");
+    CHECK_EVAL("ieee754_double_decode(0xfff0000000000001)", "NaN");
+    CHECK_EVAL("ieee754_double_decode(0xfff4000000000001)", "NaN");
+    CHECK_EVAL("ieee754_double_decode(0xfff8000000000000)", "NaN");
     CHECK_EVAL("hex(ieee754_half_encode(1))", "0x3C00");
     CHECK_EVAL("hex(ieee754_half_encode(0.99951171875))", "0x3BFF");
     CHECK_EVAL("hex(ieee754_half_encode(0.999755859375))", "0x3C00");
@@ -3846,6 +4460,20 @@ void test_auto_fix_powers()
     }
 }
 
+void test_auto_fix_hex_grouping()
+{
+    CHECK_AUTOFIX("0xffef ffff ffff ffff", "0xffef ffff ffff ffff");
+    CHECK_AUTOFIX("ieee754_double_decode(0xffef ffff ffff ffff)",
+                  "ieee754_double_decode(0xffef ffff ffff ffff)");
+    CHECK_AUTOFIX("0XAB CD EF", "0XAB CD EF");
+    CHECK_AUTOFIX("#AB CD EF", "#AB CD EF");
+    CHECK_AUTOFIX("0x12AB CD34 EF56", "0x12AB CD34 EF56");
+    CHECK_AUTOFIX("0xab cd + pi pi", "0xab cd + pi·pi");
+    CHECK_AUTOFIX("0xab cd pi", "0xab cd·pi");
+    CHECK_EVAL(eval->autoFix("0xab cd"), "43981");
+    CHECK_EVAL(eval->autoFix("ieee754_double_decode(0xffef ffff ffff ffff) / ieee754_double_decode(0xffefffffffffffff)"), "1");
+}
+
 void test_auto_fix_shift_add_sub()
 {
     CHECK_AUTOFIX("0x4f<<8+0x4c", "(0x4f << 8) + 0x4c");
@@ -3864,6 +4492,95 @@ void test_comments()
     CHECK_EVAL("21", "21");
     CHECK_EVAL("? foo", "NaN");
     CHECK_EVAL("1+ans", "22");
+}
+
+void test_comments_do_not_change_result_formatting()
+{
+    Settings* settings = Settings::instance();
+    const char oldAngleUnit = settings->angleUnit;
+    const char oldResultFormat = settings->resultFormat;
+    const bool oldSimplify = settings->simplifyResultExpressions;
+    const bool oldMultipleResultLines = settings->multipleResultLinesEnabled;
+    settings->resultFormat = 'g';
+    settings->simplifyResultExpressions = true;
+
+    Session session;
+    Evaluator* evaluator = session.evaluator();
+    const struct {
+        const char* expression;
+        const char* comment;
+    } cases[] = {
+        { "2", "\"" },
+        { "2", "'" },
+        { "2", u8"° ′ ″" },
+        { "2", "[rad]" },
+        { "2", "sin(pi)" },
+        { "pi", "\"" },
+        { "pi", "arctan(1) -> [rad]" },
+        { u8"180°", u8"∠" },
+        { u8"180°", "sin(pi)" },
+        { u8"180° -> [rad]", "-> [degree]" },
+        { "arctan(1)", "-> [degree]" },
+        { "1:30", "-> [s]" },
+        { "2[m]", "[rad] \"" },
+        { "cos(pi)*cos(pi)", "? \" [rad] -> [degree]" },
+        { "2", "([} = 1/0 ? \"" }
+    };
+
+    for (char angleUnit : {'r', 'd'}) {
+        settings->angleUnit = angleUnit;
+        evaluator->initializeBuiltInVariables();
+        for (bool multipleLines : {false, true}) {
+            settings->multipleResultLinesEnabled = multipleLines;
+            for (const auto& tc : cases) {
+                const QString expression = QString::fromUtf8(tc.expression);
+                evaluator->setExpression(expression);
+                const Quantity expectedValue = evaluator->evalUpdateAns();
+                const QString expectedInterpreted = evaluator->interpretedExpression();
+                const QStringList expectedLines = ResultLineFormatUtils::formatResultLinesForDisplay(
+                    expression, expectedInterpreted, expectedValue, false, true, evaluator);
+                const QStringList expectedResultOnly = ResultLineFormatUtils::formatResultLinesForDisplay(
+                    expression, expectedInterpreted, expectedValue, false, true, evaluator, true);
+                const QString expectedSimplified = ResultLineFormatUtils::simplifiedExpressionLineForDisplay(
+                    expectedInterpreted, expression, true, evaluator);
+
+                // Match compact comments too, since whitespace is optional before '?'.
+                for (const QString& separator : {QStringLiteral("?"), QStringLiteral(" ? ")}) {
+                    const QString commented = expression + separator + QString::fromUtf8(tc.comment);
+                    evaluator->setExpression(evaluator->autoFix(commented));
+                    const Quantity value = evaluator->evalUpdateAns();
+                    const QString interpreted = evaluator->interpretedExpression();
+                    const QStringList lines = ResultLineFormatUtils::formatResultLinesForDisplay(
+                        commented, interpreted, value, true, true, evaluator);
+                    const QStringList resultOnly = ResultLineFormatUtils::formatResultLinesForDisplay(
+                        commented, interpreted, value, false, true, evaluator, true);
+                    const QString simplified = ResultLineFormatUtils::simplifiedExpressionLineForDisplay(
+                        interpreted, commented, true, evaluator);
+
+                    ++eval_total_tests;
+                    if (!evaluator->error().isEmpty()
+                        || DMath::format(value, Format::Fixed()) != DMath::format(expectedValue, Format::Fixed())
+                        || lines.mid(1) != expectedLines
+                        || resultOnly != expectedResultOnly
+                        || simplified != expectedSimplified
+                        || !lines.first().endsWith(QString::fromUtf8(tc.comment))) {
+                        ++eval_failed_tests;
+                        ++eval_new_failed_tests;
+                        cerr << __FILE__ << "[" << __LINE__ << "]\tcomments leave results unchanged\t[NEW]" << endl
+                             << "\tExpression: " << commented.toUtf8().constData() << endl
+                             << "\tError     : " << qPrintable(evaluator->error()) << endl
+                             << "\tResult    : " << lines.join(QLatin1Char('\n')).toUtf8().constData() << endl
+                             << "\tExpected  : " << expectedLines.join(QLatin1Char('\n')).toUtf8().constData() << endl;
+                    }
+                }
+            }
+        }
+    }
+
+    settings->angleUnit = oldAngleUnit;
+    settings->resultFormat = oldResultFormat;
+    settings->simplifyResultExpressions = oldSimplify;
+    settings->multipleResultLinesEnabled = oldMultipleResultLines;
 }
 
 void test_comment_and_description_edge_cases()
@@ -10048,6 +10765,72 @@ void test_trig_symbolic_fraction_half()
     }
 }
 
+void test_interpreted_quotient_simplification()
+{
+    const QString dot = space + QString(MathDsl::MulDotOp) + space;
+    const QString plus = space + QString(MathDsl::AddOp) + space;
+    const QString minus(UnicodeChars::MinusSign);
+    struct SimplificationCase {
+        QString expression;
+        QString simplified;
+        QString displayed;
+    };
+    const SimplificationCase cases[] = {
+        {QStringLiteral("ans/9"), QStringLiteral("ans/9"),
+         QStringLiteral("ans") + slash + QStringLiteral("9")},
+        {QStringLiteral("ans/0.25"), QStringLiteral("ans/0.25"),
+         QStringLiteral("ans") + slash + QStringLiteral("0.25")},
+        {QStringLiteral("e/7"), QStringLiteral("e/7"),
+         QStringLiteral("e") + slash + QStringLiteral("7")},
+        {QStringLiteral("cos(pi)/11"), QStringLiteral("cos(pi)/11"),
+         QStringLiteral("cos(pi)") + slash + QStringLiteral("11")},
+        {QStringLiteral("ans^2/13"), QStringLiteral("ans^2/13"),
+         QString::fromUtf8("ans²") + slash + QStringLiteral("13")},
+        {QStringLiteral("ans*e/5"), QString::fromUtf8("ans·e/5"),
+         QStringLiteral("ans") + dot + QStringLiteral("e") + slash + QStringLiteral("5")},
+        {QStringLiteral("ans/(17*e)"), QString::fromUtf8("ans/(17·e)"),
+         QStringLiteral("ans") + slash + QStringLiteral("(17") + dot + QStringLiteral("e)")},
+        {QStringLiteral("(-ans)/8"), QStringLiteral("-ans/8"),
+         minus + QStringLiteral("ans") + slash + QStringLiteral("8")},
+        {QStringLiteral("ans/(-6)"), QStringLiteral("ans/(-6)"),
+         QStringLiteral("ans") + slash + QStringLiteral("(") + minus + QStringLiteral("6)")},
+        {QStringLiteral("ans/10+e/7"), QStringLiteral("ans/10+e/7"),
+         QStringLiteral("ans") + slash + QStringLiteral("10")
+             + plus + QStringLiteral("e") + slash + QStringLiteral("7")},
+        {QStringLiteral("ans/12 ? previous answer"), QStringLiteral("ans/12"),
+         QStringLiteral("ans") + slash + QStringLiteral("12")},
+        {QString::fromUtf8("ans÷16"), QStringLiteral("ans/16"),
+         QStringLiteral("ans") + slash + QStringLiteral("16")},
+        {QStringLiteral("ans*ans/25"), QStringLiteral("1/25*ans^2"),
+         QStringLiteral("1") + slash + QStringLiteral("25") + dot + QString::fromUtf8("ans²")},
+        {QStringLiteral("6*ans/15"), QStringLiteral("2/5*ans"),
+         QStringLiteral("2") + slash + QStringLiteral("5") + dot + QStringLiteral("ans")},
+        {QStringLiteral("ans/2/7"), QStringLiteral("1/14*ans"),
+         QStringLiteral("1") + slash + QStringLiteral("14") + dot + QStringLiteral("ans")},
+        {QStringLiteral("ans*e/e/8"), QStringLiteral("1/8*ans"),
+         QStringLiteral("1") + slash + QStringLiteral("8") + dot + QStringLiteral("ans")},
+        {QStringLiteral("ans/1"), QStringLiteral("ans"), QStringLiteral("ans")}
+    };
+
+    for (const SimplificationCase& testCase : cases) {
+        CHECK_EVAL("4", "4");
+        CHECK_DISPLAY_SIMPLIFIED_INTERPRETED(testCase.expression, testCase.displayed);
+        if (!eval->error().isEmpty())
+            continue;
+
+        ++eval_total_tests;
+        const QString simplified = Evaluator::simplifyInterpretedExpression(eval->interpretedExpression());
+        if (simplified != testCase.simplified) {
+            ++eval_failed_tests;
+            ++eval_new_failed_tests;
+            cerr << __FILE__ << "[" << __LINE__ << "]\tinterpreted quotient simplification\t[NEW]" << endl
+                 << "\tExpression : " << qPrintable(testCase.expression) << endl
+                 << "\tSimplified : " << qPrintable(simplified) << endl
+                 << "\tExpected   : " << qPrintable(testCase.simplified) << endl;
+        }
+    }
+}
+
 void test_non_informative_numeric_simplified_row_suppression()
 {
     checkSuppressSimplifiedExpressionLine(
@@ -10458,6 +11241,218 @@ void test_non_informative_numeric_simplified_row_suppression()
 }
 
 
+void test_unit_lookup_registry_aliases()
+{
+    const auto check = [](bool passed, const QString& message) {
+        ++eval_total_tests;
+        if (!passed) {
+            ++eval_failed_tests;
+            ++eval_new_failed_tests;
+            cerr << "Unit lookup: " << message.toUtf8().constData() << "\t[NEW]" << endl;
+        }
+    };
+    const auto& registered = Units::builtInUnitValues();
+    const QStringList identifiers {QStringLiteral("Pa"), QStringLiteral("pA"),
+        QStringLiteral("hPa"), QStringLiteral("hectopascal"), QStringLiteral("KiB"),
+        QStringLiteral("sr")};
+    const QHash<QString, QString> displayNames {
+        {QStringLiteral("Pa"), QStringLiteral("pascal")},
+        {QStringLiteral("hPa"), QStringLiteral("hPa")},
+        {QStringLiteral("hectopascal"), QStringLiteral("hectopascal")},
+        {QStringLiteral("KiB"), QStringLiteral("KiB")},
+        {QStringLiteral("sr"), QStringLiteral("sr")}
+    };
+    for (const char mode : {'r', 'd', 'g', 't', 'v'}) {
+        const auto lookup = Units::builtInUnitLookup(mode);
+        const QString context = QStringLiteral("angle mode %1: ").arg(QLatin1Char(mode));
+        QStringList missing;
+        for (auto it = registered.constBegin(); it != registered.constEnd(); ++it) {
+            if (!lookup.contains(it.key()))
+                missing.append(it.key());
+        }
+        check(missing.isEmpty(), context + QStringLiteral("missing identifiers: ")
+              + missing.join(QLatin1Char(' ')));
+        for (const QString& identifier : identifiers) {
+            const auto actual = lookup.constFind(identifier);
+            const auto expected = registered.constFind(identifier);
+            check(actual != lookup.constEnd() && expected != registered.constEnd()
+                  && actual.value() == expected.value(),
+                  context + identifier + QStringLiteral(" changes value or dimension"));
+        }
+        for (auto it = displayNames.constBegin(); it != displayNames.constEnd(); ++it) {
+            const auto actual = lookup.constFind(it.key());
+            check(actual != lookup.constEnd() && actual.value().hasUnit()
+                  && actual.value().unitName() == it.value()
+                  && actual.value().unit() == actual.value().numericValue(),
+                  context + it.key() + QStringLiteral(" loses its display unit"));
+        }
+        check(!lookup.value(QStringLiteral("Pa")).sameDimension(lookup.value(QStringLiteral("pA"))),
+              context + QStringLiteral("Pa and pA must remain distinct"));
+    }
+    Units::builtInUnitLookup(Settings::instance()->angleUnit);
+}
+
+void test_unit_registry_prefix_values_and_display_units()
+{
+    const auto& registered = Units::builtInUnitValues();
+    const auto checkPrefixes = [&](const QList<UnitPrefixSpec>& prefixes, bool binary) {
+        for (int index = int(UnitId::Second); index <= int(UnitId::YearTropical); ++index) {
+            const UnitId id = static_cast<UnitId>(index);
+            if (id == UnitId::SquareMetre || id == UnitId::CubicMetre)
+                continue;
+            const QString name = unitName(id);
+            const auto base = registered.constFind(name);
+            if (base == registered.constEnd())
+                continue;
+            for (const UnitPrefixSpec& prefix : prefixes) {
+                if (!unitPrefixPolicyAllows(unitPrefixPolicy(id), prefix, binary))
+                    continue;
+                const QString identifier = prefix.longName + name;
+                const Quantity expected = prefix.value * base.value();
+                const Quantity actual = registered.value(identifier);
+                QJsonObject expectedJson;
+                QJsonObject actualJson;
+                expected.serialize(expectedJson);
+                actual.serialize(actualJson);
+                ++eval_total_tests;
+                if (actualJson != expectedJson) {
+                    ++eval_failed_tests;
+                    ++eval_new_failed_tests;
+                    cerr << "Unit prefix changes value or display metadata: "
+                         << identifier.toUtf8().constData() << "\t[NEW]" << endl;
+                }
+            }
+        }
+    };
+    checkPrefixes(siPrefixes(), false);
+    checkPrefixes(binaryIecPrefixes(), true);
+}
+
+void test_unit_lookup_angle_changes_and_caller_isolation()
+{
+    const auto check = [](bool passed, const QString& message) {
+        ++eval_total_tests;
+        if (!passed) {
+            ++eval_failed_tests;
+            ++eval_new_failed_tests;
+            cerr << "Unit lookup: " << message.toUtf8().constData() << "\t[NEW]" << endl;
+        }
+    };
+    const auto serializeLookup = [](const QHash<QString, Quantity>& lookup) {
+        QJsonObject json;
+        for (auto it = lookup.constBegin(); it != lookup.constEnd(); ++it) {
+            QJsonObject value;
+            it.value().serialize(value);
+            json.insert(it.key(), value);
+        }
+        return json;
+    };
+    QHash<char, QJsonObject> initialLookups;
+    for (char mode : {'r', 'd', 'g', 't', 'v'})
+        initialLookups.insert(mode, serializeLookup(Units::builtInUnitLookup(mode)));
+
+    for (char mode : {'v', 't', 'g', 'd', 'r', 'd', 'r'}) {
+        auto lookup = Units::builtInUnitLookup(mode);
+        const QString context = QStringLiteral("angle mode %1: ").arg(QLatin1Char(mode));
+        check(serializeLookup(lookup) == initialLookups.value(mode),
+              context + QStringLiteral("mode switching changes values or display metadata"));
+        Quantity reference = Units::radian();
+        if (mode == 'd')
+            reference = Units::degree();
+        else if (mode == 'g')
+            reference = Units::gradian();
+        else if (mode == 't' || mode == 'v')
+            reference = Units::turn();
+        Quantity radian = Units::radian() / reference;
+        radian.setDisplayUnit(CNumber(1), Units::angleModeUnitSymbol(mode));
+        check(lookup.value(QStringLiteral("rad")) == radian,
+              context + QStringLiteral("radian has the wrong scale"));
+        for (const UnitPrefixSpec& prefix : siPrefixes()) {
+            if (!unitPrefixPolicyAllows(unitPrefixPolicy(UnitId::Radian), prefix))
+                continue;
+            const Quantity expected = prefix.value * radian;
+            for (const QString& suffix : {QStringLiteral("rad"), QStringLiteral("radian")}) {
+                const QString identifier = (suffix == QLatin1String("rad")
+                    ? prefix.symbol : prefix.longName) + suffix;
+                const Quantity actual = lookup.value(identifier);
+                check(actual == expected && actual.hasUnit()
+                      && actual.unit() == expected.unit()
+                      && actual.unitName() == expected.unitName(),
+                      context + identifier + QStringLiteral(" has the wrong scale or display unit"));
+            }
+        }
+
+        // Callers receive an independent table, including its Quantity values.
+        lookup.remove(QStringLiteral("mrad"));
+        lookup.insert(QStringLiteral("caller_only"), Quantity(123));
+        lookup[QStringLiteral("metre")] = Quantity(456);
+        lookup[QStringLiteral("Pa")].setDisplayUnit(CNumber(7), QStringLiteral("caller display"));
+        check(serializeLookup(Units::builtInUnitLookup(mode)) == initialLookups.value(mode),
+              context + QStringLiteral("caller changes leak into another lookup"));
+    }
+    Units::builtInUnitLookup(Settings::instance()->angleUnit);
+}
+
+void test_on_demand_unit_lookup_matches_complete_tables()
+{
+    const auto check = [](bool passed, const QString& message) {
+        ++eval_total_tests;
+        if (!passed) {
+            ++eval_failed_tests;
+            ++eval_new_failed_tests;
+            cerr << "On-demand units: " << message.toUtf8().constData() << "\t[NEW]" << endl;
+        }
+    };
+    const QStringList identifiers = Units::builtInUnitIdentifiers();
+    for (char mode : {'r', 'd', 'g', 't', 'v', 'd', 'r'}) {
+        QHash<QString, QJsonObject> requested;
+        for (const QString& identifier : identifiers) {
+            Quantity value;
+            check(Units::tryGetBuiltInUnitQuantity(identifier, mode, &value), identifier);
+            QJsonObject json;
+            value.serialize(json);
+            requested.insert(identifier, json);
+        }
+        const auto complete = Units::builtInUnitLookup(mode);
+        check(requested.size() == complete.size(), QStringLiteral("identifier list differs"));
+        for (auto it = complete.constBegin(); it != complete.constEnd(); ++it) {
+            QJsonObject expected;
+            it.value().serialize(expected);
+            check(requested.value(it.key()) == expected,
+                  QStringLiteral("%1 in mode %2").arg(it.key()).arg(QLatin1Char(mode)));
+        }
+    }
+    const auto& rawValues = Units::builtInUnitValues();
+    for (auto it = rawValues.constBegin(); it != rawValues.constEnd(); ++it) {
+        Quantity value;
+        check(Units::tryGetBuiltInUnitValue(it.key(), &value), it.key());
+        QJsonObject actual;
+        QJsonObject expected;
+        value.serialize(actual);
+        it.value().serialize(expected);
+        check(actual == expected, it.key() + QStringLiteral(" raw value differs"));
+    }
+    Quantity value(123);
+    check(!Units::tryGetBuiltInUnitQuantity(QStringLiteral("unknown_unit"), 'r', &value)
+          && value == Quantity(123), QStringLiteral("unknown lookup changes the output"));
+    check(!Units::tryGetBuiltInUnitValue(QStringLiteral("unknown_unit"), &value)
+          && value == Quantity(123), QStringLiteral("unknown raw lookup changes the output"));
+    check(!Units::isBuiltInUnitIdentifier(QStringLiteral("unknown_unit")),
+          QStringLiteral("unknown identifier is accepted"));
+    for (const QString& identifier : {QStringLiteral("Pa"), QStringLiteral("pA"),
+                                      QStringLiteral("mrad"), QStringLiteral("deg")}) {
+        check(Units::tryGetBuiltInUnitQuantity(identifier, 'r', &value), identifier);
+        QJsonObject original;
+        value.serialize(original);
+        value.setDisplayUnit(CNumber(7), QStringLiteral("caller display"));
+        check(Units::tryGetBuiltInUnitQuantity(identifier, 'r', &value), identifier);
+        QJsonObject restored;
+        value.serialize(restored);
+        check(restored == original, identifier + QStringLiteral(" cache changes with caller"));
+    }
+    Units::setRuntimeAngleMode(Settings::instance()->angleUnit);
+}
+
 int main(int argc, char* argv[])
 {
     if (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
@@ -10481,11 +11476,17 @@ int main(int argc, char* argv[])
 
     eval->initializeBuiltInVariables();
 
+    test_on_demand_unit_lookup_matches_complete_tables();
+
     test_constants();
     test_exponentiation();
     test_unary();
     test_binary();
     test_units();
+    test_unit_lookup_registry_aliases();
+    test_unit_registry_prefix_values_and_display_units();
+    test_unit_lookup_angle_changes_and_caller_isolation();
+    test_unit_expression_powers();
     test_percent_operator();
     test_bitwise_complement_operator();
 
@@ -10498,6 +11499,15 @@ int main(int argc, char* argv[])
     test_tolerant_number_input_with_dot_style();
     test_number_format_style_behavior_all_supported_styles();
     test_tolerant_number_input_all_styles();
+    test_single_grouping_separator_uses_number_format();
+    test_grouped_input_without_display_grouping();
+    test_validated_number_format_examples();
+    test_ambiguous_fractional_grouping_prefers_ungrouped();
+    test_number_grouping_edge_cases();
+    test_malformed_number_grouping_all_formats();
+    test_decimal_input_without_display_grouping();
+    test_decimal_input_all_number_formats();
+    test_number_input_interpreted_expressions_all_formats();
     test_settings_default_result_line_behavior();
     test_extra_result_lines_profile_formatting();
     test_sexagesimal();
@@ -10505,6 +11515,7 @@ int main(int argc, char* argv[])
     test_rational_format();
 
     test_function_basic();
+    test_function_root();
     test_function_trig();
     test_function_tanh_range();
     test_function_stat();
@@ -10517,10 +11528,12 @@ int main(int argc, char* argv[])
     test_auto_fix_ans();
     test_auto_fix_trailing_equal();
     test_auto_fix_powers();
+    test_auto_fix_hex_grouping();
     test_auto_fix_shift_add_sub();
     test_auto_fix_untouch();
 
     test_comments();
+    test_comments_do_not_change_result_formatting();
     test_comment_and_description_edge_cases();
     test_result_display_history_mapping_after_multiple_lines_toggle_with_comment_only_entry();
     test_result_display_scroll_edge_gradient_height_scales_with_font_zoom();
@@ -10583,6 +11596,7 @@ int main(int argc, char* argv[])
     test_result_display_shows_pi_multiples_for_radian_angle_results();
     test_result_display_compacts_bracketed_degree_inside_trig_call();
     test_trig_symbolic_fraction_half();
+    test_interpreted_quotient_simplification();
     test_non_informative_numeric_simplified_row_suppression();
 
     test_angle_mode(settings);

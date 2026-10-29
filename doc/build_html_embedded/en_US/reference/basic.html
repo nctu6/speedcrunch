@@ -20,7 +20,7 @@
   <tr>
     <td width="50%">
       <a class="nav-item nav-item-0"
-         href="../contents.html">SpeedCrunch 1.0 documentation</a> &#187; <a class="nav-item nav-item-1"
+         href="../contents.html">SpeedCrunch 1.1 documentation</a> &#187; <a class="nav-item nav-item-1"
              href="index.html">Reference</a>
           
     </td>
@@ -104,6 +104,48 @@
 </dd></dl>
 
 <dl class="sc function">
+<dt class="sig sig-object sc" id="sc.root">
+<span class="sig-name descname"><span class="pre">root</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n</span></em>; <em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return the nth root of <code class="docutils literal notranslate"><span class="pre">x</span></code>. Put the root index <code class="docutils literal notranslate"><span class="pre">n</span></code> first, followed by
+the value <code class="docutils literal notranslate"><span class="pre">x</span></code>, as with the base and value in <a class="reference internal" href="#sc.log" title="log"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">log()</span></code></a>. The index must
+be a positive, dimensionless integer.</p>
+<p>For real inputs, return the real root whenever one exists. Negative real
+inputs with an odd index return a negative real root, as with <a class="reference internal" href="#sc.cbrt" title="cbrt"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">cbrt()</span></code></a>.
+Negative real inputs with an even index and non-real complex inputs return
+the principal complex root.</p>
+<p>Example:</p>
+<table class="-x-quark-literal-block"><tbody><tr><td width="100%" class="-x-quark-literal-block-td"><div class="highlight-speedcrunch notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="p">(</span><span class="mi">5</span><span class="p">;</span> <span class="mi">32</span><span class="p">)</span>
+<span class="ge">= 2</span>
+
+<span class="n">root</span><span class="p">(</span><span class="mi">5</span><span class="p">;</span> <span class="o">-</span><span class="mi">32</span><span class="p">)</span>
+<span class="ge">= -2</span>
+
+<span class="n">root</span><span class="p">(</span><span class="mi">2</span><span class="p">;</span> <span class="o">-</span><span class="mi">16</span><span class="p">)</span>
+<span class="ge">= 4i</span>
+</pre></div>
+</div>
+</td></tr></tbody></table><p>The argument <code class="docutils literal notranslate"><span class="pre">x</span></code> may have a dimension. Its unit exponents are divided
+by <code class="docutils literal notranslate"><span class="pre">n</span></code>. For dimensioned inputs, <code class="docutils literal notranslate"><span class="pre">n</span></code> must not exceed 2147483647:</p>
+<table class="-x-quark-literal-block"><tbody><tr><td width="100%" class="-x-quark-literal-block-td"><div class="highlight-speedcrunch notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="p">(</span><span class="mi">5</span><span class="p">;</span> <span class="mi">32 </span><span class="p">[</span><span class="n">m</span><span class="o">^</span><span class="mi">5</span><span class="p">])</span>
+<span class="ge">= 2 metre</span>
+</pre></div>
+</div>
+</td></tr></tbody></table><p><code class="docutils literal notranslate"><span class="pre">root(1;</span> <span class="pre">x)</span></code> returns <code class="docutils literal notranslate"><span class="pre">x</span></code> unchanged. A zero, negative, fractional or
+complex index is rejected.</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">x^(1/n)</span></code>, this function keeps odd roots of negative real inputs
+real even when complex numbers are enabled.</p>
+<table class="-x-quark-box -x-quark-admonition -x-quark-seealso"><tbody><tr><td width="100%" class="-x-quark-box-td"><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="#sc.sqrt" title="sqrt"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">sqrt()</span></code></a> (square root), <a class="reference internal" href="#sc.cbrt" title="cbrt"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">cbrt()</span></code></a> (cube root)</div>
+</div>
+</div>
+</td></tr></tbody></table><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.</span></p>
+</div>
+</dd></dl>
+
+<dl class="sc function">
 <dt class="sig sig-object sc" id="sc.exp">
 <span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Compute the natural exponential function.</p>
@@ -124,14 +166,14 @@
 </dd></dl>
 
 <dl class="sc function">
-<dt class="sig sig-object sc" id="sc.lb">
-<span class="sig-name descname"><span class="pre">lb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object sc" id="sc.log2">
+<span class="sig-name descname"><span class="pre">log2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Compute the binary logarithm. The same complex-number rules apply as for <a class="reference internal" href="#sc.ln" title="ln"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">ln()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="sc function">
-<dt class="sig sig-object sc" id="sc.lg">
-<span class="sig-name descname"><span class="pre">lg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object sc" id="sc.log10">
+<span class="sig-name descname"><span class="pre">log10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Compute the decimal logarithm. The same complex-number rules apply as for <a class="reference internal" href="#sc.ln" title="ln"><code class="xref sc sc-func docutils literal notranslate"><span class="pre">ln()</span></code></a>.</p>
 </dd></dl>
 
@@ -715,7 +757,7 @@ to <code class="docutils literal notranslate"><span class="pre">1</span></code> 
 <h2>Complex Numbers</h2>
 <p>The complex-form functions in this section format one result in a specific
 complex representation. They override the global
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Form</span> setting for
+<span class="menuselection">Settings ‣ Results ‣ Complex Form</span> setting for
 that result only.</p>
 <p>Complex numbers can also be entered in phasor notation as <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">∠</span> <span class="pre">θ</span></code>. This is
 equivalent to <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">*</span> <span class="pre">cis(θ)</span></code>: the left operand is the magnitude, and the right
@@ -769,7 +811,7 @@ form continues to use radians.</p>
 <em>a + b u</em>, where <code class="docutils literal notranslate"><span class="pre">u</span></code> is the currently selected imaginary-unit symbol
 (<code class="docutils literal notranslate"><span class="pre">i</span></code> or <code class="docutils literal notranslate"><span class="pre">j</span></code>).</p>
 <p>This corresponds to
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Form ‣
+<span class="menuselection">Settings ‣ Results ‣ Complex Form ‣
 Rectangular (a + bi)</span>.</p>
 </dd></dl>
 
@@ -780,7 +822,7 @@ Rectangular (a + bi)</span>.</p>
 <em>r(cos ɸ + u sin ɸ)</em>, where <code class="docutils literal notranslate"><span class="pre">u</span></code> is the selected imaginary-unit symbol
 (<code class="docutils literal notranslate"><span class="pre">i</span></code> or <code class="docutils literal notranslate"><span class="pre">j</span></code>). The angle ɸ follows the global angle mode.</p>
 <p>This corresponds to
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Form ‣
+<span class="menuselection">Settings ‣ Results ‣ Complex Form ‣
 Trigonometric (r(cos θ + i·sin θ))</span>.</p>
 </dd></dl>
 
@@ -791,7 +833,7 @@ Trigonometric (r(cos θ + i·sin θ))</span>.</p>
 <em>r e</em> <sup>uɸ</sup>, where <code class="docutils literal notranslate"><span class="pre">u</span></code> is the selected imaginary-unit symbol
 (<code class="docutils literal notranslate"><span class="pre">i</span></code> or <code class="docutils literal notranslate"><span class="pre">j</span></code>), and ɸ is in radians.</p>
 <p>This corresponds to
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Form ‣
+<span class="menuselection">Settings ‣ Results ‣ Complex Form ‣
 Exponential (reⁱᶿ)</span>.</p>
 </dd></dl>
 
@@ -801,7 +843,7 @@ Exponential (reⁱᶿ)</span>.</p>
 <dd><p>Format the complex number <code class="docutils literal notranslate"><span class="pre">x</span></code> in cis form, shown as <em>r cis(ɸ)</em>. The
 angle ɸ follows the global angle mode.</p>
 <p>This corresponds to
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Form ‣
+<span class="menuselection">Settings ‣ Results ‣ Complex Form ‣
 Cis (r·cis(θ))</span>.</p>
 </dd></dl>
 
@@ -813,7 +855,7 @@ angle ɸ follows the global angle mode.</p>
 <p>This output format is related to phasor input notation: <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">∠</span> <span class="pre">θ</span></code> enters a
 complex number from magnitude <code class="docutils literal notranslate"><span class="pre">r</span></code> and phase <code class="docutils literal notranslate"><span class="pre">θ</span></code>.</p>
 <p>This corresponds to
-<span class="menuselection">Settings ‣ Results ‣ Complex Numbers ‣ Form ‣
+<span class="menuselection">Settings ‣ Results ‣ Complex Form ‣
 Phasor (r∠θ)</span>.</p>
 </dd></dl>
 
@@ -898,7 +940,7 @@ as radians) or explicitly tagged with an angle unit in <code class="docutils lit
   <tr>
     <td width="50%">
       <a class="nav-item nav-item-0"
-         href="../contents.html">SpeedCrunch 1.0 documentation</a> &#187; <a class="nav-item nav-item-1"
+         href="../contents.html">SpeedCrunch 1.1 documentation</a> &#187; <a class="nav-item nav-item-1"
              href="index.html">Reference</a>
           
     </td>

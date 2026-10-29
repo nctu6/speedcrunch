@@ -8,27 +8,48 @@
 #include "gui/syntaxhighlighter.h"
 #include "gui/uiconfig.h"
 #include "core/colorscheme.h"
+#include "core/constants.h"
 #include "core/evaluator.h"
 #include "core/session.h"
 #include "core/settings.h"
 #include "core/unicodechars.h"
 #include "core/mathdsl.h"
+#include "core/numberformatter.h"
+#include "gui/displayformatutils.h"
+#include "numberformatcases.h"
+#include "fractionalgroupingcases.h"
+#include "numbergroupingedgecases.h"
+#include "malformednumbergroupingcases.h"
+#include "decimalinputcases.h"
+#include "interpretednumbercases.h"
+#include "gui/resultdisplay.h"
 #include "core/units.h"
 #include "core/userfunction.h"
 #include "core/userunit.h"
 #include "uitestfixture.h"
+#include "editorgeometrytesthelpers.h"
 
 #include <QApplication>
+#include <QAbstractItemDelegate>
+#include <QClipboard>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPointer>
 #include <QInputMethodEvent>
+#include <QFontDatabase>
+#include <QHeaderView>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QKeyEvent>
+#include <QMimeData>
 #include <QPalette>
 #include <QPainter>
 #include <QPushButton>
 #include <QScrollBar>
 #include <QScreen>
+#include <QScopeGuard>
 #include <QSignalSpy>
+#include <QStyleOptionViewItem>
 #include <QTest>
 #include <QTextLayout>
 #include <QElapsedTimer>
@@ -55,6 +76,20 @@ class TestEditorUi : public QObject {
 
 private slots:
     void init() { UiTestFixture::resetSettings(); }
+    void raw_input_preserves_text_data();
+    void raw_input_preserves_text();
+    void history_recall_respects_input_adjustments_data();
+    void history_recall_respects_input_adjustments();
+    void raw_input_keeps_character_navigation_and_deletion();
+    void raw_input_preserves_calculator_commands();
+    void raw_input_switch_preserves_document_and_restores_adjustments();
+    void raw_input_preserves_visible_digit_grouping();
+    void raw_input_preserves_tab_completion_data();
+    void raw_input_preserves_tab_completion();
+    void automatic_input_adjustments_survive_settings_reload();
+    void preserves_comment_text_during_input_data();
+    void preserves_comment_text_during_input();
+    void normalizes_only_expression_text_when_replacing_comment_selection();
     void blocks_consecutive_plus();
     void respects_keyboard_layout_for_equals_and_plus_data();
     void respects_keyboard_layout_for_equals_and_plus();
@@ -67,6 +102,35 @@ private slots:
     void allows_special_function_symbols_as_leading_chars();
     void allows_list_start_after_operators();
     void highlights_list_braces_as_parentheses();
+    void input_digit_grouping_formats_only_integer_digits_data();
+    void input_digit_grouping_formats_only_integer_digits();
+    void input_digit_grouping_preserves_typing_selection_and_undo();
+    void input_digit_grouping_survives_settings_reload();
+    void input_digit_grouping_follows_number_format_data();
+    void input_digit_grouping_follows_number_format();
+    void number_separators_keep_value_when_typed_or_pasted();
+    void input_preserves_typed_and_pasted_number_separators();
+    void validated_number_format_examples_data();
+    void validated_number_format_examples();
+    void ambiguous_fractional_grouping_prefers_ungrouped_data();
+    void ambiguous_fractional_grouping_prefers_ungrouped();
+    void number_grouping_edge_cases_data();
+    void number_grouping_edge_cases();
+    void malformed_number_grouping_all_formats_data();
+    void malformed_number_grouping_all_formats();
+    void decimal_input_without_display_grouping_data();
+    void decimal_input_without_display_grouping();
+    void decimal_input_all_number_formats_data();
+    void decimal_input_all_number_formats();
+    void number_input_interpreted_expressions_all_formats_data();
+    void number_input_interpreted_expressions_all_formats();
+    void input_digit_grouping_paints_separator_glyphs_data();
+    void input_digit_grouping_paints_separator_glyphs();
+    void typing_hex_separators_preserves_number_data();
+    void typing_hex_separators_preserves_number();
+    void spaced_hex_decode_live_preview();
+    void manual_grouping_keeps_punctuation_data();
+    void manual_grouping_keeps_punctuation();
     void auto_ans_rewrite_helper_handles_tilde_and_factorial();
     void blocks_operator_right_after_open_square_bracket();
     void inserts_value_unit_space_brackets_after_number_or_symbol();
@@ -87,6 +151,24 @@ private slots:
     void backspace_removes_typed_operator_after_unit();
     void editing_keys_bypass_typing_restrictions_data();
     void editing_keys_bypass_typing_restrictions();
+    void undo_redo_shortcuts_preserve_expression_data();
+    void undo_redo_shortcuts_preserve_expression();
+    void typing_undoes_one_key_at_a_time_data();
+    void typing_undoes_one_key_at_a_time();
+    void non_printable_key_payloads_do_not_replace_selection();
+    void clipboard_shortcuts_do_not_insert_key_payloads_data();
+    void clipboard_shortcuts_do_not_insert_key_payloads();
+    void copy_shortcut_preserves_editor_state_data();
+    void copy_shortcut_preserves_editor_state();
+    void highlight_refresh_preserves_text_and_selection_without_edit_signals();
+    void primary_theme_changes_preserve_document_highlighting_data();
+    void primary_theme_changes_preserve_document_highlighting();
+    void highlight_refresh_updates_document_once_data();
+    void highlight_refresh_updates_document_once();
+    void editor_text_line_is_vertically_centered_data();
+    void editor_text_line_is_vertically_centered();
+    void unchanged_primary_theme_avoids_editor_style_refresh_data();
+    void unchanged_primary_theme_avoids_editor_style_refresh();
     void treats_spaced_question_comment_as_atomic_navigation_and_edit_token();
     void treats_spaced_equal_as_atomic_navigation_and_edit_token();
     void treats_leading_question_comment_as_atomic_navigation_and_edit_token();
@@ -134,14 +216,16 @@ private slots:
     void completes_arc_units_in_unit_context();
     void tooltip_does_not_duplicate_degree_symbol_for_explicit_angle_conversion();
     void tooltip_does_not_append_angle_mode_symbol_after_explicit_arcsecond_unit();
-    void tooltip_compacts_bracketed_arcminute_and_arcsecond_expression_units();
+    void tooltip_formats_arcminute_and_arcsecond_results_without_expression();
     void tooltip_rewrites_composite_canonical_angle_symbols_to_aliases();
     void tooltip_shows_radian_suffix_for_negative_sexagesimal_literal();
     void tooltip_trig_output_does_not_append_angle_mode_suffix();
-    void tooltip_shows_interpreted_expression_for_non_trig_sexagesimal_expression();
-    void tooltip_shows_simplified_line_for_repeated_trig_with_degree_sign();
-    void tooltip_shows_simplified_line_for_mixed_revolution_aliases();
-    void tooltip_uses_cross_for_literal_number_products_in_simplified_line();
+    void tooltip_shows_only_result_for_non_trig_sexagesimal_expression();
+    void tooltip_shows_only_result_for_repeated_trig_with_degree_sign();
+    void tooltip_shows_only_result_for_mixed_revolution_aliases();
+    void tooltip_shows_only_result_for_literal_number_products();
+    void tooltip_shows_only_result_data();
+    void tooltip_shows_only_result();
     void tooltip_keeps_quantsp_before_degree_celsius();
     void tooltip_handles_affine_temperature_units_without_arrow_and_with_conversion();
     void tooltip_shows_selection_result_when_selecting_with_shift_arrows();
@@ -151,6 +235,11 @@ private slots:
     void tooltip_does_not_refresh_current_result_on_mouse_caret_reposition();
     void tooltip_refreshes_current_result_on_char_deletion();
     void enter_evaluates_when_completion_popup_has_no_explicit_interaction();
+    void completion_popup_enter_respects_accept_with_enter_data();
+    void completion_popup_enter_respects_accept_with_enter();
+    void enter_accepts_completion_for_names_and_units_data();
+    void enter_accepts_completion_for_names_and_units();
+    void enter_evaluates_without_completion_when_accept_with_enter_is_enabled();
     void completion_popup_arrow_keys_change_selection();
     void completion_popup_tab_accepts_selected_item();
     void completion_popup_closes_when_clicking_elsewhere();
@@ -176,7 +265,15 @@ private slots:
     void completion_popups_configure_editor_anchor();
     void completion_popup_compositor_geometry_data();
     void completion_popup_compositor_geometry();
-    void constant_completion_pages_follow_popup_resize();
+    void constant_search_filters_without_editing_expression();
+    void constant_search_inserts_selected_result_data();
+    void constant_search_inserts_selected_result();
+    void constant_search_closes_without_stealing_outside_focus();
+    void constant_search_layout_follows_popup_resize();
+    void constant_search_inline_units_preserve_full_insertion_data();
+    void constant_search_inline_units_preserve_full_insertion();
+    void constant_search_renders_units_in_secondary_shade_data();
+    void constant_search_renders_units_in_secondary_shade();
     void constant_completion_popup_follows_wrapped_editor_cursor();
     void completion_popup_uses_configured_surface_colors();
     void constant_completion_popup_uses_configured_surface_colors();
@@ -187,6 +284,11 @@ private slots:
     void wrap_selection_method_wraps_whole_expression_without_selection();
     void matching_parentheses_use_parens_and_generated_foreground_colors();
     void keeps_wrapped_cursor_line_visible_at_height_cap();
+    void rewrites_operators_in_scrolled_expression_data();
+    void rewrites_operators_in_scrolled_expression();
+    void classic_editor_keeps_wrapped_input_visible_and_preserves_undo();
+    void classic_completion_popups_follow_text_inset_data();
+    void classic_completion_popups_follow_text_inset();
     void editor_height_adds_only_one_line_height_per_visible_line();
     void editor_keeps_unit_descenders_inside_viewport();
     void adding_second_wrapped_character_keeps_first_line_visible();
@@ -194,6 +296,9 @@ private slots:
     void editor_fill_color_is_15_percent_darker_for_light_background_role();
     void themed_cursor_has_only_two_states_at_display_scale_data();
     void themed_cursor_has_only_two_states_at_display_scale();
+    void non_blinking_cursor_stays_visible_data();
+    void non_blinking_cursor_stays_visible();
+    void cursor_blinking_survives_settings_reload();
     void cursor_free_painting_preserves_text_and_selections_data();
     void cursor_free_painting_preserves_text_and_selections();
 };
@@ -872,6 +977,555 @@ void TestEditorUi::auto_inserts_space_before_question_comment_only_with_non_spac
     QCOMPARE(editor.document()->toRawText(), QStringLiteral("2+2 ? "));
 }
 
+void TestEditorUi::typing_hex_separators_preserves_number_data()
+{
+    QTest::addColumn<QString>("expression");
+    QTest::addColumn<QString>("expected");
+    QTest::newRow("spaces") << QStringLiteral("0xffef ffff ffff ffff")
+        << QStringLiteral("18442240474082181119");
+    QTest::newRow("commas") << QStringLiteral("0xffef,ffff,ffff,ffff")
+        << QStringLiteral("18442240474082181119");
+    QTest::newRow("uppercase") << QStringLiteral("0XFFEF,FFFF,FFFF,FFFF")
+        << QStringLiteral("18442240474082181119");
+    QTest::newRow("fraction") << QStringLiteral("0xf.a") << QStringLiteral("15.625");
+    QTest::newRow("alternate-prefix") << QStringLiteral("#F.A") << QStringLiteral("15.625");
+    QTest::newRow("after-operator") << QStringLiteral("1 + 0xf.a") << QStringLiteral("16.625");
+}
+
+void TestEditorUi::typing_hex_separators_preserves_number()
+{
+    QFETCH(QString, expression);
+    QFETCH(QString, expected);
+    Settings* settings = Settings::instance();
+    settings->automaticInputAdjustments = true;
+    Session session;
+    for (const auto style : {Settings::NumberFormatThreeDigitSpaceDot,
+                             Settings::NumberFormatThreeDigitCommaDot,
+                             Settings::NumberFormatThreeDigitDotComma}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        Editor editor;
+        editor.setSession(&session);
+        editor.setAutoCompletionEnabled(false);
+        editor.setAutoCalcEnabled(false);
+        QTest::keyClicks(&editor, expression);
+        QCOMPARE(editor.text(), expression);
+        session.evaluator()->setExpression(editor.text());
+        const Quantity result = session.evaluator()->evalNoAssign();
+        QVERIFY2(session.evaluator()->error().isEmpty(), qPrintable(session.evaluator()->error()));
+        QCOMPARE(DMath::format(result, Quantity::Format::Fixed()), expected);
+    }
+}
+
+void TestEditorUi::number_separators_keep_value_when_typed_or_pasted()
+{
+    class PasteEditor : public Editor {
+    public:
+        using Editor::insertFromMimeData;
+    };
+    Settings* settings = Settings::instance();
+    settings->automaticInputAdjustments = true;
+    Session session;
+    for (const auto style : {Settings::NumberFormatNoGroupingDot,
+                             Settings::NumberFormatNoGroupingComma,
+                             Settings::NumberFormatSIDot,
+                             Settings::NumberFormatSIComma,
+                             Settings::NumberFormatThreeDigitSpaceDot,
+                             Settings::NumberFormatThreeDigitSpaceComma,
+                             Settings::NumberFormatThreeDigitUnderscoreDot,
+                             Settings::NumberFormatThreeDigitUnderscoreDotFraction,
+                             Settings::NumberFormatThreeDigitUnderscoreComma,
+                             Settings::NumberFormatThreeDigitUnderscoreCommaFraction,
+                             Settings::NumberFormatThreeDigitCommaDot,
+                             Settings::NumberFormatThreeDigitCommaDotFraction,
+                             Settings::NumberFormatIndianCommaDot,
+                             Settings::NumberFormatThreeDigitDotComma,
+                             Settings::NumberFormatThreeDigitDotCommaFraction}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        const QString grouping = settings->digitGroupingSeparator();
+        const bool commaGroups = settings->decimalSeparator() == '.';
+        const bool dotGroups = settings->decimalSeparator() == ',';
+        const struct {
+            const char* expression;
+            const char* expected;
+        } cases[] = {
+            {"1,000*2", commaGroups ? "2000" : "2"},
+            {"1,234", commaGroups ? "1234" : "1.234"},
+            {"1.234", dotGroups ? "1234" : "1.234"},
+            {"1,234e2", commaGroups ? "123400" : "123.4"},
+            {"1.234e2", dotGroups ? "123400" : "123.4"},
+            {"1,000.0*2", style == Settings::NumberFormatThreeDigitDotCommaFraction ? "2" : "2000"},
+            {"1.000,23", style == Settings::NumberFormatThreeDigitCommaDotFraction ? "1.00023" : "1000.23"},
+            {"1,000.23", style == Settings::NumberFormatThreeDigitDotCommaFraction ? "1.00023" : "1000.23"},
+            {"1.234.567,12345", "1234567.12345"},
+            {"1,234,567.12345", "1234567.12345"},
+            {"1,23", "1.23"},
+            {"1.23", "1.23"}
+        };
+        for (const auto& item : cases) {
+            for (bool paste : {false, true}) {
+                PasteEditor editor;
+                editor.setSession(&session);
+                editor.setAutoCompletionEnabled(false);
+                editor.setAutoCalcEnabled(false);
+                if (paste) {
+                    QMimeData mime;
+                    mime.setText(QString::fromLatin1(item.expression));
+                    editor.insertFromMimeData(&mime);
+                } else {
+                    QTest::keyClicks(&editor, item.expression);
+                }
+                session.evaluator()->setExpression(editor.text());
+                const Quantity result = session.evaluator()->evalNoAssign();
+                QVERIFY2(session.evaluator()->error().isEmpty(), qPrintable(session.evaluator()->error()));
+                QCOMPARE(DMath::format(result, Quantity::Format::Fixed()),
+                         QString::fromLatin1(item.expected));
+                const QString source = QString::fromLatin1(item.expression);
+                const QChar decimal(settings->decimalSeparator());
+                if (!paste && (commaGroups || dotGroups)
+                    && source.contains(grouping) && !source.contains(decimal)
+                    && QString::fromLatin1(item.expected) != QStringLiteral("1.23")) {
+                    editor.rehighlight();
+                    for (const auto& range : editor.document()->firstBlock().layout()->formats()) {
+                        QVERIFY2(!range.format.hasProperty(SyntaxHighlighter::InputRadixReplacement),
+                                 "A grouping mark must keep its appearance, including before an exponent");
+                    }
+                }
+            }
+        }
+    }
+}
+
+void TestEditorUi::input_preserves_typed_and_pasted_number_separators()
+{
+    class PasteEditor : public Editor {
+    public:
+        using Editor::insertFromMimeData;
+    };
+    Settings* settings = Settings::instance();
+    for (const auto style : {Settings::NumberFormatNoGroupingDot,
+                             Settings::NumberFormatNoGroupingComma,
+                             Settings::NumberFormatThreeDigitCommaDot,
+                             Settings::NumberFormatThreeDigitDotComma}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        for (bool adjustments : {false, true}) {
+            settings->automaticInputAdjustments = adjustments;
+            for (bool grouping : {false, true}) {
+                settings->inputDigitGrouping = grouping;
+                for (const QString& number : {QStringLiteral("1,000"), QStringLiteral("1.000"),
+                                              QStringLiteral("1,234e2"), QStringLiteral("1.234e2"),
+                                              QStringLiteral("1.000,23"), QStringLiteral("1,000.23")}) {
+                    PasteEditor editor;
+                    editor.setAutoCompletionEnabled(false);
+                    editor.setAutoCalcEnabled(false);
+                    QString prefix;
+                    for (QChar ch : number) {
+                        QTest::keyClicks(&editor, QString(ch));
+                        prefix += ch;
+                        editor.rehighlight();
+                        QCOMPARE(editor.text(), prefix);
+                        for (const auto& range : editor.document()->firstBlock().layout()->formats())
+                            QVERIFY(!range.format.hasProperty(SyntaxHighlighter::InputRadixReplacement));
+                    }
+                    editor.clear();
+                    QMimeData mime;
+                    mime.setText(number);
+                    editor.insertFromMimeData(&mime);
+                    QCOMPARE(editor.text(), number);
+                    editor.rehighlight();
+                    for (const auto& range : editor.document()->firstBlock().layout()->formats())
+                        QVERIFY(!range.format.hasProperty(SyntaxHighlighter::InputRadixReplacement));
+                }
+                if (adjustments) {
+                    for (QChar separator : {QLatin1Char('.'), QLatin1Char(',')}) {
+                        PasteEditor editor;
+                        editor.setAutoCompletionEnabled(false);
+                        editor.setAutoCalcEnabled(false);
+                        QTest::keyClicks(&editor, QString(separator));
+                        QCOMPARE(editor.text(), QStringLiteral("0") + separator);
+                        editor.setText(QStringLiteral("1"));
+                        editor.setCursorPosition(1);
+                        QKeyEvent event(QEvent::KeyPress, Qt::Key_Period, Qt::KeypadModifier,
+                                        QString(separator));
+                        QApplication::sendEvent(&editor, &event);
+                        QCOMPARE(editor.text(), QStringLiteral("1") + separator);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void TestEditorUi::validated_number_format_examples_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expectedValue");
+    QTest::addColumn<QString>("expectedOutput");
+    QTest::addColumn<bool>("paste");
+    for (const auto& format : NumberFormatCases::formats) {
+        for (size_t i = 0; i <= NumberFormatCases::inputs.size(); ++i) {
+            const bool example = i == NumberFormatCases::inputs.size();
+            const QString input = QString::fromUtf8(example ? format.example : NumberFormatCases::inputs.at(i));
+            const QString value = QString::fromLatin1(example ? "1234567.12345" : NumberFormatCases::numericValue(format, i));
+            const QString output = QString::fromUtf8(example ? format.example : format.outputs.at(i));
+            for (bool paste : {false, true}) {
+                const QByteArray label = QStringLiteral("%1/%2/%3")
+                    .arg(QString::fromUtf8(format.example), input, paste ? QStringLiteral("paste") : QStringLiteral("type"))
+                    .toUtf8();
+                QTest::newRow(label.constData()) << int(format.style) << input << value << output << paste;
+            }
+        }
+    }
+}
+
+void TestEditorUi::validated_number_format_examples()
+{
+    QFETCH(int, style);
+    QFETCH(QString, input);
+    QFETCH(QString, expectedValue);
+    QFETCH(QString, expectedOutput);
+    QFETCH(bool, paste);
+    class PasteEditor : public Editor {
+    public:
+        using Editor::insertFromMimeData;
+    };
+    Settings* settings = Settings::instance();
+    settings->numberFormatStyle = static_cast<Settings::NumberFormatStyle>(style);
+    settings->applyNumberFormatStyle();
+    settings->automaticInputAdjustments = true;
+    Session session;
+    PasteEditor editor;
+    editor.setSession(&session);
+    editor.setAutoCompletionEnabled(false);
+    editor.setAutoCalcEnabled(false);
+    if (paste) {
+        QMimeData mime;
+        mime.setText(input);
+        editor.insertFromMimeData(&mime);
+    } else {
+        QString keys = input;
+        keys.replace(MathDsl::MulCrossOp, QLatin1Char('*'));
+        QTest::keyClicks(&editor, keys);
+    }
+    if (!input.contains(MathDsl::MulCrossOp))
+        QCOMPARE(editor.text(), input);
+    session.evaluator()->setExpression(editor.text());
+    const Quantity value = session.evaluator()->evalNoAssign();
+    QVERIFY2(session.evaluator()->error().isEmpty(), qPrintable(session.evaluator()->error()));
+    QCOMPARE(DMath::format(value, Quantity::Format::Fixed()), expectedValue);
+    QCOMPARE(DisplayFormatUtils::applyDigitGroupingForDisplay(
+                 NumberFormatter::format(value, 'f', -1, false, ComplexForm::Rectangular)), expectedOutput);
+    editor.rehighlight();
+    for (const auto& range : editor.document()->firstBlock().layout()->formats())
+        QVERIFY(!range.format.hasProperty(SyntaxHighlighter::InputRadixReplacement));
+}
+
+void TestEditorUi::ambiguous_fractional_grouping_prefers_ungrouped_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expectedValue");
+    QTest::addColumn<QString>("expectedOutput");
+    QTest::addColumn<bool>("paste");
+    for (const auto& item : FractionalGroupingCases::cases) {
+        for (bool paste : {false, true}) {
+            const QByteArray label = QStringLiteral("%1/%2/%3")
+                .arg(int(item.style)).arg(QString::fromUtf8(item.input),
+                    paste ? QStringLiteral("paste") : QStringLiteral("type")).toUtf8();
+            QTest::newRow(label.constData()) << int(item.style) << QString::fromUtf8(item.input)
+                << QString::fromLatin1(item.value) << QString::fromUtf8(item.output) << paste;
+        }
+    }
+}
+
+void TestEditorUi::ambiguous_fractional_grouping_prefers_ungrouped()
+{
+    validated_number_format_examples();
+}
+
+void TestEditorUi::number_grouping_edge_cases_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expectedValue");
+    QTest::addColumn<bool>("shouldFail");
+    QTest::addColumn<bool>("paste");
+    for (auto style : {Settings::NumberFormatNoGroupingDot, Settings::NumberFormatNoGroupingComma}) {
+        const auto& cases = style == Settings::NumberFormatNoGroupingDot
+            ? NumberGroupingEdgeCases::dotCases : NumberGroupingEdgeCases::commaCases;
+        for (const auto& item : cases) {
+            for (bool paste : {false, true}) {
+                const QByteArray label = QStringLiteral("%1/%2/%3").arg(int(style))
+                    .arg(QString::fromLatin1(item.input), paste ? QStringLiteral("paste") : QStringLiteral("type")).toUtf8();
+                QTest::newRow(label.constData()) << int(style) << QString::fromLatin1(item.input)
+                    << QString::fromLatin1(item.value ? item.value : "") << !item.value << paste;
+            }
+        }
+    }
+}
+
+void TestEditorUi::number_grouping_edge_cases()
+{
+    QFETCH(int, style);
+    QFETCH(QString, input);
+    QFETCH(QString, expectedValue);
+    QFETCH(bool, shouldFail);
+    QFETCH(bool, paste);
+    class PasteEditor : public Editor {
+    public:
+        using Editor::insertFromMimeData;
+    };
+    Settings* settings = Settings::instance();
+    settings->numberFormatStyle = static_cast<Settings::NumberFormatStyle>(style);
+    settings->applyNumberFormatStyle();
+    settings->automaticInputAdjustments = true;
+    Session session;
+    PasteEditor editor;
+    editor.setSession(&session);
+    editor.setAutoCompletionEnabled(false);
+    editor.setAutoCalcEnabled(false);
+    if (paste) {
+        QMimeData mime;
+        mime.setText(input);
+        editor.insertFromMimeData(&mime);
+    } else {
+        QTest::keyClicks(&editor, input);
+    }
+    QCOMPARE(editor.text(), input);
+    session.evaluator()->setExpression(editor.text());
+    const Quantity value = session.evaluator()->evalNoAssign();
+    QCOMPARE(!session.evaluator()->error().isEmpty(), shouldFail);
+    if (!shouldFail)
+        QCOMPARE(DMath::format(value, Quantity::Format::Fixed()), expectedValue);
+}
+
+void TestEditorUi::number_input_interpreted_expressions_all_formats_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("interpreted");
+    QTest::addColumn<QString>("displayed");
+    QTest::addColumn<bool>("paste");
+    for (size_t index = 0; index < NumberFormatCases::formats.size(); ++index) {
+        const auto& format = NumberFormatCases::formats.at(index);
+        for (const auto& item : InterpretedNumberCases::forFormat(index)) {
+            for (bool paste : {false, true}) {
+                const QByteArray label = QStringLiteral("%1/%2/%3").arg(int(format.style))
+                    .arg(item.input, paste ? QStringLiteral("paste") : QStringLiteral("type")).toUtf8();
+                QTest::newRow(label.constData()) << int(format.style) << item.input
+                    << item.interpreted << item.displayed << paste;
+            }
+        }
+    }
+}
+
+void TestEditorUi::number_input_interpreted_expressions_all_formats()
+{
+    QFETCH(int, style);
+    QFETCH(QString, input);
+    QFETCH(QString, interpreted);
+    QFETCH(QString, displayed);
+    QFETCH(bool, paste);
+    class PasteEditor : public Editor {
+    public:
+        using Editor::insertFromMimeData;
+    };
+    Settings* settings = Settings::instance();
+    settings->numberFormatStyle = static_cast<Settings::NumberFormatStyle>(style);
+    settings->applyNumberFormatStyle();
+    settings->automaticInputAdjustments = true;
+    Session session;
+    PasteEditor editor;
+    editor.setSession(&session);
+    editor.setAutoCompletionEnabled(false);
+    editor.setAutoCalcEnabled(false);
+    if (paste) {
+        QMimeData mime;
+        mime.setText(input);
+        editor.insertFromMimeData(&mime);
+    } else {
+        QTest::keyClicks(&editor, input);
+    }
+    QString expectedInput = input;
+    expectedInput.replace(QLatin1String("*"), paste ? QString::fromUtf8("×") : QString::fromUtf8(" × "));
+    QCOMPARE(editor.text(), expectedInput);
+    Evaluator* evaluator = session.evaluator();
+    evaluator->setExpression(editor.text());
+    Quantity value = evaluator->evalNoAssign();
+    QVERIFY2(evaluator->error().isEmpty(), qPrintable(evaluator->error()));
+    QCOMPARE(evaluator->interpretedExpression(), interpreted);
+    ResultDisplay display;
+    display.setSession(&session);
+    display.append(editor.text(), value, evaluator->interpretedExpression());
+    QCOMPARE(display.document()->firstBlock().text(), displayed);
+}
+
+void TestEditorUi::malformed_number_grouping_all_formats_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expectedValue");
+    QTest::addColumn<bool>("shouldFail");
+    QTest::addColumn<bool>("paste");
+    for (const auto& format : NumberFormatCases::formats) {
+        const auto addCases = [&](const auto& cases) {
+            for (const char* input : cases) {
+                for (bool paste : {false, true}) {
+                    const QByteArray label = QStringLiteral("%1/%2/%3").arg(int(format.style))
+                        .arg(QString::fromLatin1(input),
+                             paste ? QStringLiteral("paste") : QStringLiteral("type")).toUtf8();
+                    QTest::newRow(label.constData()) << int(format.style) << QString::fromLatin1(input)
+                        << QString() << true << paste;
+                }
+            }
+        };
+        addCases(MalformedNumberGroupingCases::decimal);
+        addCases(MalformedNumberGroupingCases::nondecimal);
+    }
+}
+
+void TestEditorUi::malformed_number_grouping_all_formats()
+{
+    number_grouping_edge_cases();
+}
+
+void TestEditorUi::decimal_input_without_display_grouping_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expectedValue");
+    QTest::addColumn<QString>("expectedOutput");
+    QTest::addColumn<bool>("paste");
+    for (const auto& item : DecimalInputCases::cases) {
+        for (bool paste : {false, true}) {
+            const QByteArray label = QStringLiteral("%1/%2").arg(QString::fromLatin1(item.input),
+                paste ? QStringLiteral("paste") : QStringLiteral("type")).toUtf8();
+            const QString value = QString::fromLatin1(item.value);
+            QTest::newRow(label.constData()) << int(Settings::NumberFormatNoGroupingDot)
+                << QString::fromLatin1(item.input) << value << value << paste;
+        }
+    }
+}
+
+void TestEditorUi::decimal_input_without_display_grouping()
+{
+    validated_number_format_examples();
+}
+
+void TestEditorUi::decimal_input_all_number_formats_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expectedValue");
+    QTest::addColumn<QString>("expectedOutput");
+    QTest::addColumn<bool>("paste");
+    for (const auto& format : DecimalInputCases::formats) {
+        for (size_t i = 0; i < DecimalInputCases::cases.size(); ++i) {
+            const auto& item = DecimalInputCases::cases.at(i);
+            for (bool paste : {false, true}) {
+                const QByteArray label = QStringLiteral("%1/%2/%3")
+                    .arg(QString::fromUtf8(format.example), QString::fromLatin1(item.input),
+                         paste ? QStringLiteral("paste") : QStringLiteral("type")).toUtf8();
+                QTest::newRow(label.constData()) << int(format.style) << QString::fromLatin1(item.input)
+                    << QString::fromLatin1(item.value) << QString::fromUtf8(format.outputs.at(i)) << paste;
+            }
+        }
+    }
+}
+
+void TestEditorUi::decimal_input_all_number_formats()
+{
+    validated_number_format_examples();
+}
+
+void TestEditorUi::spaced_hex_decode_live_preview()
+{
+    class PasteEditor : public Editor {
+    public:
+        using Editor::insertFromMimeData;
+    };
+
+    Settings* settings = Settings::instance();
+    settings->automaticInputAdjustments = true;
+    Session session;
+    for (const auto style : {Settings::NumberFormatThreeDigitSpaceDot,
+                             Settings::NumberFormatThreeDigitCommaDot,
+                             Settings::NumberFormatThreeDigitDotComma}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        for (const bool paste : {false, true}) {
+            PasteEditor editor;
+            editor.setSession(&session);
+            editor.setAutoCalcEnabled(true);
+            editor.setAutoCompletionEnabled(true);
+            editor.setText(QStringLiteral("ieee754_double_decode()"));
+            editor.setCursorPosition(editor.text().size() - 1);
+            const QString hex = QStringLiteral("0xffef ffff ffff ffff");
+            if (paste) {
+                QMimeData mime;
+                mime.setText(hex);
+                editor.insertFromMimeData(&mime);
+            } else {
+                QTest::keyClicks(&editor, hex);
+            }
+            QCOMPARE(editor.text(), QStringLiteral("ieee754_double_decode(0xffef ffff ffff ffff)"));
+            bool hasPreview = false;
+            Quantity preview;
+            connect(&editor, &Editor::autoCalcQuantityAvailable, &editor, [&](const Quantity& value) {
+                hasPreview = true;
+                preview = value;
+            });
+            editor.refreshAutoCalc();
+            QVERIFY2(hasPreview, qPrintable(session.evaluator()->error()));
+            QCOMPARE(DMath::format(preview, Quantity::Format::Scientific()),
+                     QStringLiteral("-1.79769313486231570815e308"));
+        }
+    }
+}
+
+void TestEditorUi::manual_grouping_keeps_punctuation_data()
+{
+    QTest::addColumn<QString>("input");
+    for (const auto& input : {QStringLiteral("0xffef,ffff,ffff,ffff"),
+                              QStringLiteral("0xffef.ffff.ffff.ffff"),
+                              QStringLiteral("1,234,567"),
+                              QStringLiteral("1.234.567"),
+                              QStringLiteral("1,234,567.89"),
+                              QStringLiteral("1.234.567,89"),
+                              QStringLiteral("1,234.56"),
+                              QStringLiteral("1.234,56")}) {
+        QTest::newRow(qPrintable(input)) << input;
+    }
+}
+
+void TestEditorUi::manual_grouping_keeps_punctuation()
+{
+    QFETCH(QString, input);
+    Settings* settings = Settings::instance();
+    settings->inputDigitGrouping = true;
+    for (const auto style : {Settings::NumberFormatNoGroupingDot,
+                             Settings::NumberFormatNoGroupingComma}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        Editor editor;
+        editor.setAutoCalcEnabled(false);
+        editor.setAutoCompletionEnabled(false);
+        editor.setText(input);
+        for (const bool highlighting : {true, false}) {
+            settings->syntaxHighlighting = highlighting;
+            editor.rehighlight();
+            for (const auto& range : editor.document()->firstBlock().layout()->formats()) {
+                QVERIFY2(!range.format.hasProperty(SyntaxHighlighter::InputRadixReplacement),
+                         qPrintable(input));
+            }
+            QCOMPARE(editor.text(), input);
+        }
+    }
+}
+
 void TestEditorUi::inserts_middle_dot_on_space_after_identifier_or_closed_group()
 {
     Settings* settings = Settings::instance();
@@ -1389,6 +2043,514 @@ void TestEditorUi::editing_keys_bypass_typing_restrictions()
     QCOMPARE(editor.document()->toRawText(), expected);
     QCOMPARE(editor.textCursor().position(), expectedPosition);
     QCOMPARE(escapeSpy.count(), key == Qt::Key_Escape ? 1 : 0);
+}
+
+void TestEditorUi::undo_redo_shortcuts_preserve_expression_data()
+{
+    QTest::addColumn<QString>("expression");
+    QTest::addColumn<int>("position");
+    QTest::addColumn<int>("selectionLength");
+    QTest::addColumn<int>("shortcutPosition");
+    QTest::addColumn<QString>("payload");
+
+    const QStringList expressions = {
+        QStringLiteral("123456"), QStringLiteral("12+34"),
+        QStringLiteral("12[m/s]"), QString::fromUtf8("12°34′56″"),
+        QStringLiteral("12 ? comment")
+    };
+    const QStringList payloads = {QString(), QString(QChar(0x1a)), QStringLiteral("z")};
+    const QList<int> shortcutPositions = {3, 3, 5, 4, 7};
+    for (int context = 0; context < expressions.size(); ++context) {
+        for (int payload = 0; payload < payloads.size(); ++payload) {
+            for (int selectionLength : {0, 2}) {
+                const QByteArray name = QStringLiteral("context-%1-payload-%2-selection-%3")
+                    .arg(context).arg(payload).arg(selectionLength).toLatin1();
+                QTest::newRow(name.constData())
+                    << expressions.at(context) << 2 << selectionLength
+                    << shortcutPositions.at(context) << payloads.at(payload);
+            }
+        }
+    }
+}
+
+void TestEditorUi::undo_redo_shortcuts_preserve_expression()
+{
+    QFETCH(QString, expression);
+    QFETCH(int, position);
+    QFETCH(int, selectionLength);
+    QFETCH(int, shortcutPosition);
+    QFETCH(QString, payload);
+
+    const auto undoBindings = QKeySequence::keyBindings(QKeySequence::Undo);
+    const auto redoBindings = QKeySequence::keyBindings(QKeySequence::Redo);
+    QVERIFY(!undoBindings.isEmpty());
+    QVERIFY(!redoBindings.isEmpty());
+    for (const QKeySequence& undoBinding : undoBindings) {
+        for (const QKeySequence& redoBinding : redoBindings) {
+            Editor editor;
+            editor.setAutoCompletionEnabled(false);
+            editor.setText(expression);
+            const QString original = editor.document()->toRawText();
+            QTextCursor cursor = editor.textCursor();
+            cursor.setPosition(position);
+            cursor.setPosition(position + selectionLength, QTextCursor::KeepAnchor);
+            editor.setTextCursor(cursor);
+            QTest::keyClicks(&editor, QStringLiteral("9"));
+            const QString edited = editor.document()->toRawText();
+            QVERIFY(edited != original);
+            editor.setCursorPosition(shortcutPosition);
+
+            // Native shortcuts can carry a control character or printable text.
+            const auto undoKey = undoBinding[0];
+            QKeyEvent undoEvent(QEvent::KeyPress, undoKey.key(), undoKey.keyboardModifiers(), payload);
+            QVERIFY(undoEvent.matches(QKeySequence::Undo));
+            QApplication::sendEvent(&editor, &undoEvent);
+            QCOMPARE(editor.document()->toRawText(), original);
+            QVERIFY(editor.document()->isRedoAvailable());
+
+            // Keep a selection active to catch accidental replacement by shortcut text.
+            cursor = editor.textCursor();
+            cursor.setPosition(0);
+            cursor.setPosition(2, QTextCursor::KeepAnchor);
+            editor.setTextCursor(cursor);
+            const auto redoKey = redoBinding[0];
+            const QString redoPayload = payload.isEmpty() ? QString()
+                : payload.at(0).isPrint() ? QStringLiteral("z") : QString(QChar(0x19));
+            QKeyEvent redoEvent(QEvent::KeyPress, redoKey.key(), redoKey.keyboardModifiers(), redoPayload);
+            QVERIFY(redoEvent.matches(QKeySequence::Redo));
+            QApplication::sendEvent(&editor, &redoEvent);
+            QCOMPARE(editor.document()->toRawText(), edited);
+            QApplication::sendEvent(&editor, &redoEvent);
+            QCOMPARE(editor.document()->toRawText(), edited);
+
+            QApplication::sendEvent(&editor, &undoEvent);
+            QCOMPARE(editor.document()->toRawText(), original);
+            QVERIFY(!editor.document()->isUndoAvailable());
+            QApplication::sendEvent(&editor, &undoEvent);
+            QCOMPARE(editor.document()->toRawText(), original);
+            QVERIFY(editor.document()->isRedoAvailable());
+        }
+    }
+}
+
+void TestEditorUi::typing_undoes_one_key_at_a_time_data()
+{
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<bool>("inputMethod");
+    for (bool inputMethod : {false, true}) {
+        const QByteArray prefix = inputMethod ? "ime-" : "key-";
+        QTest::newRow(QByteArray(prefix + "digits").constData()) << QStringLiteral("12345") << inputMethod;
+        QTest::newRow(QByteArray(prefix + "operators").constData()) << QStringLiteral("12+34") << inputMethod;
+        QTest::newRow(QByteArray(prefix + "units").constData()) << QStringLiteral("12[m/s]") << inputMethod;
+        QTest::newRow(QByteArray(prefix + "degrees").constData()) << QString::fromUtf8("12º34'56\"") << inputMethod;
+        QTest::newRow(QByteArray(prefix + "superscript-rewrite").constData()) << QStringLiteral("12^34") << inputMethod;
+        if (!inputMethod) {
+            QTest::newRow("key-unit-conversion-rewrite") << QStringLiteral("12--") << false;
+            QTest::newRow("key-parenthesis-pair") << QStringLiteral("12+(34") << false;
+        }
+    }
+}
+
+void TestEditorUi::typing_undoes_one_key_at_a_time()
+{
+    QFETCH(QString, input);
+    QFETCH(bool, inputMethod);
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    editor.setText(QString());
+    QStringList states = {editor.document()->toRawText()};
+    for (const QChar ch : input) {
+        if (inputMethod) {
+            QInputMethodEvent event;
+            event.setCommitString(QString(ch));
+            QApplication::sendEvent(&editor, &event);
+        } else if (ch.unicode() < 128) {
+            QTest::keyClicks(&editor, QString(ch));
+        } else {
+            QKeyEvent event(QEvent::KeyPress, Qt::Key_unknown, Qt::NoModifier, QString(ch));
+            QApplication::sendEvent(&editor, &event);
+        }
+        const QString state = editor.document()->toRawText();
+        if (state != states.last())
+            states.append(state);
+    }
+    QVERIFY(states.size() > 2);
+    for (int i = states.size() - 2; i >= 0; --i) {
+        QVERIFY(editor.document()->isUndoAvailable());
+        editor.undo();
+        QCOMPARE(editor.document()->toRawText(), states.at(i));
+    }
+    QVERIFY(!editor.document()->isUndoAvailable());
+    for (int i = 1; i < states.size(); ++i) {
+        QVERIFY(editor.document()->isRedoAvailable());
+        editor.redo();
+        QCOMPARE(editor.document()->toRawText(), states.at(i));
+    }
+    QVERIFY(!editor.document()->isRedoAvailable());
+}
+
+void TestEditorUi::non_printable_key_payloads_do_not_replace_selection()
+{
+    for (ushort code : {0x01, 0x19, 0x1a, 0x7f}) {
+        Editor editor;
+        editor.setText(QStringLiteral("123456"));
+        QTextCursor cursor = editor.textCursor();
+        cursor.setPosition(2);
+        cursor.setPosition(4, QTextCursor::KeepAnchor);
+        editor.setTextCursor(cursor);
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_unknown, Qt::NoModifier, QString(QChar(code)));
+        QApplication::sendEvent(&editor, &event);
+        QCOMPARE(editor.document()->toRawText(), QStringLiteral("123456"));
+        QCOMPARE(editor.textCursor().selectedText(), QStringLiteral("34"));
+        QVERIFY(!editor.document()->isUndoAvailable());
+    }
+}
+
+void TestEditorUi::clipboard_shortcuts_do_not_insert_key_payloads_data()
+{
+    QTest::addColumn<QString>("cutPayload");
+    QTest::addColumn<QString>("pastePayload");
+    QTest::newRow("empty") << QString() << QString();
+    QTest::newRow("control-characters") << QString(QChar(0x18)) << QString(QChar(0x16));
+    QTest::newRow("printable-letters") << QStringLiteral("x") << QStringLiteral("v");
+}
+
+void TestEditorUi::clipboard_shortcuts_do_not_insert_key_payloads()
+{
+    QFETCH(QString, cutPayload);
+    QFETCH(QString, pastePayload);
+    Editor editor;
+    editor.setText(QStringLiteral("123456"));
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(2);
+    cursor.setPosition(4, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    const auto cutKey = QKeySequence(QKeySequence::Cut)[0];
+    QKeyEvent cutEvent(QEvent::KeyPress, cutKey.key(), cutKey.keyboardModifiers(), cutPayload);
+    QApplication::sendEvent(&editor, &cutEvent);
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("1256"));
+    QCOMPARE(QApplication::clipboard()->text(), QStringLiteral("34"));
+
+    const auto pasteKey = QKeySequence(QKeySequence::Paste)[0];
+    QKeyEvent pasteEvent(QEvent::KeyPress, pasteKey.key(), pasteKey.keyboardModifiers(), pastePayload);
+    QApplication::sendEvent(&editor, &pasteEvent);
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("123456"));
+    editor.undo();
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("1256"));
+    editor.undo();
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("123456"));
+}
+
+void TestEditorUi::copy_shortcut_preserves_editor_state_data()
+{
+    QTest::addColumn<QString>("payload");
+    QTest::addColumn<bool>("selectText");
+    QTest::newRow("empty-selection") << QString() << true;
+    QTest::newRow("control-character-selection") << QString(QChar(0x03)) << true;
+    QTest::newRow("printable-letter-selection") << QStringLiteral("c") << true;
+    QTest::newRow("empty-no-selection") << QString() << false;
+    QTest::newRow("control-character-no-selection") << QString(QChar(0x03)) << false;
+    QTest::newRow("printable-letter-no-selection") << QStringLiteral("c") << false;
+}
+
+void TestEditorUi::copy_shortcut_preserves_editor_state()
+{
+    QFETCH(QString, payload);
+    QFETCH(bool, selectText);
+    Editor editor;
+    // MainWindow routes this signal to the widget whose selection is copied.
+    // Use the editor as that widget here to exercise the clipboard operation.
+    connect(&editor, &Editor::copySequencePressed, &editor, &QPlainTextEdit::copy);
+    QSignalSpy copySpy(&editor, &Editor::copySequencePressed);
+    QVERIFY(copySpy.isValid());
+
+    editor.setText(QStringLiteral("123456"));
+    editor.setCursorPosition(6);
+    QTest::keyClicks(&editor, "78");
+    editor.undo();
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("1234567"));
+    QVERIFY(editor.document()->isUndoAvailable());
+    QVERIFY(editor.document()->isRedoAvailable());
+
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(2);
+    if (selectText)
+        cursor.setPosition(4, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    QApplication::clipboard()->setText(QStringLiteral("unchanged"));
+
+    const auto copyKey = QKeySequence(QKeySequence::Copy)[0];
+    QKeyEvent copyEvent(QEvent::KeyPress, copyKey.key(), copyKey.keyboardModifiers(), payload);
+    copyEvent.ignore();
+    QApplication::sendEvent(&editor, &copyEvent);
+
+    QVERIFY(copyEvent.isAccepted());
+    QCOMPARE(copySpy.count(), 1);
+    QCOMPARE(QApplication::clipboard()->text(), selectText ? QStringLiteral("34") : QStringLiteral("unchanged"));
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("1234567"));
+    QCOMPARE(editor.textCursor().position(), cursor.position());
+    QCOMPARE(editor.textCursor().anchor(), cursor.anchor());
+    QVERIFY(editor.document()->isUndoAvailable());
+    QVERIFY(editor.document()->isRedoAvailable());
+    editor.redo();
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("12345678"));
+    editor.undo();
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("1234567"));
+    editor.undo();
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("123456"));
+}
+
+void TestEditorUi::highlight_refresh_preserves_text_and_selection_without_edit_signals()
+{
+    Editor editor;
+    editor.setText(QStringLiteral("123456"));
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(2);
+    cursor.setPosition(4, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    QSignalSpy textChangedSpy(&editor, &Editor::textChanged);
+    QVERIFY(textChangedSpy.isValid());
+
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#334455")), true);
+    editor.rehighlight();
+
+    QCOMPARE(textChangedSpy.count(), 0);
+    editor.setSession(nullptr);
+    QCOMPARE(textChangedSpy.count(), 0);
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("123456"));
+    QCOMPARE(editor.textCursor().position(), cursor.position());
+    QCOMPARE(editor.textCursor().anchor(), cursor.anchor());
+    QVERIFY(!editor.document()->isUndoAvailable());
+}
+
+void TestEditorUi::primary_theme_changes_preserve_document_highlighting_data()
+{
+    QTest::addColumn<bool>("classic");
+    QTest::newRow("modern") << false;
+    QTest::newRow("classic") << true;
+}
+
+void TestEditorUi::primary_theme_changes_preserve_document_highlighting()
+{
+    QFETCH(bool, classic);
+    Settings* settings = Settings::instance();
+    settings->editorDisplayStyle = classic
+        ? Settings::EditorDisplayClassic : Settings::EditorDisplayModern;
+    settings->inputDigitGrouping = true;
+    Editor editor;
+    editor.setAutoCalcEnabled(false);
+    editor.setAutoCompletionEnabled(false);
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#334455")), false);
+    editor.insertPlainText(QStringLiteral("123456 + sin(2)"));
+    editor.rehighlight();
+    QCoreApplication::processEvents();
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(2);
+    cursor.setPosition(8, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    const auto formats = editor.document()->firstBlock().layout()->formats();
+    QVERIFY(!formats.isEmpty());
+    const int revision = editor.document()->revision();
+    QSignalSpy documentChanged(editor.document(), &QTextDocument::contentsChanged);
+    QSignalSpy textChanged(&editor, &Editor::textChanged);
+
+    const QString inactiveStyle = editor.styleSheet();
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#334455")), true);
+    QVERIFY(editor.styleSheet() != inactiveStyle);
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#556677")), true);
+    QCOMPARE(editor.cursorColor(), QColor(QStringLiteral("#556677")));
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#556677")), false);
+    QPalette viewportPalette = editor.viewport()->palette();
+    viewportPalette.setColor(QPalette::Base, Qt::transparent);
+    editor.viewport()->setPalette(viewportPalette);
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#556677")), false);
+    QCOMPARE(editor.viewport()->palette().color(QPalette::Base),
+             editor.palette().color(QPalette::Base));
+
+    QCOMPARE(documentChanged.count(), 0);
+    QCOMPARE(textChanged.count(), 0);
+    QCOMPARE(editor.document()->revision(), revision);
+    QCOMPARE(editor.document()->firstBlock().layout()->formats(), formats);
+    QCOMPARE(editor.textCursor().position(), cursor.position());
+    QCOMPARE(editor.textCursor().anchor(), cursor.anchor());
+    QVERIFY(editor.document()->isUndoAvailable());
+    editor.undo();
+    QVERIFY(editor.text().isEmpty());
+}
+
+void TestEditorUi::highlight_refresh_updates_document_once_data()
+{
+    QTest::addColumn<bool>("preview");
+    QTest::newRow("configured-theme") << false;
+    QTest::newRow("preview-theme") << true;
+}
+
+void TestEditorUi::highlight_refresh_updates_document_once()
+{
+    QFETCH(bool, preview);
+    Settings* settings = Settings::instance();
+    settings->colorScheme = QStringLiteral("Custom");
+    settings->customColorSchemeJson = themeJsonString(QJsonObject{
+        {QStringLiteral("number"), QStringLiteral("#123456")},
+        {QStringLiteral("background"), QStringLiteral("#102030")}
+    });
+    Editor editor;
+    editor.setAutoCalcEnabled(false);
+    editor.setAutoCompletionEnabled(false);
+    editor.setText(QStringLiteral("123456"));
+    const auto refreshTheme = [&]() {
+        if (preview) {
+            editor.setThemePreviewColorScheme(ColorScheme(QJsonDocument::fromJson(
+                settings->customColorSchemeJson.toUtf8())));
+        } else {
+            editor.rehighlight();
+        }
+    };
+    refreshTheme();
+    QCoreApplication::processEvents();
+    QCOMPARE(editor.document()->firstBlock().layout()->formats().first().format.foreground().color(),
+             QColor(QStringLiteral("#123456")));
+    QSignalSpy documentChanged(editor.document(), &QTextDocument::contentsChanged);
+    QSignalSpy textChanged(&editor, &Editor::textChanged);
+    settings->customColorSchemeJson = themeJsonString(QJsonObject{
+        {QStringLiteral("number"), QStringLiteral("#abcdef")},
+        {QStringLiteral("background"), QStringLiteral("#102030")}
+    });
+
+    refreshTheme();
+
+    QCOMPARE(documentChanged.count(), 1);
+    QCOMPARE(textChanged.count(), 0);
+    QCOMPARE(editor.document()->firstBlock().layout()->formats().first().format.foreground().color(),
+             QColor(QStringLiteral("#abcdef")));
+    QCOMPARE(editor.text(), QStringLiteral("123456"));
+}
+
+void TestEditorUi::unchanged_primary_theme_avoids_editor_style_refresh_data()
+{
+    QTest::addColumn<bool>("classic");
+    QTest::newRow("modern") << false;
+    QTest::newRow("classic") << true;
+}
+
+void TestEditorUi::unchanged_primary_theme_avoids_editor_style_refresh()
+{
+    QFETCH(bool, classic);
+    Settings::instance()->editorDisplayStyle = classic
+        ? Settings::EditorDisplayClassic : Settings::EditorDisplayModern;
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    const QColor primary(QStringLiteral("#334455"));
+    editor.setThemePrimaryColor(primary, true);
+    editor.setText(QStringLiteral("123+456"));
+    editor.setCursorPosition(editor.text().size());
+
+    class StyleChangeRecorder : public QObject {
+    public:
+        int count = 0;
+        bool eventFilter(QObject*, QEvent* event) override
+        {
+            if (event->type() == QEvent::StyleChange)
+                ++count;
+            return false;
+        }
+    } recorder;
+    editor.installEventFilter(&recorder);
+    for (int i = 0; i < 5; ++i) {
+        QTest::keyClicks(&editor, QStringLiteral("1"));
+        editor.setThemePrimaryColor(primary, true);
+    }
+    QCOMPARE(recorder.count, 0);
+    QCOMPARE(editor.text(), QStringLiteral("123+45611111"));
+
+    const QString activeStyle = editor.styleSheet();
+    editor.setThemePrimaryColor(primary, false);
+    QVERIFY(recorder.count > 0);
+    QVERIFY(editor.styleSheet() != activeStyle);
+    recorder.count = 0;
+    editor.setThemePrimaryColor(primary, false);
+    QCOMPARE(recorder.count, 0);
+
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#556677")), true);
+    QVERIFY(recorder.count > 0);
+    QVERIFY(editor.styleSheet() != activeStyle);
+
+    QPalette viewportPalette = editor.viewport()->palette();
+    viewportPalette.setColor(QPalette::Base, Qt::transparent);
+    editor.viewport()->setPalette(viewportPalette);
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#556677")), true);
+    QCOMPARE(editor.viewport()->palette().color(QPalette::Base),
+             editor.palette().color(QPalette::Base));
+}
+
+void TestEditorUi::editor_text_line_is_vertically_centered_data()
+{
+    QTest::addColumn<bool>("classic");
+    QTest::addColumn<int>("pixelSize");
+    QTest::addColumn<int>("lineCount");
+    QTest::addColumn<bool>("fixedFont");
+    QTest::addColumn<bool>("wrapped");
+    for (const bool classic : {false, true}) {
+        for (const int pixelSize : {16, 24, 32}) {
+            for (const int lineCount : {1, 5}) {
+                const QByteArray name = QByteArray(classic ? "classic-" : "modern-")
+                    + QByteArray::number(pixelSize) + '-' + QByteArray::number(lineCount);
+                QTest::newRow(name.constData()) << classic << pixelSize << lineCount << false << false;
+                QTest::newRow(QByteArray(name + "-fixed").constData())
+                    << classic << pixelSize << lineCount << true << false;
+                if (lineCount > 1) {
+                    QTest::newRow(QByteArray(name + "-wrapped").constData())
+                        << classic << pixelSize << lineCount << false << true;
+                    QTest::newRow(QByteArray(name + "-fixed-wrapped").constData())
+                        << classic << pixelSize << lineCount << true << true;
+                }
+            }
+        }
+    }
+}
+
+void TestEditorUi::editor_text_line_is_vertically_centered()
+{
+    QFETCH(bool, classic);
+    QFETCH(int, pixelSize);
+    QFETCH(int, lineCount);
+    QFETCH(bool, fixedFont);
+    QFETCH(bool, wrapped);
+    Settings::instance()->editorDisplayStyle = classic
+        ? Settings::EditorDisplayClassic : Settings::EditorDisplayModern;
+    Settings::instance()->inputDigitGrouping = false;
+    Editor editor;
+    QFont font = fixedFont ? QFontDatabase::systemFont(QFontDatabase::FixedFont) : editor.font();
+    font.setPixelSize(pixelSize);
+    editor.setFont(font);
+    editor.setFixedWidth(400);
+    editor.rehighlight();
+    editor.setThemePrimaryColor(QColor(QStringLiteral("#90aaff")), true);
+    QStringList lines;
+    for (int i = 0; i < lineCount; ++i)
+        lines.append(QStringLiteral("23323323"));
+    editor.setText(lines.join(QLatin1Char('\n')));
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    if (wrapped) {
+        const int decorations = editor.width() - editor.viewport()->width();
+        editor.setFixedWidth(decorations + qCeil(QFontMetricsF(font).horizontalAdvance(lines.first()))
+            + 2 * int(editor.document()->documentMargin()) + 1);
+        editor.setText(lines.join(QString()));
+    }
+    QCoreApplication::processEvents();
+    QCOMPARE(editor.document()->lineCount(), lineCount);
+    QTextCursor first(editor.document());
+    QTextCursor last(editor.document());
+    last.movePosition(QTextCursor::End);
+    const QRect firstLine = editor.cursorRect(first).translated(editor.viewport()->pos());
+    const QRect lastLine = editor.cursorRect(last).translated(editor.viewport()->pos());
+    const int top = classic ? UiConfig::OutlineStrokeWidth : UiConfig::ModernEditorTopMargin;
+    const int bottom = editor.height()
+        - (classic ? 0 : UiConfig::ModernEditorBottomMargin);
+    QVERIFY2(qAbs((firstLine.top() + lastLine.bottom() + 1) - (top + bottom)) <= 1,
+        qPrintable(QStringLiteral("Text spans %1..%2 inside editor area %3..%4")
+            .arg(firstLine.top()).arg(lastLine.bottom() + 1).arg(top).arg(bottom)));
 }
 
 void TestEditorUi::treats_spaced_question_comment_as_atomic_navigation_and_edit_token()
@@ -2196,7 +3358,7 @@ void TestEditorUi::rewrites_superscript_exponent_for_radix_and_inserts_mul_space
     editor.setText(QString::fromUtf8("pi⁴"));
     editor.setCursorPosition(editor.text().size());
     QTest::keyClick(&editor, Qt::Key_Comma, Qt::NoModifier);
-    QCOMPARE(editor.document()->toRawText(), QStringLiteral("pi^(4.)"));
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("pi^(4,)"));
     QCOMPARE(editor.textCursor().position(),
              editor.document()->toRawText().size() - 1);
 
@@ -2331,7 +3493,7 @@ void TestEditorUi::auto_inserts_zero_before_dot_in_configured_contexts()
     editor.setText(QStringLiteral("pi  "));
     editor.setCursorPosition(editor.text().size());
     QTest::keyClick(&editor, Qt::Key_Comma, Qt::NoModifier);
-    QCOMPARE(editor.document()->toRawText(), QStringLiteral("pi  × 0."));
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("pi  × 0,"));
 
     editor.setText(QStringLiteral("12"));
     editor.setCursorPosition(editor.text().size());
@@ -2341,7 +3503,78 @@ void TestEditorUi::auto_inserts_zero_before_dot_in_configured_contexts()
     editor.setText(QStringLiteral("0,"));
     editor.setCursorPosition(editor.text().size());
     QTest::keyClick(&editor, Qt::Key_Comma, Qt::NoModifier);
-    QCOMPARE(editor.document()->toRawText(), QStringLiteral("0,"));
+    QCOMPARE(editor.document()->toRawText(), QStringLiteral("0,,"));
+}
+
+void TestEditorUi::preserves_comment_text_during_input_data()
+{
+    QTest::addColumn<QString>("comment");
+    QTest::newRow("multiplication") << QStringLiteral("2*2");
+    QTest::newRow("expression-aliases")
+        << QStringLiteral("pi sqrt(4) cbrt(8) summation(k) 2/3-1 'quoted' \"text\" Ω μ º 𝛑");
+    QTest::newRow("units-and-conversions")
+        << QStringLiteral("10000 [m * s^2] -> [km] 2*[m] ? pi");
+    QTest::newRow("unfinished-syntax") << QStringLiteral("[sqrt(2^ + + ^^ --");
+    QTest::newRow("spacing") << QStringLiteral("2*2  pi\t10000 [m/s]");
+}
+
+void TestEditorUi::preserves_comment_text_during_input()
+{
+    QFETCH(QString, comment);
+    const QString prefix = QStringLiteral("examplevar = 2*2");
+    const QString suffix = QStringLiteral(" ? ") + comment;
+    const QString expression = prefix + suffix;
+    Session session;
+    QCOMPARE(session.evaluator()->autoFix(QStringLiteral("4") + suffix),
+             QStringLiteral("4") + suffix);
+    QCOMPARE(EditorUtils::normalizeExpressionOperators(expression),
+             EditorUtils::normalizeExpressionOperators(prefix) + suffix);
+    QCOMPARE(EditorUtils::normalizeExpressionOperatorsForEditorInput(expression),
+             EditorUtils::normalizeExpressionOperatorsForEditorInput(prefix) + suffix);
+
+    Editor editor;
+    editor.setText(expression);
+    QCOMPARE(editor.text(), EditorUtils::normalizeExpressionOperatorsForEditorInput(prefix) + suffix);
+
+    editor.setText(QStringLiteral("4 ? "));
+    editor.setCursorPosition(editor.text().size());
+    editor.insert(comment);
+    QCOMPARE(editor.text(), QStringLiteral("4 ? ") + comment);
+
+    const QString oldClipboard = QApplication::clipboard()->text();
+    const auto restoreClipboard = qScopeGuard([&]() {
+        QApplication::clipboard()->setText(oldClipboard);
+    });
+    editor.setText(QStringLiteral("4 ? "));
+    editor.setCursorPosition(editor.text().size());
+    QApplication::clipboard()->setText(comment);
+    editor.paste();
+    QCOMPARE(editor.text(), QStringLiteral("4 ? ") + comment);
+
+    editor.setText(QStringLiteral("4 ? "));
+    editor.setCursorPosition(editor.text().size());
+    QInputMethodEvent commit;
+    commit.setCommitString(comment);
+    QApplication::sendEvent(&editor, &commit);
+    QCOMPARE(editor.text(), QStringLiteral("4 ? ") + comment);
+}
+
+void TestEditorUi::normalizes_only_expression_text_when_replacing_comment_selection()
+{
+    Editor editor;
+    editor.setText(QStringLiteral("4 ? old"));
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(4);
+    cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    editor.insert(QStringLiteral("2*2"));
+    QCOMPARE(editor.text(), QStringLiteral("4 ? 2*2"));
+
+    cursor.setPosition(2);
+    cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    editor.insert(QStringLiteral("*2 ? 3*3"));
+    QCOMPARE(editor.text(), QStringLiteral("4 ×2 ? 3*3"));
 }
 
 void TestEditorUi::allows_unrestricted_typing_inside_question_comment_context()
@@ -3020,8 +4253,7 @@ void TestEditorUi::tooltip_does_not_duplicate_degree_symbol_for_explicit_angle_c
 
     QVERIFY(!spy.isEmpty());
     const QString message = spy.takeLast().at(0).toString();
-    QVERIFY(message.contains(QString::fromUtf8("= 360°")));
-    QVERIFY(!message.contains(QString::fromUtf8("= 360°°")));
+    QCOMPARE(message, QString::fromUtf8("Current result:<br/>360°"));
 
     settings->angleUnit = oldAngleUnit;
     settings->resultFormat = oldResultFormat;
@@ -3059,7 +4291,7 @@ void TestEditorUi::tooltip_does_not_append_angle_mode_symbol_after_explicit_arcs
     Evaluator::instance()->initializeAngleUnits();
 }
 
-void TestEditorUi::tooltip_compacts_bracketed_arcminute_and_arcsecond_expression_units()
+void TestEditorUi::tooltip_formats_arcminute_and_arcsecond_results_without_expression()
 {
     Editor editor;
     editor.show();
@@ -3082,10 +4314,10 @@ void TestEditorUi::tooltip_compacts_bracketed_arcminute_and_arcsecond_expression
 
     QVERIFY(!spy.isEmpty());
     const QString arcminuteMessage = spy.takeLast().at(0).toString();
-    QVERIFY2(arcminuteMessage.contains(QString::fromUtf8("1′")),
+    QVERIFY2(arcminuteMessage.contains(QString(MathDsl::QuantSp) + Units::angleModeUnitSymbol('r')),
              qPrintable(QStringLiteral("Arcminute tooltip: %1").arg(arcminuteMessage)));
-    QVERIFY2(!arcminuteMessage.contains(QString::fromUtf8("1 [′]")),
-             qPrintable(QStringLiteral("Arcminute tooltip: %1").arg(arcminuteMessage)));
+    QVERIFY(!arcminuteMessage.contains(UnicodeChars::Prime));
+    QVERIFY(!arcminuteMessage.contains(QLatin1Char('=')));
 
     editor.setText(QStringLiteral("1 [arcsec]"));
     editor.setCursorPosition(editor.text().size());
@@ -3094,10 +4326,10 @@ void TestEditorUi::tooltip_compacts_bracketed_arcminute_and_arcsecond_expression
 
     QVERIFY(!spy.isEmpty());
     const QString arcsecondMessage = spy.takeLast().at(0).toString();
-    QVERIFY2(arcsecondMessage.contains(QString::fromUtf8("1″")),
+    QVERIFY2(arcsecondMessage.contains(QString(MathDsl::QuantSp) + Units::angleModeUnitSymbol('r')),
              qPrintable(QStringLiteral("Arcsecond tooltip: %1").arg(arcsecondMessage)));
-    QVERIFY2(!arcsecondMessage.contains(QString::fromUtf8("1 [″]")),
-             qPrintable(QStringLiteral("Arcsecond tooltip: %1").arg(arcsecondMessage)));
+    QVERIFY(!arcsecondMessage.contains(UnicodeChars::DoublePrime));
+    QVERIFY(!arcsecondMessage.contains(QLatin1Char('=')));
 
     settings->angleUnit = oldAngleUnit;
     settings->resultFormat = oldResultFormat;
@@ -3120,7 +4352,7 @@ void TestEditorUi::tooltip_rewrites_composite_canonical_angle_symbols_to_aliases
 
     QSignalSpy spy(&editor, SIGNAL(autoCalcMessageAvailable(const QString&)));
 
-    editor.setText(QString::fromUtf8("1 [″/m]"));
+    editor.setText(QString::fromUtf8("1 [rad/m] -> [″/m]"));
     editor.setCursorPosition(editor.text().size());
     editor.refreshAutoCalc();
     QCoreApplication::processEvents();
@@ -3131,7 +4363,7 @@ void TestEditorUi::tooltip_rewrites_composite_canonical_angle_symbols_to_aliases
     QVERIFY2(!arcsecondMessage.contains(QString::fromUtf8("″/m")),
              qPrintable(QStringLiteral("Arcsecond composite tooltip: %1").arg(arcsecondMessage)));
 
-    editor.setText(QString::fromUtf8("1 [′/m]"));
+    editor.setText(QString::fromUtf8("1 [rad/m] -> [′/m]"));
     editor.setCursorPosition(editor.text().size());
     editor.refreshAutoCalc();
     QCoreApplication::processEvents();
@@ -3142,7 +4374,7 @@ void TestEditorUi::tooltip_rewrites_composite_canonical_angle_symbols_to_aliases
     QVERIFY2(!arcminuteMessage.contains(QString::fromUtf8("′/m")),
              qPrintable(QStringLiteral("Arcminute composite tooltip: %1").arg(arcminuteMessage)));
 
-    editor.setText(QString::fromUtf8("1 [°/m]"));
+    editor.setText(QString::fromUtf8("1 [rad/m] -> [°/m]"));
     editor.setCursorPosition(editor.text().size());
     editor.refreshAutoCalc();
     QCoreApplication::processEvents();
@@ -3224,16 +4456,9 @@ void TestEditorUi::tooltip_trig_output_does_not_append_angle_mode_suffix()
         const QString message = spy.takeLast().at(0).toString();
         QString normalizedMessage = message;
         normalizedMessage.replace(QString(MathDsl::SubOp), QString(MathDsl::SubOpAl1));
-        QVERIFY2(normalizedMessage.contains(QStringLiteral("= -1")),
+        QCOMPARE(normalizedMessage, QStringLiteral("Current result:<br/>-1"));
+        QVERIFY2(!message.contains(QStringLiteral("cos(")),
                  qPrintable(QStringLiteral("Expected scalar trig result, got: %1").arg(message)));
-        const bool hasBracketedDegreeArg =
-            message.contains(QString::fromUtf8("cos(180"))
-            && message.contains(QString::fromUtf8("[°])"));
-        const bool hasCompactDegreeArg =
-            message.contains(QString::fromUtf8("cos(180"))
-            && message.contains(QString::fromUtf8("°)"));
-        QVERIFY2(hasBracketedDegreeArg || hasCompactDegreeArg,
-                 qPrintable(QStringLiteral("Expected interpreted expression line, got: %1").arg(message)));
         const QStringList lines = normalizedMessage.split(QStringLiteral("<br/>"));
         QVERIFY2(!lines.isEmpty(),
                  qPrintable(QStringLiteral("Unexpected empty tooltip message: %1").arg(message)));
@@ -3249,7 +4474,7 @@ void TestEditorUi::tooltip_trig_output_does_not_append_angle_mode_suffix()
     Evaluator::instance()->initializeAngleUnits();
 }
 
-void TestEditorUi::tooltip_shows_interpreted_expression_for_non_trig_sexagesimal_expression()
+void TestEditorUi::tooltip_shows_only_result_for_non_trig_sexagesimal_expression()
 {
     Editor editor;
     editor.show();
@@ -3274,18 +4499,14 @@ void TestEditorUi::tooltip_shows_interpreted_expression_for_non_trig_sexagesimal
 
     QVERIFY(!spy.isEmpty());
     const QString message = spy.takeLast().at(0).toString();
-    QVERIFY2(message.contains(QString::fromUtf8("round(2.8"))
-             && message.contains(QString::fromUtf8("[°])")),
-             qPrintable(QStringLiteral("Expected interpreted expression line, got: %1").arg(message)));
-    QVERIFY2(message.contains(QString::fromUtf8("= 9°")),
-             qPrintable(QStringLiteral("Expected degree result line, got: %1").arg(message)));
+    QCOMPARE(message, QString::fromUtf8("Current result:<br/>9°"));
 
     settings->angleUnit = oldAngleUnit;
     settings->resultFormat = oldResultFormat;
     Evaluator::instance()->initializeAngleUnits();
 }
 
-void TestEditorUi::tooltip_shows_simplified_line_for_repeated_trig_with_degree_sign()
+void TestEditorUi::tooltip_shows_only_result_for_repeated_trig_with_degree_sign()
 {
     Editor editor;
     editor.show();
@@ -3314,16 +4535,7 @@ void TestEditorUi::tooltip_shows_simplified_line_for_repeated_trig_with_degree_s
     const QString message = spy.takeLast().at(0).toString();
     QString normalizedMessage = message;
     normalizedMessage.replace(QString(MathDsl::SubOp), QString(MathDsl::SubOpAl1));
-    const bool hasBracketedDegreeSimplifiedLine =
-        message.contains(QString::fromUtf8("= 4 · cos(180"))
-        && message.contains(QString::fromUtf8("[°])"));
-    const bool hasCompactDegreeSimplifiedLine =
-        message.contains(QString::fromUtf8("= 4 · cos(180"))
-        && message.contains(QString::fromUtf8("°)"));
-    QVERIFY2(hasBracketedDegreeSimplifiedLine || hasCompactDegreeSimplifiedLine,
-             qPrintable(QStringLiteral("Expected simplified line, got: %1").arg(message)));
-    QVERIFY2(normalizedMessage.contains(QStringLiteral("= -4")),
-             qPrintable(QStringLiteral("Expected result line, got: %1").arg(message)));
+    QCOMPARE(normalizedMessage, QStringLiteral("Current result:<br/>-4"));
 
     settings->angleUnit = oldAngleUnit;
     settings->resultFormat = oldResultFormat;
@@ -3331,7 +4543,7 @@ void TestEditorUi::tooltip_shows_simplified_line_for_repeated_trig_with_degree_s
     Evaluator::instance()->initializeAngleUnits();
 }
 
-void TestEditorUi::tooltip_shows_simplified_line_for_mixed_revolution_aliases()
+void TestEditorUi::tooltip_shows_only_result_for_mixed_revolution_aliases()
 {
     Editor editor;
     editor.show();
@@ -3358,14 +4570,7 @@ void TestEditorUi::tooltip_shows_simplified_line_for_mixed_revolution_aliases()
 
     QVERIFY(!spy.isEmpty());
     const QString message = spy.takeLast().at(0).toString();
-    QString compactMessage = message;
-    compactMessage.remove(QRegularExpression(QStringLiteral("\\s+")));
-    compactMessage.remove(MathDsl::QuantSp);
-    compactMessage.remove(UnicodeChars::NoBreakSpace);
-    QVERIFY2(!message.contains(QString::fromUtf8("3 · cos(180")),
-             qPrintable(QStringLiteral("Expected folded repeated term, got: %1").arg(message)));
-    QVERIFY2(compactMessage.contains(QString::fromUtf8("=4·cos(180[rev])")),
-             qPrintable(QStringLiteral("Expected unified simplified line, got: %1").arg(message)));
+    QCOMPARE(message, QStringLiteral("Current result:<br/>4"));
 
     settings->angleUnit = oldAngleUnit;
     settings->resultFormat = oldResultFormat;
@@ -3373,7 +4578,7 @@ void TestEditorUi::tooltip_shows_simplified_line_for_mixed_revolution_aliases()
     Evaluator::instance()->initializeAngleUnits();
 }
 
-void TestEditorUi::tooltip_uses_cross_for_literal_number_products_in_simplified_line()
+void TestEditorUi::tooltip_shows_only_result_for_literal_number_products()
 {
     Editor editor;
     editor.show();
@@ -3395,12 +4600,11 @@ void TestEditorUi::tooltip_uses_cross_for_literal_number_products_in_simplified_
 
     QVERIFY(!spy.isEmpty());
     const QString message = spy.takeLast().at(0).toString();
-    const bool hasParenthesizedPowerTerm =
-        message.contains(QString::fromUtf8("= π² · (2⁻²) + (3²) × 4"));
-    const bool hasUnparenthesizedPowerTerm =
-        message.contains(QString::fromUtf8("= π² · (2⁻²) + 3² × 4"));
-    QVERIFY2(hasParenthesizedPowerTerm || hasUnparenthesizedPowerTerm,
-             qPrintable(QStringLiteral("Expected cross between literal numbers in simplified line, got: %1").arg(message)));
+    const QStringList lines = message.split(QStringLiteral("<br/>"));
+    QCOMPARE(lines.size(), 2);
+    QCOMPARE(lines.first(), QStringLiteral("Current result:"));
+    QVERIFY(lines.last().startsWith(QStringLiteral("38.467")));
+    QVERIFY(!message.contains(QLatin1Char('=')));
 
     QSignalSpy interpretedSpy(&editor, SIGNAL(autoCalcMessageAvailable(const QString&)));
     editor.setText(QStringLiteral("pi*2^(-2)*pi+3^2*4"));
@@ -3410,16 +4614,66 @@ void TestEditorUi::tooltip_uses_cross_for_literal_number_products_in_simplified_
 
     QVERIFY(!interpretedSpy.isEmpty());
     const QString interpretedMessage = interpretedSpy.takeLast().at(0).toString();
-    const bool interpretedHasParenthesizedPowerTerm =
-        interpretedMessage.contains(QString::fromUtf8("π · (2⁻²) · π + (3²) × 4"));
-    const bool interpretedHasUnparenthesizedPowerTerm =
-        interpretedMessage.contains(QString::fromUtf8("π · (2⁻²) · π + 3² × 4"));
-    QVERIFY2(interpretedHasParenthesizedPowerTerm || interpretedHasUnparenthesizedPowerTerm,
-             qPrintable(QStringLiteral("Expected interpreted line to use cross for numeric-literal product, got: %1")
-                 .arg(interpretedMessage)));
+    QCOMPARE(interpretedMessage, message);
 
     settings->resultFormat = oldResultFormat;
     settings->simplifyResultExpressions = oldSimplify;
+}
+
+void TestEditorUi::tooltip_shows_only_result_data()
+{
+    QTest::addColumn<bool>("selection");
+    QTest::addColumn<bool>("simplify");
+    QTest::addColumn<bool>("extraResult");
+    QTest::addColumn<QString>("expression");
+    QTest::addColumn<QString>("expectedResult");
+
+    for (bool selection : {false, true}) {
+        for (bool simplify : {false, true}) {
+            const QString prefix = QStringLiteral("%1-%2")
+                .arg(selection ? QStringLiteral("selection") : QStringLiteral("current"),
+                     simplify ? QStringLiteral("simplify") : QStringLiteral("plain"));
+            QTest::newRow(qPrintable(prefix + QStringLiteral("-complete")))
+                << selection << simplify << false << QStringLiteral("1+24") << QStringLiteral("25");
+            QTest::newRow(qPrintable(prefix + QStringLiteral("-incomplete")))
+                << selection << simplify << false << QStringLiteral("1+24+") << QStringLiteral("25");
+            QTest::newRow(qPrintable(prefix + QStringLiteral("-extra-result")))
+                << selection << simplify << true << QStringLiteral("1+24")
+                << QString::fromUtf8("25<br/>2.5 × 10¹");
+        }
+    }
+}
+
+void TestEditorUi::tooltip_shows_only_result()
+{
+    QFETCH(bool, selection);
+    QFETCH(bool, simplify);
+    QFETCH(bool, extraResult);
+    QFETCH(QString, expression);
+    QFETCH(QString, expectedResult);
+
+    Settings* settings = Settings::instance();
+    settings->resultFormat = 'f';
+    settings->resultPrecision = -1;
+    settings->simplifyResultExpressions = simplify;
+    settings->multipleResultLinesEnabled = extraResult;
+    settings->secondaryResultEnabled = extraResult;
+    settings->alternativeResultFormat = 'e';
+    settings->secondaryResultPrecision = -1;
+
+    Editor editor;
+    editor.setText(expression);
+    QSignalSpy spy(&editor, SIGNAL(autoCalcMessageAvailable(const QString&)));
+    if (selection)
+        editor.autoCalcSelection(expression);
+    else
+        editor.refreshAutoCalc();
+
+    QVERIFY(!spy.isEmpty());
+    const QString message = spy.takeLast().at(0).toString();
+    const QString title = selection ? QStringLiteral("Selection result:")
+                                    : QStringLiteral("Current result:");
+    QCOMPARE(message, title + QStringLiteral("<br/>") + expectedResult);
 }
 
 void TestEditorUi::tooltip_keeps_quantsp_before_degree_celsius()
@@ -3442,8 +4696,9 @@ void TestEditorUi::tooltip_keeps_quantsp_before_degree_celsius()
 
     QVERIFY(!spy.isEmpty());
     const QString message = spy.takeLast().at(0).toString();
-    const QString expected = QStringLiteral("= 25") + QString(MathDsl::QuantSp) + QString::fromUtf8("°C");
-    QVERIFY(message.contains(expected));
+    const QString expected = QStringLiteral("Current result:<br/>25")
+        + QString(MathDsl::QuantSp) + QString::fromUtf8("°C");
+    QCOMPARE(message, expected);
 
     settings->resultFormat = oldResultFormat;
 }
@@ -3465,20 +4720,16 @@ void TestEditorUi::tooltip_handles_affine_temperature_units_without_arrow_and_wi
     };
     const QList<Case> cases = {
         {QString::fromUtf8("100 [°C]"),
-         QStringLiteral("= 100") + QString(MathDsl::QuantSp) + QString::fromUtf8("°C")},
+         QStringLiteral("100") + QString(MathDsl::QuantSp) + QString::fromUtf8("°C")},
         {QString::fromUtf8("203 [°F]"),
-         QStringLiteral("= 203") + QString(MathDsl::QuantSp) + QString::fromUtf8("°F")},
+         QStringLiteral("203") + QString(MathDsl::QuantSp) + QString::fromUtf8("°F")},
         {QString::fromUtf8("1 [K] -> [°C]"),
-         QString(MathDsl::Equals)
-             + QStringLiteral(" ")
-             + QString(MathDsl::SubOp)
+         QString(MathDsl::SubOp)
              + QStringLiteral("272.15")
              + QString(MathDsl::QuantSp)
              + QString::fromUtf8("°C")},
         {QString::fromUtf8("1 [K] -> [°F]"),
-         QString(MathDsl::Equals)
-             + QStringLiteral(" ")
-             + QString(MathDsl::SubOp)
+         QString(MathDsl::SubOp)
              + QStringLiteral("457.87")
              + QString(MathDsl::QuantSp)
              + QString::fromUtf8("°F")}
@@ -3493,9 +4744,7 @@ void TestEditorUi::tooltip_handles_affine_temperature_units_without_arrow_and_wi
 
         QVERIFY(!spy.isEmpty());
         const QString message = spy.takeLast().at(0).toString();
-        QVERIFY2(message.contains(c.expected),
-                 qPrintable(QStringLiteral("Expression: %1\nMessage: %2\nExpected fragment: %3")
-                                .arg(c.expression, message, c.expected)));
+        QCOMPARE(message, QStringLiteral("Current result:<br/>") + c.expected);
     }
 
     settings->resultFormat = oldResultFormat;
@@ -3521,8 +4770,7 @@ void TestEditorUi::tooltip_shows_selection_result_when_selecting_with_shift_arro
     const QString message = spy.takeLast().at(0).toString();
     QVERIFY2(message.contains(QStringLiteral("Selection result:")),
              qPrintable(QStringLiteral("Expected selection result message, got: %1").arg(message)));
-    QVERIFY2(message.contains(QStringLiteral("= 4")),
-             qPrintable(QStringLiteral("Expected selected value 4 in message, got: %1").arg(message)));
+    QCOMPARE(message, QStringLiteral("Selection result:<br/>4"));
 }
 
 void TestEditorUi::tooltip_shows_selection_result_when_selecting_all_with_keyboard_shortcut()
@@ -3552,8 +4800,7 @@ void TestEditorUi::tooltip_shows_selection_result_when_selecting_all_with_keyboa
     const QString message = spy.takeLast().at(0).toString();
     QVERIFY2(message.contains(QStringLiteral("Selection result:")),
              qPrintable(QStringLiteral("Expected selection result message, got: %1").arg(message)));
-    QVERIFY2(message.contains(QStringLiteral("= 25")),
-             qPrintable(QStringLiteral("Expected selected value 25 in message, got: %1").arg(message)));
+    QCOMPARE(message, QStringLiteral("Selection result:<br/>25"));
 }
 
 void TestEditorUi::tooltip_shows_selection_result_when_selecting_with_mouse()
@@ -3591,8 +4838,7 @@ void TestEditorUi::tooltip_shows_selection_result_when_selecting_with_mouse()
     const QString message = spy.takeLast().at(0).toString();
     QVERIFY2(message.contains(QStringLiteral("Selection result:")),
              qPrintable(QStringLiteral("Expected selection result message, got: %1").arg(message)));
-    QVERIFY2(message.contains(QStringLiteral("= 4")),
-             qPrintable(QStringLiteral("Expected selected value 4 in message, got: %1").arg(message)));
+    QCOMPARE(message, QStringLiteral("Selection result:<br/>4"));
 }
 
 void TestEditorUi::tooltip_does_not_refresh_current_result_on_caret_arrow_move()
@@ -3663,8 +4909,7 @@ void TestEditorUi::tooltip_refreshes_current_result_on_char_deletion()
     const QString message = spy.takeLast().at(0).toString();
     QVERIFY2(message.contains(QStringLiteral("Current result:")),
              qPrintable(QStringLiteral("Expected current result message after deletion, got: %1").arg(message)));
-    QVERIFY2(message.contains(QStringLiteral("= 3")),
-             qPrintable(QStringLiteral("Expected updated value 3 in message, got: %1").arg(message)));
+    QCOMPARE(message, QStringLiteral("Current result:<br/>3"));
 }
 
 void TestEditorUi::enter_evaluates_when_completion_popup_has_no_explicit_interaction()
@@ -3693,6 +4938,128 @@ void TestEditorUi::enter_evaluates_when_completion_popup_has_no_explicit_interac
 
     QCOMPARE(returnPressedSpy.count(), 1);
     QCOMPARE(editor.text(), input);
+}
+
+void TestEditorUi::completion_popup_enter_respects_accept_with_enter_data()
+{
+    QTest::addColumn<bool>("enabled");
+    QTest::addColumn<bool>("navigated");
+    QTest::addColumn<bool>("sendToPopup");
+    QTest::addColumn<int>("key");
+    for (bool enabled : {false, true}) {
+        for (bool navigated : {false, true}) {
+            for (bool sendToPopup : {false, true}) {
+                for (int key : {Qt::Key_Return, Qt::Key_Enter}) {
+                    const QString name = QStringLiteral("%1-%2-%3-%4")
+                        .arg(enabled ? "enabled" : "disabled")
+                        .arg(navigated ? "arrow-selection" : "first-suggestion")
+                        .arg(sendToPopup ? "popup" : "editor")
+                        .arg(key == Qt::Key_Return ? "return" : "keypad-enter");
+                    QTest::newRow(qPrintable(name)) << enabled << navigated << sendToPopup << key;
+                }
+            }
+        }
+    }
+}
+
+void TestEditorUi::completion_popup_enter_respects_accept_with_enter()
+{
+    QFETCH(bool, enabled);
+    QFETCH(bool, navigated);
+    QFETCH(bool, sendToPopup);
+    QFETCH(int, key);
+    Editor editor;
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+    editor.setText(QStringLiteral("cos"));
+    editor.setCursorPosition(editor.text().size());
+    QSignalSpy returnPressedSpy(&editor, &Editor::returnPressed);
+    QVERIFY(QMetaObject::invokeMethod(&editor, "triggerAutoComplete", Qt::DirectConnection));
+    QTreeWidget* popup = nullptr;
+    QTRY_VERIFY_WITH_TIMEOUT((popup = s_completionPopupTree()) != nullptr, 1000);
+    QWidget* target = sendToPopup ? static_cast<QWidget*>(popup) : &editor;
+    if (navigated)
+        QTest::keyClick(target, Qt::Key_Down);
+    QVERIFY(popup->currentItem());
+    const QString completion = popup->currentItem()->text(1) + QStringLiteral("()");
+    Settings::instance()->autoCompletionAcceptWithEnter = enabled;
+    QTest::keyClick(target, Qt::Key(key));
+    QVERIFY(!popup->isVisible());
+    if (enabled || navigated) {
+        QCOMPARE(returnPressedSpy.count(), 0);
+        QCOMPARE(editor.text(), completion);
+        QCOMPARE(editor.textCursor().position(), completion.size() - 1);
+        QTRY_VERIFY(s_editorOrViewportHasFocus(&editor));
+        QTest::keyClick(&editor, Qt::Key(key));
+        QCOMPARE(returnPressedSpy.count(), 1);
+    } else {
+        QCOMPARE(returnPressedSpy.count(), 1);
+        QCOMPARE(editor.text(), QStringLiteral("cos"));
+    }
+}
+
+void TestEditorUi::enter_accepts_completion_for_names_and_units_data()
+{
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("expected");
+    QTest::addColumn<bool>("inputAdjustments");
+    QTest::addColumn<int>("key");
+    for (bool inputAdjustments : {false, true}) {
+        for (int key : {Qt::Key_Return, Qt::Key_Tab}) {
+            const QByteArray prefix = QByteArray(inputAdjustments ? "adjusted-" : "raw-")
+                + (key == Qt::Key_Return ? "enter-" : "tab-");
+            QTest::newRow(QByteArray(prefix + "user-variable").constData())
+                << QStringLiteral("entervar") << QStringLiteral("entervariable") << inputAdjustments << key;
+            QTest::newRow(QByteArray(prefix + "user-function").constData())
+                << QStringLiteral("enterfun") << QStringLiteral("enterfunction()") << inputAdjustments << key;
+            QTest::newRow(QByteArray(prefix + "unit").constData())
+                << QStringLiteral("[met") << QStringLiteral("[m") << inputAdjustments << key;
+        }
+    }
+}
+
+void TestEditorUi::enter_accepts_completion_for_names_and_units()
+{
+    QFETCH(QString, input);
+    QFETCH(QString, expected);
+    QFETCH(bool, inputAdjustments);
+    QFETCH(int, key);
+    Settings::instance()->autoCompletionAcceptWithEnter = true;
+    Settings::instance()->automaticInputAdjustments = inputAdjustments;
+    Editor editor;
+    editor.evaluator()->setVariable(QStringLiteral("entervariable"), Quantity(42));
+    editor.evaluator()->setUserFunction(UserFunction(
+        QStringLiteral("enterfunction"), QStringList{QStringLiteral("x")}, QStringLiteral("x")));
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+    editor.setText(input);
+    editor.setCursorPosition(editor.text().size());
+    QSignalSpy returnPressedSpy(&editor, &Editor::returnPressed);
+    QVERIFY(QMetaObject::invokeMethod(&editor, "triggerAutoComplete", Qt::DirectConnection));
+    QTreeWidget* popup = nullptr;
+    QTRY_VERIFY_WITH_TIMEOUT((popup = s_completionPopupTree()) != nullptr, 1000);
+    QTest::keyClick(&editor, Qt::Key(key));
+    QCOMPARE(editor.text(), expected);
+    QCOMPARE(returnPressedSpy.count(), 0);
+    QVERIFY(!popup->isVisible());
+}
+
+void TestEditorUi::enter_evaluates_without_completion_when_accept_with_enter_is_enabled()
+{
+    Settings::instance()->autoCompletionAcceptWithEnter = true;
+    Editor editor;
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+    editor.setText(QStringLiteral("2+2"));
+    editor.setCursorPosition(editor.text().size());
+    QSignalSpy returnPressedSpy(&editor, &Editor::returnPressed);
+    QVERIFY(!s_completionPopupTree());
+    QTest::keyClick(&editor, Qt::Key_Return);
+    QCOMPARE(returnPressedSpy.count(), 1);
+    QCOMPARE(editor.text(), QStringLiteral("2+2"));
 }
 
 void TestEditorUi::completion_popup_arrow_keys_change_selection()
@@ -4462,7 +5829,169 @@ void TestEditorUi::completion_popup_compositor_geometry()
     }
 }
 
-void TestEditorUi::constant_completion_pages_follow_popup_resize()
+void TestEditorUi::constant_search_filters_without_editing_expression()
+{
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    editor.setText(QStringLiteral("12+34"));
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(3);
+    cursor.setPosition(5, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+    QSignalSpy evaluated(&editor, &Editor::returnPressed);
+    QSignalSpy changed(&editor, &Editor::textChanged);
+    QTest::keyClick(&editor, Qt::Key_Space, Qt::ControlModifier);
+    QPointer<QWidget> popup = QApplication::activePopupWidget();
+    QVERIFY(popup);
+    auto* search = popup->findChild<QLineEdit*>(QStringLiteral("constantCompletionSearch"));
+    auto* list = popup->findChild<QTreeWidget*>();
+    QVERIFY(search && list);
+    QTRY_VERIFY(search->hasFocus());
+    QCOMPARE(list->topLevelItemCount(), Constants::instance()->list().size());
+    QTest::keyClick(search, Qt::Key_Tab, Qt::ShiftModifier);
+    QVERIFY(list->hasFocus());
+    QTest::keyClick(list, Qt::Key_Tab, Qt::ShiftModifier);
+    QVERIFY(search->hasFocus());
+    QTest::keyClick(search, Qt::Key_Tab, Qt::ShiftModifier);
+    QVERIFY(list->hasFocus());
+    QTest::keyClick(list, Qt::Key_P);
+    QVERIFY(search->hasFocus());
+    QCOMPARE(search->text(), QStringLiteral("p"));
+    search->clear();
+    QTest::keyClicks(search, "PROTON");
+    QVERIFY(list->topLevelItemCount() > 1);
+    for (int i = 0; i < list->topLevelItemCount(); ++i)
+        QVERIFY(list->topLevelItem(i)->text(0).contains(QStringLiteral("proton"), Qt::CaseInsensitive));
+    QTest::keyClick(search, Qt::Key_Down);
+    QCOMPARE(list->indexOfTopLevelItem(list->currentItem()), 1);
+    QTest::keyClick(search, Qt::Key_Up);
+    QCOMPARE(list->indexOfTopLevelItem(list->currentItem()), 0);
+    QVERIFY(search->hasFocus());
+    QTest::keyClick(search, Qt::Key_Backspace);
+    QCOMPARE(search->text(), QStringLiteral("PROTO"));
+    search->setText(QStringLiteral("kg"));
+    QVERIFY(list->topLevelItemCount() > 0);
+    for (int i = 0; i < list->topLevelItemCount(); ++i) {
+        auto* item = list->topLevelItem(i);
+        QVERIFY(item->data(0, Qt::AccessibleTextRole).toString().contains(QStringLiteral("kg"), Qt::CaseInsensitive));
+    }
+    search->clear();
+    QCOMPARE(list->topLevelItemCount(), Constants::instance()->list().size());
+    search->setText(QStringLiteral("no such constant 49236"));
+    QCOMPARE(list->topLevelItemCount(), 0);
+    QTest::keyClick(search, Qt::Key_Down);
+    QTest::keyClick(search, Qt::Key_Return);
+    QTest::keyClick(search, Qt::Key_Tab);
+    QVERIFY(popup->isVisible());
+    QVERIFY(search->hasFocus());
+    QVERIFY(list->currentItem() == nullptr);
+    QCOMPARE(evaluated.count(), 0);
+    QCOMPARE(changed.count(), 0);
+    QCOMPARE(editor.text(), QStringLiteral("12+34"));
+    QTest::keyClick(search, Qt::Key_Escape);
+    QVERIFY(!popup || !popup->isVisible());
+    QTRY_VERIFY(s_editorOrViewportHasFocus(&editor));
+    QCOMPARE(editor.textCursor().selectionStart(), 3);
+    QCOMPARE(editor.textCursor().selectionEnd(), 5);
+    QCOMPARE(editor.text(), QStringLiteral("12+34"));
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QVERIFY(popup.isNull());
+}
+
+void TestEditorUi::constant_search_inserts_selected_result_data()
+{
+    QTest::addColumn<QString>("query");
+    QTest::addColumn<QString>("expected");
+    QTest::addColumn<bool>("mouse");
+    QTest::addColumn<int>("acceptKey");
+    QTest::addColumn<bool>("listFocus");
+    QTest::newRow("pi") << QStringLiteral("pi (π)") << QString(UnicodeChars::Pi) << false << int(Qt::Key_Return) << false;
+    QTest::newRow("e-click") << QStringLiteral("Euler's number") << QStringLiteral("e") << true << int(Qt::Key_Return) << false;
+    QTest::newRow("unit") << QStringLiteral("speed of light in vacuum")
+        << QStringLiteral("299792458 [m·s⁻¹]") << false << int(Qt::Key_Return) << false;
+    QTest::newRow("pi-tab") << QStringLiteral("pi (π)") << QString(UnicodeChars::Pi) << false << int(Qt::Key_Tab) << false;
+    QTest::newRow("unit-tab") << QStringLiteral("speed of light in vacuum")
+        << QStringLiteral("299792458 [m·s⁻¹]") << false << int(Qt::Key_Tab) << false;
+    QTest::newRow("e-tab-from-list") << QStringLiteral("Euler's number") << QStringLiteral("e") << false << int(Qt::Key_Tab) << true;
+}
+
+void TestEditorUi::constant_search_inserts_selected_result()
+{
+    QFETCH(QString, query);
+    QFETCH(QString, expected);
+    QFETCH(bool, mouse);
+    QFETCH(int, acceptKey);
+    QFETCH(bool, listFocus);
+    QWidget window;
+    QVBoxLayout layout(&window);
+    Editor editor;
+    Editor other;
+    layout.addWidget(&editor);
+    layout.addWidget(&other);
+    editor.setAutoCompletionEnabled(false);
+    editor.setText(QStringLiteral("12+34"));
+    QSignalSpy evaluated(&editor, &Editor::returnPressed);
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(3);
+    cursor.setPosition(5, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+    editor.setFocus();
+    QTest::keyClick(&editor, Qt::Key_Space, Qt::ControlModifier);
+    QPointer<QWidget> popup = QApplication::activePopupWidget();
+    QVERIFY(popup);
+    auto* search = popup->findChild<QLineEdit*>(QStringLiteral("constantCompletionSearch"));
+    auto* list = popup->findChild<QTreeWidget*>();
+    QVERIFY(search && list);
+    search->setText(query);
+    QCOMPARE(list->topLevelItemCount(), 1);
+    if (mouse) {
+        QTest::mouseClick(list->viewport(), Qt::LeftButton, Qt::NoModifier,
+                          list->visualItemRect(list->currentItem()).center());
+    } else {
+        if (listFocus) {
+            QTest::keyClick(search, Qt::Key_Tab, Qt::ShiftModifier);
+            QVERIFY(list->hasFocus());
+        }
+        QTest::keyClick(listFocus ? static_cast<QWidget*>(list) : search, static_cast<Qt::Key>(acceptKey));
+    }
+    QCOMPARE(editor.text(), QStringLiteral("12+") + expected);
+    QCOMPARE(evaluated.count(), 0);
+    QVERIFY(other.text().isEmpty());
+    QTRY_VERIFY(s_editorOrViewportHasFocus(&editor));
+    editor.undo();
+    QCOMPARE(editor.text(), QStringLiteral("12+34"));
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QVERIFY(popup.isNull());
+}
+
+void TestEditorUi::constant_search_closes_without_stealing_outside_focus()
+{
+    QWidget window;
+    QVBoxLayout layout(&window);
+    Editor editor;
+    QLineEdit other;
+    layout.addWidget(&editor);
+    layout.addWidget(&other);
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+    editor.setFocus();
+    QTest::keyClick(&editor, Qt::Key_Space, Qt::ControlModifier);
+    QPointer<QWidget> popup = QApplication::activePopupWidget();
+    QVERIFY(popup);
+    popup->hide();
+    other.setFocus();
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QVERIFY(popup.isNull());
+    QVERIFY(other.hasFocus());
+    QVERIFY(editor.text().isEmpty());
+}
+
+void TestEditorUi::constant_search_layout_follows_popup_resize()
 {
     Editor editor;
     editor.setAutoCompletionEnabled(false);
@@ -4472,26 +6001,153 @@ void TestEditorUi::constant_completion_pages_follow_popup_resize()
     completion.showCompletion();
     QWidget* popup = QApplication::activePopupWidget();
     QVERIFY(popup);
-    QTreeWidget* category = popup->findChild<QTreeWidget*>(QStringLiteral("constantCompletionCategoryPopup"));
-    QTreeWidget* constants = popup->findChild<QTreeWidget*>(QStringLiteral("constantCompletionConstantsPopup"));
-    QVERIFY(category);
-    QVERIFY(constants);
-    popup->resize(320, 40);
-    QCOMPARE(category->size(), popup->size());
-    QCOMPARE(constants->size(), popup->size());
-    QCOMPARE(category->x(), 0);
-    QCOMPARE(constants->x(), popup->width());
-    QTRY_VERIFY(category->verticalScrollBar()->maximum() > 0);
-
-    QVERIFY(QMetaObject::invokeMethod(&completion, "showConstants", Qt::DirectConnection));
-    QTRY_COMPARE(category->x(), -popup->width());
-    popup->resize(300, 30);
-    QCOMPARE(category->size(), popup->size());
-    QCOMPARE(constants->size(), popup->size());
-    QCOMPARE(category->x(), -popup->width());
-    QCOMPARE(constants->x(), 0);
+    auto* search = popup->findChild<QLineEdit*>(QStringLiteral("constantCompletionSearch"));
+    auto* constants = popup->findChild<QTreeWidget*>();
+    QVERIFY(search && constants);
+    popup->resize(340, 150);
+    QCoreApplication::processEvents();
+    QVERIFY(popup->rect().contains(search->geometry()));
+    QVERIFY(popup->rect().contains(constants->geometry()));
+    QVERIFY(constants->height() > constants->sizeHintForRow(0));
     QTRY_VERIFY(constants->verticalScrollBar()->maximum() > 0);
+    search->setText(QStringLiteral("no such constant 49236"));
+    popup->resize(300, 130);
+    QCoreApplication::processEvents();
+    QLabel* empty = nullptr;
+    for (auto* label : popup->findChildren<QLabel*>()) {
+        if (label->property("dockListNoMatchLabel").toBool())
+            empty = label;
+    }
+    QVERIFY(empty);
+    QVERIFY(empty->isVisible());
+    QCOMPARE(empty->geometry(), constants->viewport()->rect());
+    QVERIFY(popup->rect().contains(constants->geometry()));
     popup->hide();
+}
+
+void TestEditorUi::constant_search_inline_units_preserve_full_insertion_data()
+{
+    QTest::addColumn<bool>("rightToLeft");
+    QTest::newRow("left-to-right") << false;
+    QTest::newRow("right-to-left") << true;
+}
+
+void TestEditorUi::constant_search_inline_units_preserve_full_insertion()
+{
+    QFETCH(bool, rightToLeft);
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    editor.setLayoutDirection(rightToLeft ? Qt::RightToLeft : Qt::LeftToRight);
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    ConstantCompletion completion(&editor);
+    QSignalSpy inserted(&completion, &ConstantCompletion::selectedCompletion);
+    completion.showCompletion();
+    QWidget* popup = QApplication::activePopupWidget();
+    QVERIFY(popup);
+    auto* search = popup->findChild<QLineEdit*>(QStringLiteral("constantCompletionSearch"));
+    auto* list = popup->findChild<QTreeWidget*>();
+    QVERIFY(search && list);
+    const QString name = QStringLiteral("electron mass energy equivalent in MeV");
+    search->setText(name);
+    QCOMPARE(list->topLevelItemCount(), 1);
+    auto* item = list->currentItem();
+    QVERIFY(item);
+    QCOMPARE(item->data(0, Qt::AccessibleTextRole).toString(), name + QStringLiteral(" MeV"));
+    QVERIFY(item->toolTip(0).contains(QStringLiteral("MeV")));
+    popup->resize(230, 140);
+    QFont font = list->font();
+    font.setPointSizeF(font.pointSizeF() * 1.5);
+    list->setFont(font);
+    QCoreApplication::processEvents();
+    const QPixmap rendered = list->viewport()->grab();
+    QVERIFY(!rendered.isNull());
+    // A narrow row may elide the label, but insertion keeps the full quantity.
+    QTest::keyClick(search, Qt::Key_Return);
+    QCOMPARE(inserted.count(), 1);
+    QCOMPARE(inserted.first().first().toString(),
+             QStringLiteral("0.51099895069%1[MeV]").arg(QChar(MathDsl::QuantSp)));
+}
+
+void TestEditorUi::constant_search_renders_units_in_secondary_shade_data()
+{
+    QTest::addColumn<QColor>("background");
+    QTest::addColumn<QColor>("foreground");
+    QTest::addColumn<bool>("selected");
+    QTest::addColumn<QColor>("expected");
+    QTest::newRow("dark") << QColor(QStringLiteral("#454257")) << QColor(QStringLiteral("#f7f5fc"))
+        << false << QColor(QStringLiteral("#cdcbe0"));
+    QTest::newRow("light") << QColor(QStringLiteral("#f3f3f3")) << QColor(QStringLiteral("#202025"))
+        << false << QColor(QStringLiteral("#282828"));
+    QTest::newRow("selected") << QColor(QStringLiteral("#5c586f")) << QColor(QStringLiteral("#f7f5fc"))
+        << true << QColor(QStringLiteral("#cdcbe0"));
+    QTest::newRow("neutral") << QColor(Qt::white) << QColor(Qt::black)
+        << false << QColor(QStringLiteral("#606060"));
+}
+
+void TestEditorUi::constant_search_renders_units_in_secondary_shade()
+{
+    QFETCH(QColor, background);
+    QFETCH(QColor, foreground);
+    QFETCH(bool, selected);
+    QFETCH(QColor, expected);
+    Editor editor;
+    editor.setThemePreviewColorScheme(ColorScheme::fromJsonObject(themeJson({
+        {QStringLiteral("background"), background.name()},
+        {QStringLiteral("unit"), expected.name()}
+    })));
+    ConstantCompletion completion(&editor);
+    auto* popup = editor.findChild<QWidget*>(QStringLiteral("constantCompletionPopup"));
+    QVERIFY(popup);
+    auto* list = popup->findChild<QTreeWidget*>();
+    auto* search = popup->findChild<QLineEdit*>(QStringLiteral("constantCompletionSearch"));
+    QVERIFY(list && search);
+    search->setText(QStringLiteral("electron mass energy equivalent in MeV"));
+    QCOMPARE(list->topLevelItemCount(), 1);
+    auto* item = list->topLevelItem(0);
+    // Paint the unit alone so name antialiasing cannot mimic its secondary color.
+    item->setText(0, QStringLiteral(" "));
+    QFont font = list->font();
+    font.setPixelSize(32);
+    list->setFont(font);
+    QPalette palette = list->palette();
+    for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
+        palette.setColor(group, QPalette::Base, background);
+        palette.setColor(group, QPalette::Highlight, background);
+        palette.setColor(group, QPalette::Text, foreground);
+        palette.setColor(group, QPalette::HighlightedText, foreground);
+    }
+    list->setPalette(palette);
+    QStyleOptionViewItem option;
+    option.initFrom(list);
+    option.rect = QRect(0, 0, 400, 64);
+    option.state = QStyle::State_Enabled | QStyle::State_Active;
+    if (selected)
+        option.state |= QStyle::State_Selected;
+    option.font = font;
+    option.fontMetrics = QFontMetrics(font);
+    for (const QColor& unitColor : {expected, QColor(QStringLiteral("#789abc"))}) {
+        editor.setThemePreviewColorScheme(ColorScheme::fromJsonObject(themeJson({
+            {QStringLiteral("background"), background.name()},
+            {QStringLiteral("unit"), unitColor.name()}
+        })));
+        QImage image(option.rect.size(), QImage::Format_ARGB32_Premultiplied);
+        image.fill(background);
+        QPainter painter(&image);
+        list->itemDelegate()->paint(&painter, option, list->model()->index(0, 0));
+        painter.end();
+        int unitPixels = 0;
+        int mainTextPixels = 0;
+        for (int y = 0; y < image.height(); ++y) {
+            for (int x = 0; x < image.width(); ++x) {
+                const QRgb pixel = image.pixel(x, y);
+                unitPixels += pixel == unitColor.rgba();
+                mainTextPixels += pixel == foreground.rgba();
+            }
+        }
+        QVERIFY(unitPixels > 20);
+        QCOMPARE(mainTextPixels, 0);
+    }
 }
 
 void TestEditorUi::constant_completion_popup_follows_wrapped_editor_cursor()
@@ -4605,7 +6261,7 @@ void TestEditorUi::constant_completion_popup_uses_configured_surface_colors()
 
     QList<QTreeWidget*> popupTrees;
     QTRY_VERIFY_WITH_TIMEOUT(!(popupTrees = s_constantCompletionPopupTrees()).isEmpty(), 1000);
-    QCOMPARE(popupTrees.count(), 2);
+    QCOMPARE(popupTrees.count(), 1);
     for (QTreeWidget* popup : popupTrees) {
         QCOMPARE(popup->palette().color(QPalette::Base), background);
         QCOMPARE(popup->palette().color(QPalette::Text), foreground);
@@ -4887,6 +6543,165 @@ void TestEditorUi::keeps_wrapped_cursor_line_visible_at_height_cap()
     QTRY_VERIFY(editor.cursorRect().bottom() <= editor.viewport()->rect().bottom());
 }
 
+void TestEditorUi::rewrites_operators_in_scrolled_expression_data()
+{
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QString>("token");
+    QTest::addColumn<int>("cursorOffset");
+    QTest::addColumn<bool>("inputMethod");
+    QTest::addColumn<int>("style");
+    const QString conversion = MathDsl::buildWrappedToken(MathDsl::TransOp, MathDsl::SubWrapSp)
+        + QStringLiteral("[]");
+    for (int style : {int(Settings::EditorDisplayModern), int(Settings::EditorDisplayClassic)}) {
+        const QByteArray prefix = style == Settings::EditorDisplayModern ? "modern-" : "classic-";
+        QTest::newRow(QByteArray(prefix + "double-minus").constData())
+            << QStringLiteral("--") << conversion << 1 << false << style;
+        QTest::newRow(QByteArray(prefix + "arrow").constData())
+            << QStringLiteral("->") << conversion << 1 << false << style;
+        QTest::newRow(QByteArray(prefix + "power").constData())
+            << QStringLiteral("**") << QStringLiteral("^") << 0 << false << style;
+        QTest::newRow(QByteArray(prefix + "superscript").constData())
+            << QStringLiteral("^2") << QString(MathDsl::Pow2) << 0 << false << style;
+        QTest::newRow(QByteArray(prefix + "ime-superscript").constData())
+            << QStringLiteral("^2") << QString(MathDsl::Pow2) << 0 << true << style;
+    }
+}
+
+void TestEditorUi::rewrites_operators_in_scrolled_expression()
+{
+    QFETCH(QString, input);
+    QFETCH(QString, token);
+    QFETCH(int, cursorOffset);
+    QFETCH(bool, inputMethod);
+    QFETCH(int, style);
+    Settings::instance()->editorDisplayStyle = Settings::EditorDisplayStyle(style);
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    editor.setAutoCalcEnabled(false);
+    editor.setFixedWidth(220);
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+
+    const QString expression = QStringLiteral("1234567890+").repeated(40) + QStringLiteral("1");
+    editor.setText(expression);
+    editor.setCursorPosition(editor.text().size());
+    QVERIFY(editor.document()->firstBlock().layout()->lineCount() > 5);
+    QVERIFY(editor.verticalScrollBar()->value() > 0);
+
+    const auto type = [&](const QString& text) {
+        if (inputMethod) {
+            QInputMethodEvent event;
+            event.setCommitString(text);
+            QApplication::sendEvent(&editor, &event);
+        } else {
+            QTest::keyClicks(&editor, text);
+        }
+    };
+    type(input.left(1));
+    const QString beforeRewrite = editor.document()->toRawText();
+    type(input.mid(1));
+    const QString afterRewrite = editor.document()->toRawText();
+    QCOMPARE(afterRewrite, expression + token);
+    QCOMPARE(editor.textCursor().position(), afterRewrite.size() - cursorOffset);
+    QVERIFY(editor.cursorRect().top() >= 0);
+    QVERIFY(editor.cursorRect().bottom() < editor.viewport()->height());
+
+    editor.undo();
+    QCOMPARE(editor.document()->toRawText(), beforeRewrite);
+    editor.undo();
+    QCOMPARE(editor.document()->toRawText(), expression);
+    editor.redo();
+    editor.redo();
+    QCOMPARE(editor.document()->toRawText(), afterRewrite);
+    QVERIFY(editor.cursorRect().top() >= 0);
+    QVERIFY(editor.cursorRect().bottom() < editor.viewport()->height());
+}
+
+void TestEditorUi::classic_editor_keeps_wrapped_input_visible_and_preserves_undo()
+{
+    Settings* settings = Settings::instance();
+    settings->autoCalc = false;
+    settings->editorDisplayStyle = Settings::EditorDisplayClassic;
+    Editor editor;
+    editor.setFixedWidth(220);
+    editor.rehighlight();
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+    editor.setText(QStringLiteral("2 [gypq]"));
+    editor.setCursorPosition(editor.text().size());
+    const int singleLineHeight = editor.height();
+    const int singleLineTextHeight = EditorGeometryTestHelpers::visibleTextHeight(editor);
+    QVERIFY(editor.cursorRect().bottom() < editor.viewport()->height());
+    editor.setText(QStringLiteral("1\n2\n3\n4\n5"));
+    QCOMPARE(editor.height() - singleLineHeight,
+             EditorGeometryTestHelpers::visibleTextHeight(editor) - singleLineTextHeight);
+    const QString input = QStringLiteral("1234567890+").repeated(30);
+    editor.setText(input);
+    editor.setCursorPosition(input.size());
+    QTRY_VERIFY(editor.document()->firstBlock().layout()->lineCount() > 5);
+    QTRY_COMPARE(editor.height() - singleLineHeight,
+                 EditorGeometryTestHelpers::visibleTextHeight(editor) - singleLineTextHeight);
+    QTRY_VERIFY(editor.cursorRect().top() >= 0);
+    QTRY_VERIFY(editor.cursorRect().bottom() < editor.viewport()->height());
+    QTest::keyClicks(&editor, QStringLiteral("2"));
+    QCOMPARE(editor.text(), input + QStringLiteral("2"));
+    settings->editorDisplayStyle = Settings::EditorDisplayModern;
+    editor.rehighlight();
+    QTRY_VERIFY(editor.cursorRect().top() >= 0);
+    QTRY_VERIFY(editor.cursorRect().bottom() < editor.viewport()->height());
+    editor.undo();
+    QCOMPARE(editor.text(), input);
+    settings->editorDisplayStyle = Settings::EditorDisplayClassic;
+    editor.rehighlight();
+    editor.redo();
+    QCOMPARE(editor.text(), input + QStringLiteral("2"));
+    QTRY_VERIFY(editor.cursorRect().top() >= 0);
+    QTRY_VERIFY(editor.cursorRect().bottom() < editor.viewport()->height());
+}
+
+void TestEditorUi::classic_completion_popups_follow_text_inset_data()
+{
+    QTest::addColumn<bool>("constant");
+    QTest::newRow("symbol-completion") << false;
+    QTest::newRow("constant-completion") << true;
+}
+
+void TestEditorUi::classic_completion_popups_follow_text_inset()
+{
+    QFETCH(bool, constant);
+    Settings::instance()->editorDisplayStyle = Settings::EditorDisplayClassic;
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    editor.setFixedWidth(340);
+    editor.rehighlight();
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+    const QRect screen = editor.screen()->availableGeometry();
+    editor.move(screen.left() + 20, screen.top() + 80);
+    editor.setText(constant ? QString() : QStringLiteral("co"));
+    editor.setCursorPosition(editor.text().size());
+    QCoreApplication::processEvents();
+    QWidget* popup = nullptr;
+    if (constant) {
+        QTest::keyClick(&editor, Qt::Key_Space, Qt::ControlModifier);
+        popup = QApplication::activePopupWidget();
+    } else {
+        auto* completion = editor.findChild<EditorCompletion*>();
+        QVERIFY(completion);
+        completion->showCompletion({QStringLiteral("cos:Cosine"),
+                                    QStringLiteral("cosh:Hyperbolic cosine")});
+        popup = s_completionPopupTree();
+    }
+    QVERIFY(popup);
+    const int textX = editor.mapToGlobal(QPoint(UiConfig::ClassicTextInset, 0)).x();
+    QCOMPARE(popup->geometry().left(), textX);
+    QVERIFY(screen.contains(popup->geometry()));
+    popup->hide();
+}
+
 void TestEditorUi::editor_height_adds_only_one_line_height_per_visible_line()
 {
     Editor editor;
@@ -4895,9 +6710,11 @@ void TestEditorUi::editor_height_adds_only_one_line_height_per_visible_line()
 
     editor.setText(QStringLiteral("1"));
     const int singleLineHeight = editor.height();
+    const int singleLineTextHeight = EditorGeometryTestHelpers::visibleTextHeight(editor);
 
     editor.setText(QStringLiteral("1\n2\n3\n4\n5"));
-    QCOMPARE(editor.height() - singleLineHeight, 4 * editor.fontMetrics().lineSpacing());
+    QCOMPARE(editor.height() - singleLineHeight,
+             EditorGeometryTestHelpers::visibleTextHeight(editor) - singleLineTextHeight);
 }
 
 void TestEditorUi::editor_keeps_unit_descenders_inside_viewport()
@@ -5061,6 +6878,90 @@ void TestEditorUi::themed_cursor_has_only_two_states_at_display_scale()
     QVERIFY(sawHidden);
 }
 
+void TestEditorUi::non_blinking_cursor_stays_visible_data()
+{
+    QTest::addColumn<qreal>("scale");
+    QTest::newRow("100-percent") << qreal(1);
+    QTest::newRow("125-percent") << qreal(1.25);
+    QTest::newRow("150-percent") << qreal(1.5);
+}
+
+void TestEditorUi::non_blinking_cursor_stays_visible()
+{
+    QFETCH(qreal, scale);
+    Editor editor;
+    editor.setAutoCalcEnabled(false);
+    editor.setAutoCompletionEnabled(false);
+    const QColor primary(QStringLiteral("#ff3377"));
+    editor.setThemePrimaryColor(primary, false);
+    editor.setText(QStringLiteral("123"));
+    editor.setCursorPosition(3);
+    editor.resize(400, editor.height());
+    editor.show();
+    editor.activateWindow();
+    editor.setFocus();
+    QTRY_VERIFY(editor.hasFocus());
+    QVERIFY(editor.isCursorBlinkingEnabled());
+
+    const auto cursorPixel = [&]() {
+        QImage image(QSize(qCeil(editor.viewport()->width() * scale),
+                           qCeil(editor.viewport()->height() * scale)),
+                     QImage::Format_ARGB32_Premultiplied);
+        image.setDevicePixelRatio(scale);
+        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        editor.viewport()->render(&painter);
+        const QRect cursor = editor.cursorRect();
+        const int cursorX = cursor.x() + (cursor.width() - 2) / 2 + 1;
+        return image.pixelColor(qFloor(cursorX * scale), qFloor(cursor.center().y() * scale));
+    };
+    const int flashTime = qMax(1000, QApplication::cursorFlashTime());
+    QTRY_VERIFY_WITH_TIMEOUT(cursorPixel().rgba() != primary.rgba(), flashTime * 2);
+    editor.setCursorBlinkingEnabled(false);
+    QCOMPARE(cursorPixel().rgba(), primary.rgba());
+
+    // Editing, focus changes and theme updates must keep the cursor steady.
+    QTest::keyClick(&editor, Qt::Key_Left);
+    QTest::keyClick(&editor, Qt::Key_4);
+    editor.clearFocus();
+    QVERIFY(cursorPixel().rgba() != primary.rgba());
+    editor.setFocus();
+    QTRY_VERIFY(editor.hasFocus());
+    editor.setThemePrimaryColor(primary, false);
+    QElapsedTimer elapsed;
+    elapsed.start();
+    while (elapsed.elapsed() < flashTime * 2) {
+        QCOMPARE(cursorPixel().rgba(), primary.rgba());
+        QTest::qWait(20);
+    }
+
+    editor.setCustomCursorVisible(false);
+    QVERIFY(cursorPixel().rgba() != primary.rgba());
+    editor.setCustomCursorVisible(true);
+    QCOMPARE(cursorPixel().rgba(), primary.rgba());
+    editor.setCursorBlinkingEnabled(true);
+    QTRY_VERIFY_WITH_TIMEOUT(cursorPixel().rgba() != primary.rgba(), flashTime * 2);
+    QTRY_COMPARE_WITH_TIMEOUT(cursorPixel().rgba(), primary.rgba(), flashTime * 2);
+}
+
+void TestEditorUi::cursor_blinking_survives_settings_reload()
+{
+    Settings* settings = Settings::instance();
+    QVERIFY(settings->cursorBlinking);
+    for (bool enabled : {false, true}) {
+        settings->cursorBlinking = enabled;
+        settings->save();
+        settings->cursorBlinking = !enabled;
+        settings->load();
+        QCOMPARE(settings->cursorBlinking, enabled);
+        Editor editor;
+        QCOMPARE(editor.isCursorBlinkingEnabled(), enabled);
+    }
+    settings->cursorBlinking = false;
+    QVERIFY(settings->resetToDefaults());
+    QVERIFY(settings->cursorBlinking);
+}
+
 void TestEditorUi::cursor_free_painting_preserves_text_and_selections_data()
 {
     QTest::addColumn<QString>("text");
@@ -5116,6 +7017,545 @@ void TestEditorUi::cursor_free_painting_preserves_text_and_selections()
     const QImage actual = editor.viewport()->grab().toImage();
     QVERIFY2(actual == expected,
              "Cursor-free painting changes Qt's text, background, or selection rendering");
+}
+
+void TestEditorUi::input_digit_grouping_formats_only_integer_digits_data()
+{
+    QTest::addColumn<QString>("input");
+    QTest::addColumn<QList<int>>("positions");
+    QTest::newRow("short") << QStringLiteral("999") << QList<int>{};
+    QTest::newRow("thousand") << QStringLiteral("1000") << QList<int>{0};
+    QTest::newRow("million") << QStringLiteral("1234567") << QList<int>{0, 3};
+    QTest::newRow("fraction") << QStringLiteral("1234.56789") << QList<int>{0};
+    QTest::newRow("comma-fraction") << QStringLiteral("1234,56789") << QList<int>{0};
+    QTest::newRow("fraction-only") << QStringLiteral("0.1234567") << QList<int>{};
+    QTest::newRow("scientific") << QStringLiteral("1000e1234") << QList<int>{0};
+    QTest::newRow("hex") << QStringLiteral("0x12345") << QList<int>{2};
+    QTest::newRow("hex-alias") << QStringLiteral("#12345") << QList<int>{1};
+    QTest::newRow("binary") << QStringLiteral("0b10101010") << QList<int>{5};
+    QTest::newRow("octal") << QStringLiteral("0o1234567") << QList<int>{2, 5};
+    QTest::newRow("decimal-prefix") << QStringLiteral("0d1234567") << QList<int>{2, 5};
+    QTest::newRow("expression") << QStringLiteral("1000 + 20000") << QList<int>{0, 8};
+    QTest::newRow("identifier-comment") << QStringLiteral("x1234 ? 1000") << QList<int>{};
+    QTest::newRow("unit-power") << QStringLiteral("1000[m²] + 2000") << QList<int>{0, 11};
+    QTest::newRow("manual-spaces") << QStringLiteral("1 234 567") << QList<int>{};
+    QTest::newRow("manual-underscores") << QStringLiteral("1_234_567") << QList<int>{};
+}
+
+void TestEditorUi::input_digit_grouping_formats_only_integer_digits()
+{
+    QFETCH(QString, input);
+    QFETCH(QList<int>, positions);
+    Settings* settings = Settings::instance();
+    settings->numberFormatStyle = Settings::NumberFormatThreeDigitSpaceDot;
+    settings->applyNumberFormatStyle();
+    QPlainTextEdit inputEdit;
+    SyntaxHighlighter inputHighlighter(&inputEdit, true);
+    inputEdit.setPlainText(input);
+    QPlainTextEdit display;
+    SyntaxHighlighter displayHighlighter(&display);
+    display.setPlainText(input);
+
+    auto groupedPositions = [](QPlainTextEdit& edit) {
+        QList<int> result;
+        for (const auto& range : edit.document()->firstBlock().layout()->formats()) {
+            if (range.format.hasProperty(SyntaxHighlighter::InputDigitSeparator)) {
+                for (int pos = range.start; pos < range.start + range.length; ++pos)
+                    result.append(pos);
+            }
+        }
+        return result;
+    };
+    for (bool highlighting : {true, false}) {
+        settings->syntaxHighlighting = highlighting;
+        for (bool grouping : {false, true, false}) {
+            settings->inputDigitGrouping = grouping;
+            inputHighlighter.rehighlight();
+            displayHighlighter.rehighlight();
+            QCOMPARE(groupedPositions(inputEdit), grouping ? positions : QList<int>{});
+            QVERIFY(groupedPositions(display).isEmpty());
+            QCOMPARE(inputEdit.toPlainText(), input);
+        }
+    }
+}
+
+void TestEditorUi::input_digit_grouping_preserves_typing_selection_and_undo()
+{
+    Settings::instance()->numberFormatStyle = Settings::NumberFormatThreeDigitSpaceDot;
+    Settings::instance()->applyNumberFormatStyle();
+    Settings::instance()->inputDigitGrouping = true;
+    Editor editor;
+    editor.setAutoCalcEnabled(false);
+    editor.setAutoCompletionEnabled(false);
+    editor.show();
+    QTest::keyClicks(&editor, "1000");
+    editor.rehighlight();
+    QCOMPARE(editor.text(), QStringLiteral("1000"));
+    QCOMPARE(editor.textCursor().position(), 4);
+    bool hasGap = false;
+    for (const auto& range : editor.document()->firstBlock().layout()->formats())
+        hasGap |= range.format.hasProperty(SyntaxHighlighter::InputDigitSeparator);
+    QVERIFY(hasGap);
+
+    QTest::keyClick(&editor, Qt::Key_Left);
+    QCOMPARE(editor.textCursor().position(), 3);
+    QTest::keyClick(&editor, Qt::Key_Backspace);
+    QCOMPARE(editor.text(), QStringLiteral("100"));
+    editor.undo();
+    QCOMPARE(editor.text(), QStringLiteral("1000"));
+    editor.redo();
+    QCOMPARE(editor.text(), QStringLiteral("100"));
+    editor.undo();
+    editor.selectAll();
+    editor.copy();
+    QCOMPARE(QApplication::clipboard()->text(), QStringLiteral("1000"));
+    const QTextCursor before = editor.textCursor();
+    Settings::instance()->inputDigitGrouping = false;
+    editor.rehighlight();
+    QCOMPARE(editor.textCursor().position(), before.position());
+    QCOMPARE(editor.textCursor().anchor(), before.anchor());
+    editor.undo();
+    QCOMPARE(editor.text(), QStringLiteral("100"));
+}
+
+void TestEditorUi::input_digit_grouping_follows_number_format_data()
+{
+    QTest::addColumn<int>("style");
+    QTest::addColumn<QString>("expected");
+    QTest::newRow("ungrouped-dot") << int(Settings::NumberFormatNoGroupingDot) << QStringLiteral("1234567.1234567");
+    QTest::newRow("ungrouped-comma") << int(Settings::NumberFormatNoGroupingComma) << QStringLiteral("1234567,1234567");
+    QTest::newRow("si-dot") << int(Settings::NumberFormatSIDot) << QStringLiteral("1 234 567.123 456 7");
+    QTest::newRow("si-comma") << int(Settings::NumberFormatSIComma) << QStringLiteral("1 234 567,123 456 7");
+    QTest::newRow("comma-dot") << int(Settings::NumberFormatThreeDigitCommaDot) << QStringLiteral("1,234,567.1234567");
+    QTest::newRow("comma-dot-fraction") << int(Settings::NumberFormatThreeDigitCommaDotFraction) << QStringLiteral("1,234,567.123,456,7");
+    QTest::newRow("dot-comma") << int(Settings::NumberFormatThreeDigitDotComma) << QStringLiteral("1.234.567,1234567");
+    QTest::newRow("dot-comma-fraction") << int(Settings::NumberFormatThreeDigitDotCommaFraction) << QStringLiteral("1.234.567,123.456.7");
+    QTest::newRow("space-dot") << int(Settings::NumberFormatThreeDigitSpaceDot) << QStringLiteral("1 234 567.1234567");
+    QTest::newRow("space-comma") << int(Settings::NumberFormatThreeDigitSpaceComma) << QStringLiteral("1 234 567,1234567");
+    QTest::newRow("underscore-dot") << int(Settings::NumberFormatThreeDigitUnderscoreDot) << QStringLiteral("1_234_567.1234567");
+    QTest::newRow("underscore-dot-fraction") << int(Settings::NumberFormatThreeDigitUnderscoreDotFraction) << QStringLiteral("1_234_567.123_456_7");
+    QTest::newRow("underscore-comma") << int(Settings::NumberFormatThreeDigitUnderscoreComma) << QStringLiteral("1_234_567,1234567");
+    QTest::newRow("underscore-comma-fraction") << int(Settings::NumberFormatThreeDigitUnderscoreCommaFraction) << QStringLiteral("1_234_567,123_456_7");
+    QTest::newRow("indian") << int(Settings::NumberFormatIndianCommaDot) << QStringLiteral("12,34,567.1234567");
+}
+
+void TestEditorUi::input_digit_grouping_follows_number_format()
+{
+    QFETCH(int, style);
+    QFETCH(QString, expected);
+    Settings* settings = Settings::instance();
+    settings->numberFormatStyle = static_cast<Settings::NumberFormatStyle>(style);
+    settings->applyNumberFormatStyle();
+    settings->inputDigitGrouping = true;
+    const QString raw = QStringLiteral("1234567") + QChar(settings->decimalSeparator())
+        + QStringLiteral("1234567");
+    Editor editor;
+    editor.setText(raw);
+    editor.rehighlight();
+    const auto displayedText = [&editor]() {
+        QString display = editor.text();
+        const auto ranges = editor.document()->firstBlock().layout()->formats();
+        for (auto it = ranges.crbegin(); it != ranges.crend(); ++it) {
+            const QString radix = it->format.stringProperty(SyntaxHighlighter::InputRadixReplacement);
+            if (!radix.isEmpty())
+                display.replace(it->start, 1, radix);
+            const QString separator = it->format.stringProperty(SyntaxHighlighter::InputDigitSeparator);
+            if (!separator.isEmpty()) {
+                for (int pos = it->start + it->length - 1; pos >= it->start; --pos)
+                    display.insert(pos + 1, separator);
+            }
+        }
+        return display;
+    };
+    for (bool syntaxHighlighting : {true, false}) {
+        settings->syntaxHighlighting = syntaxHighlighting;
+        editor.rehighlight();
+        QCOMPARE(displayedText(), expected);
+        QCOMPARE(editor.text(), raw);
+        QCOMPARE(NumberFormatter::formatNumericLiteralForDisplay(raw), expected);
+    }
+    if (settings->decimalSeparator() == ',') {
+        editor.setText(QStringLiteral("1234567.1234567"));
+        editor.rehighlight();
+        QCOMPARE(displayedText(), QString(expected).replace(QLatin1Char(','), QLatin1Char('.')));
+    }
+    editor.setText(expected);
+    editor.rehighlight();
+    QCOMPARE(displayedText(), expected);
+    settings->inputDigitGrouping = false;
+    editor.setText(raw);
+    editor.rehighlight();
+    QCOMPARE(displayedText(), raw);
+}
+
+void TestEditorUi::input_digit_grouping_paints_separator_glyphs_data()
+{
+    QTest::addColumn<bool>("themed");
+    QTest::addColumn<bool>("selected");
+    QTest::newRow("native") << false << false;
+    QTest::newRow("native-selected") << false << true;
+    QTest::newRow("themed") << true << false;
+    QTest::newRow("themed-selected") << true << true;
+}
+
+void TestEditorUi::input_digit_grouping_paints_separator_glyphs()
+{
+    QFETCH(bool, themed);
+    QFETCH(bool, selected);
+    Settings* settings = Settings::instance();
+    settings->inputDigitGrouping = true;
+    Editor editor;
+    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    font.setPointSize(20);
+    editor.setFont(font);
+    editor.setAutoCalcEnabled(false);
+    editor.setAutoCompletionEnabled(false);
+    editor.resize(600, 120);
+    editor.show();
+    editor.clearFocus();
+    editor.setThemePrimaryColor(themed ? QColor(QStringLiteral("#2277aa")) : QColor(), false);
+    for (auto style : {Settings::NumberFormatThreeDigitCommaDot,
+                       Settings::NumberFormatThreeDigitDotComma,
+                       Settings::NumberFormatThreeDigitUnderscoreDot}) {
+        settings->numberFormatStyle = style;
+        settings->applyNumberFormatStyle();
+        editor.setText(QStringLiteral("1234567.56"));
+        editor.rehighlight();
+        if (selected)
+            editor.selectAll();
+        QCoreApplication::processEvents();
+        editor.clearFocus();
+        const auto separatorWidth = [&editor]() {
+            for (const auto& range : editor.document()->firstBlock().layout()->formats()) {
+                if (range.format.hasProperty(SyntaxHighlighter::InputDigitSeparator))
+                    return range.format.fontLetterSpacing();
+            }
+            return qreal(0);
+        };
+        const QString separator = settings->digitGroupingSeparator();
+        QCOMPARE(separatorWidth(), QFontMetricsF(editor.font()).horizontalAdvance(separator));
+        editor.increaseFontPointSize();
+        // Hinting can give adjacent point sizes the same glyph width.
+        // The gap must follow the current font's metrics in either case.
+        QCOMPARE(separatorWidth(), QFontMetricsF(editor.font()).horizontalAdvance(separator));
+        QVERIFY(separatorWidth() > 0);
+        const QImage withSeparators = editor.viewport()->grab().toImage();
+        QTextLayout* layout = editor.document()->firstBlock().layout();
+        auto formats = layout->formats();
+        for (auto& range : formats) {
+            range.format.clearProperty(SyntaxHighlighter::InputDigitSeparator);
+            range.format.clearProperty(SyntaxHighlighter::InputRadixReplacement);
+        }
+        layout->setFormats(formats);
+        editor.viewport()->update();
+        const QImage withoutSeparators = editor.viewport()->grab().toImage();
+        QVERIFY2(withSeparators != withoutSeparators, "Input separators must paint glyphs, not just gaps");
+    }
+}
+
+void TestEditorUi::history_recall_respects_input_adjustments_data()
+{
+    QTest::addColumn<QString>("stored");
+    QTest::addColumn<QString>("raw");
+    QTest::addColumn<bool>("adjustments");
+    const QList<QPair<QString, QString>> expressions {
+        {QString::fromUtf8("2³"), QStringLiteral("2^3")},
+        {QString::fromUtf8("2¹²"), QStringLiteral("2^12")},
+        {QString::fromUtf8("2⁻³"), QStringLiteral("2^(-3)")},
+        {QString::fromUtf8("sin²(1)"), QStringLiteral("sin(1)^2")},
+        {QString::fromUtf8("sin²(1)³"), QStringLiteral("(sin(1)^2)^3")},
+        {QString::fromUtf8("2[m²/s⁻³]"), QStringLiteral("2[m^2/s^(-3)]")},
+        {QString::fromUtf8("2 × 3 · 4 / 2 − 1"), QStringLiteral("2 * 3 * 4 / 2 - 1")},
+        {QString::fromUtf8("2[m] → [cm]"), QStringLiteral("2[m] -> [cm]")},
+        {QString::fromUtf8("2³ ?  4² × pi -> [m] ?\t"),
+         QString::fromUtf8("2^3 ?  4² × pi -> [m] ?\t")}
+    };
+    for (int i = 0; i < expressions.size(); ++i) {
+        for (bool adjustments : {false, true}) {
+            QTest::newRow(qPrintable(QStringLiteral("%1-%2").arg(i).arg(adjustments)))
+                << expressions.at(i).first << expressions.at(i).second << adjustments;
+        }
+    }
+}
+
+void TestEditorUi::history_recall_respects_input_adjustments()
+{
+    QFETCH(QString, stored);
+    QFETCH(QString, raw);
+    QFETCH(bool, adjustments);
+    Settings::instance()->automaticInputAdjustments = adjustments;
+    Session session;
+    session.addHistoryEntry(HistoryEntry(QStringLiteral("7"), Quantity(7)));
+    session.addHistoryEntry(HistoryEntry(stored, Quantity(8)));
+    Editor editor;
+    editor.setSession(&session);
+    editor.setAutoCompletionEnabled(false);
+    editor.setAutoCalcEnabled(false);
+    const QString draft = QString::fromUtf8("unfinished² ? keep ×");
+    editor.setText(draft);
+    QVERIFY(QMetaObject::invokeMethod(&editor, "historyBack"));
+    const QString expected = adjustments ? stored : raw;
+    QCOMPARE(editor.text(), expected);
+    QCOMPARE(editor.cursorPosition(), expected.size());
+    QVERIFY(QMetaObject::invokeMethod(&editor, "historyBack"));
+    QCOMPARE(editor.text(), QStringLiteral("7"));
+    QVERIFY(QMetaObject::invokeMethod(&editor, "historyForward"));
+    QCOMPARE(editor.text(), expected);
+    QVERIFY(QMetaObject::invokeMethod(&editor, "historyForward"));
+    QCOMPARE(editor.text(), draft);
+    QCOMPARE(session.historyEntryAtRef(1).expr(), stored);
+
+    Evaluator evaluator;
+    evaluator.setExpression(evaluator.autoFix(stored));
+    const QString originalResult = NumberFormatter::format(evaluator.eval());
+    QVERIFY2(evaluator.error().isEmpty(), qPrintable(evaluator.error()));
+    evaluator.setExpression(evaluator.autoFix(expected));
+    QCOMPARE(NumberFormatter::format(evaluator.eval()), originalResult);
+    QVERIFY2(evaluator.error().isEmpty(), qPrintable(evaluator.error()));
+}
+
+void TestEditorUi::raw_input_preserves_text_data()
+{
+    QTest::addColumn<QString>("input");
+    QTest::newRow("operators") << QStringLiteral("1+2*3/4--5**2");
+    QTest::newRow("powers") << QStringLiteral("2^3 + 2[m^2]");
+    QTest::newRow("spaces-and-brackets") << QStringLiteral("  2 (3)  [m] ?text");
+    QTest::newRow("invalid-characters") << QStringLiteral("@|++^^[ +3?{}]");
+    QTest::newRow("decimal-and-units") << QStringLiteral(".5[m / s^2]");
+    QTest::newRow("unicode") << QString::fromUtf8("2 × 3 ÷ 4 − 5 → [µm²]");
+}
+
+void TestEditorUi::raw_input_preserves_text()
+{
+    QFETCH(QString, input);
+    Settings::instance()->automaticInputAdjustments = false;
+    for (int source = 0; source < 4; ++source) {
+        Editor editor;
+        editor.setAutoCompletionEnabled(false);
+        editor.setAutoCalcEnabled(false);
+        switch (source) {
+        case 0:
+            // Qt's keyClicks only supports ASCII. Send Unicode text through
+            // key events too, as keyboard layouts can produce these glyphs.
+            for (QChar ch : input) {
+                QKeyEvent key(QEvent::KeyPress, Qt::Key_unknown, Qt::NoModifier, QString(ch));
+                QApplication::sendEvent(&editor, &key);
+            }
+            break;
+        case 1:
+            for (QChar ch : input) {
+                QInputMethodEvent commit;
+                commit.setCommitString(QString(ch));
+                QApplication::sendEvent(&editor, &commit);
+            }
+            break;
+        case 2:
+            editor.insert(input);
+            break;
+        case 3:
+            editor.setText(input);
+            break;
+        }
+        QCOMPARE(editor.text(), input);
+        editor.setCursorPosition(editor.text().size());
+        QInputMethodEvent replacement;
+        replacement.setCommitString(QStringLiteral("*^@"), -1, 1);
+        QApplication::sendEvent(&editor, &replacement);
+        QCOMPARE(editor.text(), input.chopped(1) + QStringLiteral("*^@"));
+        editor.selectAll();
+        QApplication::clipboard()->setText(input);
+        QSignalSpy bulkEvaluation(&editor, &Editor::bulkEvaluationStarted);
+        editor.paste();
+        QCOMPARE(editor.text(), input.trimmed());
+        QCOMPARE(bulkEvaluation.count(), 0);
+        editor.undo();
+        QCOMPARE(editor.text(), input.chopped(1) + QStringLiteral("*^@"));
+        editor.redo();
+        QCOMPARE(editor.text(), input.trimmed());
+    }
+}
+
+void TestEditorUi::raw_input_keeps_character_navigation_and_deletion()
+{
+    Settings::instance()->automaticInputAdjustments = false;
+    Editor editor;
+    editor.setText(QStringLiteral("1 + 2"));
+    editor.setCursorPosition(4);
+    QTest::keyClick(&editor, Qt::Key_Left);
+    QCOMPARE(editor.cursorPosition(), 3);
+    QTest::keyClick(&editor, Qt::Key_Right);
+    QCOMPARE(editor.cursorPosition(), 4);
+    QTest::keyClick(&editor, Qt::Key_Backspace);
+    QCOMPARE(editor.text(), QStringLiteral("1 +2"));
+    editor.undo();
+    editor.setCursorPosition(1);
+    editor.doDelete();
+    QCOMPARE(editor.text(), QStringLiteral("1+ 2"));
+    editor.undo();
+    editor.setCursorPosition(4);
+    editor.doBackspace();
+    QCOMPARE(editor.text(), QStringLiteral("1 +2"));
+    editor.undo();
+    editor.setCursorPosition(1);
+    QTest::keyClick(&editor, Qt::Key_Delete);
+    QCOMPARE(editor.text(), QStringLiteral("1+ 2"));
+}
+
+void TestEditorUi::raw_input_preserves_calculator_commands()
+{
+    Settings::instance()->automaticInputAdjustments = false;
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    QTest::keyClicks(&editor, "2^3");
+    QCOMPARE(editor.text(), QStringLiteral("2^3"));
+    QSignalSpy enter(&editor, &Editor::returnPressed);
+    QSignalSpy escape(&editor, &Editor::escapePressed);
+    QTest::keyClick(&editor, Qt::Key_Return);
+    QCOMPARE(enter.count(), 1);
+    QCOMPARE(editor.text(), QStringLiteral("2^3"));
+    QTest::keyClick(&editor, Qt::Key_Escape);
+    QCOMPARE(escape.count(), 1);
+    QTest::keyClick(&editor, Qt::Key_Tab);
+    QCOMPARE(editor.text(), QStringLiteral("2^3"));
+    editor.setHistoryArrowNavigationEnabled(false);
+    QTest::keyClick(&editor, Qt::Key_Home);
+    QTest::keyClick(&editor, Qt::Key_Right, Qt::ShiftModifier);
+    QCOMPARE(editor.textCursor().selectedText(), QStringLiteral("2"));
+    QTest::keyClicks(&editor, "@");
+    QCOMPARE(editor.text(), QStringLiteral("@^3"));
+}
+
+void TestEditorUi::raw_input_switch_preserves_document_and_restores_adjustments()
+{
+    Settings::instance()->automaticInputAdjustments = false;
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    editor.setAutoCalcEnabled(false);
+    editor.setText(QStringLiteral("1+2*3^4"));
+    editor.setCursorPosition(3);
+    QTextCursor cursor = editor.textCursor();
+    cursor.setPosition(5, QTextCursor::KeepAnchor);
+    editor.setTextCursor(cursor);
+    QSignalSpy changed(&editor, &Editor::textChanged);
+    Settings::instance()->automaticInputAdjustments = true;
+    editor.refreshInputMode();
+    QCOMPARE(changed.count(), 0);
+    QCOMPARE(editor.text(), QStringLiteral("1+2*3^4"));
+    QCOMPARE(editor.textCursor().position(), 5);
+    QCOMPARE(editor.textCursor().anchor(), 3);
+    editor.clear();
+    QTest::keyClicks(&editor, "2^3");
+    QCOMPARE(editor.text(), QString::fromUtf8("2³"));
+    Settings::instance()->automaticInputAdjustments = false;
+    editor.refreshInputMode();
+    QTest::keyClicks(&editor, "+4");
+    QCOMPARE(editor.text(), QString::fromUtf8("2³+4"));
+}
+
+void TestEditorUi::raw_input_preserves_visible_digit_grouping()
+{
+    Settings* settings = Settings::instance();
+    settings->automaticInputAdjustments = false;
+    settings->inputDigitGrouping = true;
+    settings->digitGrouping = 3;
+    settings->numberFormatStyle = Settings::NumberFormatThreeDigitCommaDot;
+    settings->applyNumberFormatStyle();
+    Editor editor;
+    editor.setAutoCompletionEnabled(false);
+    editor.setAutoCalcEnabled(false);
+    editor.setText(QStringLiteral("1234567.123456"));
+    editor.setCustomCursorVisible(false);
+    editor.refreshInputMode();
+    editor.setFixedWidth(500);
+    editor.show();
+    QCoreApplication::processEvents();
+    bool hasSeparator = false;
+    for (const auto& range : editor.document()->firstBlock().layout()->formats()) {
+        hasSeparator |= range.format.hasProperty(SyntaxHighlighter::InputDigitSeparator);
+    }
+    QVERIFY(hasSeparator);
+    const QImage raw = editor.viewport()->grab().toImage();
+    settings->automaticInputAdjustments = true;
+    editor.refreshInputMode();
+    QCOMPARE(raw, editor.viewport()->grab().toImage());
+    settings->automaticInputAdjustments = false;
+    editor.refreshInputMode();
+    QCOMPARE(raw, editor.viewport()->grab().toImage());
+    settings->inputDigitGrouping = false;
+    settings->digitGrouping = 0;
+    editor.rehighlight();
+    QVERIFY(raw != editor.viewport()->grab().toImage());
+    for (const auto& range : editor.document()->firstBlock().layout()->formats())
+        QVERIFY(!range.format.hasProperty(SyntaxHighlighter::InputDigitSeparator));
+    QCOMPARE(editor.text(), QStringLiteral("1234567.123456"));
+}
+
+void TestEditorUi::raw_input_preserves_tab_completion_data()
+{
+    QTest::addColumn<bool>("rawInput");
+    QTest::newRow("automatic-editing") << false;
+    QTest::newRow("raw-input") << true;
+}
+
+void TestEditorUi::raw_input_preserves_tab_completion()
+{
+    QFETCH(bool, rawInput);
+    Settings::instance()->automaticInputAdjustments = !rawInput;
+    Editor editor;
+    editor.setAutoCalcEnabled(false);
+    editor.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&editor));
+    editor.setFocus();
+    QTest::keyClicks(&editor, "co");
+    QVERIFY(QMetaObject::invokeMethod(&editor, "triggerAutoComplete", Qt::DirectConnection));
+    QTreeWidget* popup = nullptr;
+    QTRY_VERIFY_WITH_TIMEOUT((popup = s_completionPopupTree()) != nullptr, 1000);
+    QTreeWidgetItem* selected = nullptr;
+    for (int i = 0; i < popup->topLevelItemCount(); ++i) {
+        QTreeWidgetItem* item = popup->topLevelItem(i);
+        if (item->text(1) == QStringLiteral("cos")) {
+            selected = item;
+            break;
+        }
+    }
+    QVERIFY(selected);
+    popup->setCurrentItem(selected);
+    QTest::keyClick(&editor, Qt::Key_Tab);
+    QCOMPARE(editor.text(), QStringLiteral("cos") + MathDsl::GroupStart + MathDsl::GroupEnd);
+    QCOMPARE(editor.cursorPosition(), editor.text().size() - 1);
+    QTRY_VERIFY_WITH_TIMEOUT(s_editorOrViewportHasFocus(&editor), 1000);
+}
+
+void TestEditorUi::automatic_input_adjustments_survive_settings_reload()
+{
+    Settings* settings = Settings::instance();
+    QVERIFY(settings->automaticInputAdjustments);
+    for (bool enabled : {true, false}) {
+        settings->automaticInputAdjustments = enabled;
+        settings->save();
+        settings->automaticInputAdjustments = !enabled;
+        settings->load();
+        QCOMPARE(settings->automaticInputAdjustments, enabled);
+    }
+    settings->automaticInputAdjustments = false;
+    QVERIFY(settings->resetToDefaults());
+    QVERIFY(settings->automaticInputAdjustments);
+}
+
+void TestEditorUi::input_digit_grouping_survives_settings_reload()
+{
+    Settings* settings = Settings::instance();
+    QVERIFY(settings->inputDigitGrouping);
+    for (bool enabled : {true, false}) {
+        settings->inputDigitGrouping = enabled;
+        settings->numberFormatStyle = Settings::NumberFormatThreeDigitCommaDot;
+        settings->applyNumberFormatStyle();
+        QCOMPARE(settings->inputDigitGrouping, enabled);
+        settings->save();
+        settings->inputDigitGrouping = !enabled;
+        settings->load();
+        QCOMPARE(settings->inputDigitGrouping, enabled);
+    }
 }
 
 int main(int argc, char** argv)

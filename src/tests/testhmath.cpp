@@ -47,6 +47,25 @@ static void check_precise(const char* file, int line, const char* msg, const HNu
     DisplayErrorOnMismatch(file, line, msg, result, expected, hmath_failed_tests, hmath_new_failed_tests);
 }
 
+void test_remove_trailing_zeroes()
+{
+    Format trimmed = Format::Fixed() + Format::Precision(3);
+    trimmed.removeTrailingZeroes = true;
+    CHECK_FORMAT(trimmed, HNumber("1.9999"), "2");
+    CHECK_FORMAT(trimmed, HNumber("1200"), "1200");
+    CHECK_FORMAT(trimmed, HNumber("1.203"), "1.203");
+    CHECK_FORMAT(trimmed, HNumber("-0.0001"), "0");
+    CHECK_FORMAT(trimmed, HNumber("NaN"), "NaN");
+    CHECK_FORMAT(Format(trimmed), HNumber("3.14"), "3.14");
+    CHECK_FORMAT(Format::Scientific() + trimmed, HNumber("1e20"), "1e20");
+    CHECK_FORMAT(trimmed + Format::Decimal(), HNumber("3.14"), "3.14");
+    CHECK_FORMAT(Format::Engineering() + Format::ForcedExponent(3) + trimmed,
+                 HNumber("1200"), "1.2e3");
+    CHECK_FORMAT(Format::Binary() + Format::PadBits(8) + trimmed,
+                 HNumber("1.5"), "0b00000001.1");
+    CHECK_FORMAT(Format::Fixed() + Format::Precision(3), HNumber("3.14"), "3.140");
+}
+
 void test_create()
 {
     CHECK(HNumber("1.0"), "1");
@@ -1011,6 +1030,7 @@ int main(int argc, char* argv[])
     PI = HMath::pi();
 
     test_create();
+    test_remove_trailing_zeroes();
     test_format();
     test_op();
     test_functions();

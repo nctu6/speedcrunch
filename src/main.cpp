@@ -3,7 +3,12 @@
 
 
 #include "gui/mainwindow.h"
+#include "gui/diagnosticapplication.h"
+#include "gui/startupfontpreparation.h"
 #include "core/settings.h"
+#include "core/startupdiagnostics.h"
+#include "core/singleinstance.h"
+#include "gui/launchcontroller.h"
 
 #include <QCoreApplication>
 #include <QApplication>
@@ -12,12 +17,12 @@
 #include <QCryptographicHash>
 #include <QAbstractSocket>
 #include <QDebug>
-#include <QLocalServer>
-#include <QLocalSocket>
 #include <QMetaObject>
+#include <QMessageBox>
 #include <QSurfaceFormat>
 #include <QEvent>
 #include <QThread>
+#include <QTimer>
 #include <QVariant>
 
 #include <atomic>
@@ -46,62 +51,6 @@ QString singletonServerName()
         + Settings::getConfigPath();
     const QByteArray hash = QCryptographicHash::hash(scope.toUtf8(), QCryptographicHash::Sha1).toHex();
     return QStringLiteral("speedcrunch-single-instance-%1").arg(QString::fromLatin1(hash.left(24)));
-}
-
-void activateMainWindow(MainWindow* window)
-{
-    if (!window)
-        return;
-
-    if (window->windowState() & Qt::WindowMinimized)
-        window->setWindowState(window->windowState() & ~Qt::WindowMinimized);
-
-    window->show();
-    window->raise();
-    window->activateWindow();
-}
-
-bool notifyRunningInstance(const QString& serverName)
-{
-    QLocalSocket socket;
-    socket.connectToServer(serverName, QIODevice::ReadWrite);
-    if (!socket.waitForConnected(250))
-        return false;
-
-    socket.write("activate\n");
-    if (!socket.waitForBytesWritten(250))
-        return false;
-    if (!socket.waitForReadyRead(750))
-        return false;
-    // Treat the instance as running only after it explicitly accepts the
-    // activation. If it is already shutting down, the new process should take
-    // over instead of exiting and leaving the user with no restored windows.
-    const QByteArray response = socket.readAll().trimmed();
-    socket.disconnectFromServer();
-    return response == QByteArrayLiteral("accepted");
-}
-
-bool startSingletonServer(QLocalServer* server, const QString& serverName, bool* alreadyRunning)
-{
-    if (alreadyRunning)
-        *alreadyRunning = false;
-
-    if (server->listen(serverName))
-        return true;
-
-    if (server->serverError() == QAbstractSocket::AddressInUseError) {
-        if (notifyRunningInstance(serverName)) {
-            if (alreadyRunning)
-                *alreadyRunning = true;
-            return false;
-        }
-        QLocalServer::removeServer(serverName);
-        if (server->listen(serverName))
-            return true;
-    }
-
-    qWarning() << "Could not initialize singleton server:" << server->errorString();
-    return false;
 }
 
 MainWindow* g_mainWindow = 0;
@@ -228,11 +177,17 @@ BOOL WINAPI handleWindowsConsoleControl(DWORD controlType)
 
 int main(int argc, char* argv[])
 {
+    // Capture launcher metadata before Qt initializes the platform plugin.
+    const LaunchRequest launchRequest = LaunchRequest::fromEnvironment();
+    StartupDiagnostics::begin();
+    StartupDiagnostics::Scope timing("Configure surface format");
     QSurfaceFormat surfaceFormat = QSurfaceFormat::defaultFormat();
     surfaceFormat.setColorSpace(QColorSpace::SRgb);
     QSurfaceFormat::setDefaultFormat(surfaceFormat);
 
-    QApplication application(argc, argv);
+    timing.next("Initialize QApplication and platform plugin");
+    DiagnosticApplication application(argc, argv);
+    timing.next("Configure application identity");
     ShutdownEventFilter shutdownEventFilter(&application);
     application.installEventFilter(&shutdownEventFilter);
 
@@ -240,9 +195,29 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationDomain("speedcrunch.org");
     QGuiApplication::setDesktopFileName("org.speedcrunch.SpeedCrunch");
 
+    QString storageError;
+    if (!Settings::preparePortableStorage(&storageError)) {
+        // Let macOS finish launching before opening a native modal alert.
+        QTimer::singleShot(0, &application, [&]() {
+            QMessageBox message(QMessageBox::Critical, QObject::tr("Portable Data Folder Unavailable"),
+                QObject::tr("SpeedCrunch cannot prepare its portable data folder:\n%1\n\n%2\n\n"
+                            "Use Finder to move SpeedCrunch.app and any SpeedCrunch-data folder "
+                            "to a writable location, then open the app again.")
+                    .arg(Settings::getConfigPath(), storageError));
+            message.setTextFormat(Qt::PlainText);
+            message.exec();
+            application.exit(1);
+        });
+        return application.exec();
+    }
+
+    timing.next("Load application settings (total)");
     Settings::instance();
-    QLocalServer singletonServer;
-    bool pendingActivation = false;
+    timing.next("Install shutdown handlers");
+    SingleInstance singletonServer;
+    LaunchController launchController;
+    QObject::connect(&singletonServer, &SingleInstance::launchRequested,
+                     &launchController, &LaunchController::request);
 
     QObject::connect(&application, &QCoreApplication::aboutToQuit, &application, [&]() {
         // Stop accepting single-instance activations during teardown. A second
@@ -285,61 +260,39 @@ int main(int argc, char* argv[])
         qWarning() << "Could not install Windows console termination handler.";
 #endif
 
+    timing.next("Check and register single instance");
     const QString serverName = singletonServerName();
-    if (notifyRunningInstance(serverName))
+    const SingleInstance::StartResult instanceResult = singletonServer.start(serverName, launchRequest);
+    if (instanceResult == SingleInstance::SecondaryInstance)
         return 0;
-
-    bool alreadyRunning = false;
-    if (startSingletonServer(&singletonServer, serverName, &alreadyRunning)) {
-        QObject::connect(&singletonServer, &QLocalServer::newConnection, &application, [&]() {
-            bool acceptedActivation = false;
-            while (singletonServer.hasPendingConnections()) {
-                QLocalSocket* socket = singletonServer.nextPendingConnection();
-                if (!socket)
-                    continue;
-                if (shutdownInProgress()) {
-                    // Refuse activation during shutdown so the launching
-                    // process removes the stale server and performs a full
-                    // restore of all saved windows.
-                    socket->write("shutting-down\n");
-                    socket->waitForBytesWritten(250);
-                    socket->close();
-                    socket->deleteLater();
-                    continue;
-                }
-
-                socket->write("accepted\n");
-                socket->waitForBytesWritten(250);
-                socket->close();
-                socket->deleteLater();
-                acceptedActivation = true;
-            }
-
-            // If all pending sockets were refused because shutdown is in
-            // progress, do not raise a window that is about to disappear.
-            if (!acceptedActivation)
-                return;
-            if (g_mainWindow)
-                activateMainWindow(g_mainWindow);
-            else
-                pendingActivation = true;
+    if (instanceResult == SingleInstance::ServerUnavailable) {
+        QTimer::singleShot(0, &application, [&application]() {
+            QMessageBox::warning(nullptr, QObject::tr("Cannot Start SpeedCrunch"),
+                QObject::tr("SpeedCrunch cannot contact the running instance or start its local server. "
+                            "Wait a moment and try again."));
+            application.exit(1);
         });
-    } else if (alreadyRunning) {
-        return 0;
+        return application.exec();
     }
 
+    timing.next("Initialize application widget style");
+    MainWindow::initializeApplicationStyle();
+    StartupFontPreparation fontPreparation;
+    timing.next("Initialize main window (total)");
     MainWindow window;
+    fontPreparation.wait();
     g_mainWindow = &window;
-    window.show();
+    timing.next("Schedule main window display");
+    window.showWhenReady();
 
-    if (pendingActivation)
-        activateMainWindow(g_mainWindow);
+    launchController.setInitialWindow(&window);
 
     QObject::connect(&application, &QGuiApplication::lastWindowClosed, &application, [&]() {
         if (!shutdownInProgress())
             application.quit();
     });
 
+    timing.finish();
     g_eventLoopRunning.store(true);
     const int result = application.exec();
     g_eventLoopRunning.store(false);

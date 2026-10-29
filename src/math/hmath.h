@@ -86,6 +86,8 @@ public:
         RadixChar radixChar;
         Mode mode;
         int precision;  // -1 means 'auto'
+        // Display-only choice, applied after rounding to the requested precision.
+        bool removeTrailingZeroes = false;
         // 0 disables integer-part padding. Positive values pad to at least this many bits.
         // -1 pads to the next multiple of 8 bits.
         int paddedBits;

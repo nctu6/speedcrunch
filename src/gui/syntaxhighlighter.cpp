@@ -3,13 +3,16 @@
 
 
 #include "gui/syntaxhighlighter.h"
+#include "gui/startupappearance.h"
 
 #include "core/evaluator.h"
 #include "core/functions.h"
 #include "core/mathdsl.h"
+#include "core/numberformatter.h"
 #include "core/settings.h"
 
 #include <QPlainTextEdit>
+#include <QFontMetricsF>
 #include <QTextDocument>
 #include <QTextDocumentFragment>
 
@@ -63,10 +66,12 @@ static QString stripTrailingAsciiDigits(QString text)
 
 
 
-SyntaxHighlighter::SyntaxHighlighter(QPlainTextEdit* edit)
+SyntaxHighlighter::SyntaxHighlighter(QPlainTextEdit* edit, bool inputEditor)
     : QSyntaxHighlighter(edit)
     , m_evaluator(Evaluator::instance())
+    , m_inputEditor(inputEditor)
 {
+    StartupDiagnostics::Scope timing("Initialize syntax highlighter");
     setDocument(edit->document());
     update();
 }
@@ -78,8 +83,13 @@ const Evaluator* SyntaxHighlighter::evaluator() const
 
 void SyntaxHighlighter::setEvaluator(const Evaluator* evaluator)
 {
+    StartupDiagnostics::AppearanceScope timing("Bind syntax highlighter evaluator", parent());
     m_evaluator = evaluator ? evaluator : Evaluator::instance();
-    rehighlight();
+    {
+        StartupDiagnostics::AppearanceScope highlightTiming(
+            m_inputEditor ? "Highlight editor document" : "Highlight result document", parent());
+        rehighlight();
+    }
 }
 
 void SyntaxHighlighter::setColorScheme(ColorScheme&& colorScheme) {
@@ -87,6 +97,116 @@ void SyntaxHighlighter::setColorScheme(ColorScheme&& colorScheme) {
 }
 
 void SyntaxHighlighter::highlightBlock(const QString& text)
+{
+    highlightSyntaxBlock(text);
+    if (m_inputEditor && Settings::instance()->inputDigitGrouping)
+        groupInputDigits(text);
+}
+
+void SyntaxHighlighter::groupInputDigits(const QString& text)
+{
+    // Keep the user's expression intact. For example, typing "1000" leaves
+    // four characters in the document even when it appears as "1,000".
+    // QSyntaxHighlighter formats belong to the text layout, not to an edit of
+    // the document, so grouping creates no cursor stops or undo commands.
+    // Copying, saving and evaluation still use the original expression.
+    const Settings* settings = Settings::instance();
+    const QString separator = settings->digitGroupingSeparator();
+    const QFontMetricsF metrics(document()->defaultFont());
+    const auto groupPart = [this, &separator, &metrics](int start, int end, int groupSize, bool fractional) {
+        for (int boundary : NumberFormatter::digitGroupingPositions(end - start, groupSize, fractional)) {
+            // Reserve the separator's width after the preceding digit. Qt uses
+            // this width for wrapping and cursor placement. Store the glyph as
+            // a format property so Editor can paint it inside that gap.
+            const int pos = start + boundary - 1;
+            QTextCharFormat fmt = format(pos);
+            fmt.setFontLetterSpacingType(QFont::AbsoluteSpacing);
+            fmt.setFontLetterSpacing(metrics.horizontalAdvance(separator));
+            fmt.setProperty(InputDigitSeparator, separator);
+            setFormat(pos, 1, fmt);
+        }
+    };
+    const Tokens tokens = evaluator()->scan(textNormalizedForHighlighting(text));
+    for (const Token& token : tokens) {
+        if (token.type() != Token::stxNumber)
+            continue;
+
+        int start = token.pos();
+        const int limit = qMin(text.size(), start + token.size());
+        if (start < 0 || start >= limit)
+            continue;
+        while (start < limit && text.at(start).isSpace())
+            ++start;
+
+        int base = 10;
+        if (start < limit && text.at(start) == MathDsl::HexPrefixAl1) {
+            base = 16;
+            ++start;
+        } else if (start + 1 < limit && text.at(start) == QLatin1Char('0')) {
+            const QChar prefix = text.at(start + 1).toLower();
+            if (prefix == QLatin1Char('x')) base = 16;
+            else if (prefix == QLatin1Char('b')) base = 2;
+            else if (prefix == QLatin1Char('o')) base = 8;
+            if (base != 10 || prefix == QLatin1Char('d'))
+                start += 2;
+        }
+
+        const auto isDigit = [base](QChar ch) {
+            ch = ch.toLower();
+            const int digit = ch >= QLatin1Char('0') && ch <= QLatin1Char('9')
+                ? ch.unicode() - '0'
+                : ch >= QLatin1Char('a') && ch <= QLatin1Char('f')
+                    ? ch.unicode() - 'a' + 10 : -1;
+            return digit >= 0 && digit < base;
+        };
+        int end = start;
+        while (end < limit && isDigit(text.at(end)))
+            ++end;
+
+        // Leave manually spaced groups alone rather than adding separators twice.
+        int next = end;
+        while (next < limit && (text.at(next).isSpace() || text.at(next) == QLatin1Char('_')))
+            ++next;
+        if (next > end && next < limit && isDigit(text.at(next)))
+            continue;
+
+        // Multiple dots or commas include grouping marks. Keep the typed
+        // punctuation instead of painting the first mark as a decimal point.
+        const QString sourceNumber = text.mid(start, limit - start);
+        if (sourceNumber.count(MathDsl::DotSep) + sourceNumber.count(MathDsl::CommaSep) > 1)
+            continue;
+
+        const int groupSize = base == 2 || base == 16 ? 4 : 3;
+        if (end < limit && QString(text.at(end)) == separator) {
+            // A pasted number may already contain the selected grouping marks.
+            // Do not mistake those marks for an alternate decimal separator.
+            QString mantissa = sourceNumber.trimmed();
+            if (base == 10) {
+                const int exponentPos = mantissa.indexOf(RegExpPatterns::decimalExponentSuffix());
+                if (exponentPos >= 0)
+                    mantissa.truncate(exponentPos);
+            }
+            const QString tail = mantissa.mid(end - start + 1);
+            bool groupedTail = base == 10 ? NumberFormatter::isSingleGroupedInteger(mantissa)
+                : tail.size() == groupSize && end - start <= groupSize;
+            for (QChar ch : tail)
+                groupedTail = groupedTail && isDigit(ch);
+            if (groupedTail || tail.contains(QChar(settings->decimalSeparator()))
+                    || tail.contains(separator))
+                continue;
+        }
+        groupPart(start, end, groupSize, false);
+        if (end < limit && Evaluator::isRadixChar(text.at(end))) {
+            const int fractionalStart = end + 1;
+            int fractionalEnd = fractionalStart;
+            while (fractionalEnd < limit && isDigit(text.at(fractionalEnd)))
+                ++fractionalEnd;
+            groupPart(fractionalStart, fractionalEnd, groupSize, true);
+        }
+    }
+}
+
+void SyntaxHighlighter::highlightSyntaxBlock(const QString& text)
 {
     // Default color for the text
     setFormat(0, text.length(), colorForRole(ColorScheme::Number));
@@ -97,9 +217,9 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
     const SyntaxHighlightBlockData* blockData =
         dynamic_cast<SyntaxHighlightBlockData*>(currentBlockUserData());
 
-    if (text.startsWith(QLatin1String("="))) {
+    if (text.startsWith(MathDsl::Equals)) {
         setFormat(0, 1, colorForRole(ColorScheme::Operator));
-        const int expressionOffset = text.startsWith(QLatin1String("= ")) ? 2 : 1;
+        const int expressionOffset = text.size() > 1 && text.at(1) == UnicodeChars::Space ? 2 : 1;
         const QString expressionText = text.mid(expressionOffset);
         const bool highlightResultExpressionSyntax =
             blockData && blockData->highlightResultExpressionSyntax;
@@ -138,11 +258,12 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
 
         const QString normalizedExpressionText = textNormalizedForHighlighting(expressionText);
         Tokens tokens = evaluator()->scan(normalizedExpressionText);
+        const QStringList functionNames = tokens.isEmpty()
+            ? QStringList() : FunctionRepo::instance()->getIdentifiers();
         int unitBracketDepth = 0;
         for (int i = 0; i < tokens.count(); ++i) {
             const Token& token = tokens.at(i);
             const QString tokenText = token.text().toLower();
-            QStringList functionNames = FunctionRepo::instance()->getIdentifiers();
             QColor color;
             const bool insideUnitBrackets = unitBracketDepth > 0;
 
@@ -220,12 +341,13 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
 
     const QString normalizedText = textNormalizedForHighlighting(text);
     Tokens tokens = evaluator()->scan(normalizedText);
+    const QStringList functionNames = tokens.isEmpty()
+        ? QStringList() : FunctionRepo::instance()->getIdentifiers();
     int unitBracketDepth = 0;
 
     for (int i = 0; i < tokens.count(); ++i) {
         const Token& token = tokens.at(i);
         const QString tokenText = token.text().toLower();
-        QStringList functionNames = FunctionRepo::instance()->getIdentifiers();
         QColor color;
         const bool insideUnitBrackets = unitBracketDepth > 0;
 
@@ -331,6 +453,25 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
 
 void SyntaxHighlighter::update()
 {
+    StartupDiagnostics::AppearanceScope timing("Update syntax highlighter", parent());
+    updateColorScheme();
+
+    QColor backgroundColor = colorForRole(ColorScheme::Background);
+    QWidget* parentWidget = static_cast<QWidget*>(parent());
+    QPalette pal = parentWidget->palette();
+    pal.setColor(QPalette::Active, QPalette::Base, backgroundColor);
+    pal.setColor(QPalette::Inactive, QPalette::Base, backgroundColor);
+    StartupDiagnostics::setAppearancePalette(parentWidget, pal);
+
+    {
+        StartupDiagnostics::AppearanceScope highlightTiming(
+            m_inputEditor ? "Highlight editor document" : "Highlight result document", parent());
+        rehighlight();
+    }
+}
+
+void SyntaxHighlighter::updateColorScheme()
+{
     const Settings* settings = Settings::instance();
     const QString name = settings->colorScheme;
     if (name == QLatin1String("Custom")) {
@@ -343,15 +484,6 @@ void SyntaxHighlighter::update()
     } else {
         setColorScheme(ColorScheme::loadByName(name));
     }
-
-    QColor backgroundColor = colorForRole(ColorScheme::Background);
-    QWidget* parentWidget = static_cast<QWidget*>(parent());
-    QPalette pal = parentWidget->palette();
-    pal.setColor(QPalette::Active, QPalette::Base, backgroundColor);
-    pal.setColor(QPalette::Inactive, QPalette::Base, backgroundColor);
-    parentWidget->setPalette(pal);
-
-    rehighlight();
 }
 
 void SyntaxHighlighter::formatDigitsGroup(const QString& text, int start, int end, bool invert, int size)

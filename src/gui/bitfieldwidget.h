@@ -46,12 +46,17 @@ protected:
     void mouseReleaseEvent(QMouseEvent*) override;
 
 private:
+    enum class StyleUpdateReason {
+        Theme,
+        Interaction
+    };
+
     void applySummaryPopupTheme();
     void ensureSummaryPopup();
     void hideSummaryPopup();
     void showSummaryPopup(const QPoint& globalPos);
     void updateSummaryPopupMask();
-    void updateStyle();
+    void updateStyle(StyleUpdateReason reason);
 
     enum {
         // TODO: have this scale with screen DPI

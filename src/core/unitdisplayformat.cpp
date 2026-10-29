@@ -28,25 +28,30 @@ int superscriptSuffixStart(const QString& text)
     return suffixStart;
 }
 
-// Builds an identifier->symbol cache from unit metadata, used to collapse
-// long names (and aliases) to short display symbols.
-const QHash<QString, QString>& shortNamesByIdentifier()
+// Resolve only the names being displayed. Building every prefixed quantity
+// here would undo the evaluator's on-demand unit initialization.
+QString shortNameForIdentifier(const QString& identifier)
 {
-    static const QHash<QString, QString> shortNames = [] {
-        QHash<QString, QString> map;
-        const auto& values = Units::builtInUnitValues();
-        for (auto it = values.constBegin(); it != values.constEnd(); ++it) {
-            const QString& identifier = it.key();
-            UnitId id = unitId(normalizeUnitName(identifier));
-            if (id == UnitId::Unknown)
-                continue;
-            const QString symbol = unitSymbol(id);
-            if (!symbol.isEmpty())
-                map.insert(identifier, symbol);
+    if (!Units::isBuiltInUnitIdentifier(identifier))
+        return QString();
+    static QHash<QString, QString> cache;
+    auto cached = cache.constFind(identifier);
+    if (cached == cache.constEnd()) {
+        QString symbol;
+        const UnitId id = unitId(normalizeUnitName(identifier));
+        Quantity value;
+        if (id != UnitId::Unknown && Units::tryGetBuiltInUnitValue(identifier, &value)) {
+            // Case folding can confuse symbols such as kT with kt, or fT
+            // with ft. Only shorten identifiers that still mean the same unit.
+            Quantity canonical;
+            if (Units::tryGetBuiltInUnitValue(unitName(id), &canonical)
+                && value.sameDimension(canonical)
+                && value.numericValue() == canonical.numericValue())
+                symbol = unitSymbol(id);
         }
-        return map;
-    }();
-    return shortNames;
+        cached = cache.insert(identifier, symbol);
+    }
+    return cached.value();
 }
 
 QString compositeAngleAlias(UnitId id)
@@ -263,17 +268,18 @@ QString shortDisplayName(const QString& name)
     const QString baseName = trimmed.left(suffixStart);
     const QString exponentSuffix = trimmed.mid(suffixStart);
 
-    const auto& shortNames = shortNamesByIdentifier();
-    if (shortNames.contains(baseName))
-        return shortNames.value(baseName) + exponentSuffix;
+    const QString shortName = shortNameForIdentifier(baseName);
+    if (!shortName.isEmpty())
+        return shortName + exponentSuffix;
 
     for (const PrefixId id : siPrefixIds()) {
         const QString prefixLong = prefixName(id);
         if (!baseName.startsWith(prefixLong))
             continue;
         const QString base = baseName.mid(prefixLong.size());
-        if (shortNames.contains(base))
-            return prefixSymbol(id) + shortNames.value(base) + exponentSuffix;
+        const QString shortBase = shortNameForIdentifier(base);
+        if (!shortBase.isEmpty())
+            return prefixSymbol(id) + shortBase + exponentSuffix;
     }
 
     for (const PrefixId id : binaryPrefixIds()) {
@@ -281,8 +287,9 @@ QString shortDisplayName(const QString& name)
         if (!baseName.startsWith(prefixLong))
             continue;
         const QString base = baseName.mid(prefixLong.size());
-        if (shortNames.contains(base))
-            return prefixSymbol(id) + shortNames.value(base) + exponentSuffix;
+        const QString shortBase = shortNameForIdentifier(base);
+        if (!shortBase.isEmpty())
+            return prefixSymbol(id) + shortBase + exponentSuffix;
     }
 
     return trimmed;

@@ -59,6 +59,15 @@ enum class UnitQuantity {
     DimensionlessRatio
 };
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+inline size_t qHash(const QMap<UnitQuantity, Rational>& dimension, size_t seed = 0) noexcept
+{
+    for (auto it = dimension.cbegin(); it != dimension.cend(); ++it)
+        seed = qHashMulti(seed, static_cast<int>(it.key()), it.value());
+    return seed;
+}
+#endif
+
 enum class UnitId {
     Unknown,
     Second,
@@ -335,6 +344,15 @@ public:
     static QString arcsecondAliasSymbol();
     static QStringList affineUnitAliases(UnitId id);
     static void findUnit(Quantity& q);
+    // Names and membership checks do not construct unit quantities.
+    static const QStringList& builtInUnitIdentifiers();
+    static bool isBuiltInUnitIdentifier(const QString& identifier);
+    // Raw values retain their base scale. Evaluator quantities also apply
+    // display rules and the active angle mode. Missing names leave output alone.
+    static bool tryGetBuiltInUnitValue(const QString& identifier, Quantity* valueOut);
+    static bool tryGetBuiltInUnitQuantity(const QString& identifier, char angleMode,
+                                         Quantity* valueOut);
+    static void setRuntimeAngleMode(char angleMode);
     static const QHash<QString, Quantity>& builtInUnitValues();
     static QHash<QString, Quantity> builtInUnitLookup(char angleMode);
     static bool isAffineUnitName(const QString& unitName);

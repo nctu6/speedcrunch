@@ -685,13 +685,16 @@ inline QString foldRepeatedAdditiveTermsForDisplay(const QString& text)
     return rebuilt.isEmpty() ? text : rebuilt;
 }
 
-inline QString simplifiedExpressionLineForDisplay(const QString& interpretedExpression,
-                                                  const QString& sourceExpression,
+inline QString simplifiedExpressionLineForDisplay(const QString& commentedInterpretedExpression,
+                                                  const QString& commentedSourceExpression,
                                                   bool simplifyResultExpressions,
                                                   const Evaluator* evaluator = nullptr)
 {
     if (!simplifyResultExpressions)
         return QString();
+
+    const QString interpretedExpression = commentedInterpretedExpression.section(MathDsl::CommentSep, 0, 0);
+    const QString sourceExpression = commentedSourceExpression.section(MathDsl::CommentSep, 0, 0);
 
     auto splitConversionSides = [](const QString& expression,
                                    QString* leftOut,
@@ -833,6 +836,23 @@ inline QString formattedExpressionLineForDisplay(const QString& sourceExpression
                                                  const QString& interpretedExpression,
                                                  const Evaluator* evaluator = nullptr)
 {
+    // Keep prose outside every expression-formatting pass, including unit and
+    // conversion formatting that runs after the evaluator restores the comment.
+    const int sourceCommentPos = sourceExpression.indexOf(MathDsl::CommentSep);
+    const int interpretedCommentPos = interpretedExpression.indexOf(MathDsl::CommentSep);
+    const QString& expression = sourceCommentPos >= 0 ? sourceExpression : interpretedExpression;
+    const int commentPos = sourceCommentPos >= 0 ? sourceCommentPos : interpretedCommentPos;
+    if (commentPos >= 0) {
+        const QString comment = expression.mid(commentPos + 1).trimmed();
+        const QString displayed = formattedExpressionLineForDisplay(
+            sourceCommentPos >= 0 ? sourceExpression.left(sourceCommentPos).trimmed() : sourceExpression,
+            interpretedCommentPos >= 0
+                ? interpretedExpression.left(interpretedCommentPos).trimmed() : interpretedExpression,
+            evaluator);
+        return displayed + (displayed.isEmpty() ? QStringLiteral("?") : QStringLiteral(" ?"))
+            + (comment.isEmpty() ? QString() : QStringLiteral(" ") + comment);
+    }
+
     const QString sourceConversionTargetSuffix =
         conversionTargetSuffixForDisplay(sourceExpression);
     if (!sourceConversionTargetSuffix.isEmpty()) {
@@ -1360,27 +1380,38 @@ inline QString formatNumericResultLine(const Quantity& value,
     return stripUnitBrackets ? stripDisplayedUnitBrackets(formattedText) : formattedText;
 }
 
-inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
-                                               const QString& interpretedExpression,
+inline QStringList formatResultLinesForDisplay(const QString& commentedSourceExpression,
+                                               const QString& commentedInterpretedExpression,
                                                const Quantity& value,
                                                bool includeExpressionLine,
                                                bool stripUnitBracketsInNumericLines,
-                                               const Evaluator* evaluator = nullptr)
+                                               const Evaluator* evaluator = nullptr,
+                                               bool resultOnly = false,
+                                               bool classifySavedLine = false)
 {
     const Settings* settings = Settings::instance();
+    const QString resultPrefix = resultOnly ? QString() : QStringLiteral("= ");
     QStringList lines;
     auto appendUniqueLine = [&lines](const QString& line) {
         if (!line.isEmpty() && !lines.contains(line))
             lines.append(line);
     };
 
-    if (includeExpressionLine)
-        appendUniqueLine(formattedExpressionLineForDisplay(sourceExpression, interpretedExpression, evaluator));
+    if (includeExpressionLine && !resultOnly)
+        appendUniqueLine(formattedExpressionLineForDisplay(
+            commentedSourceExpression, commentedInterpretedExpression, evaluator));
 
-    const QString simplifiedLine = simplifiedExpressionLineForDisplay(
-        interpretedExpression, sourceExpression, settings->simplifyResultExpressions, evaluator);
-    if (!simplifiedLine.isEmpty())
-        appendUniqueLine(QStringLiteral("= ") + simplifiedLine);
+    // Comments belong on the expression line, but must not supply angle,
+    // conversion, or function hints for any result line.
+    const QString sourceExpression = commentedSourceExpression.section(MathDsl::CommentSep, 0, 0);
+    const QString interpretedExpression = commentedInterpretedExpression.section(MathDsl::CommentSep, 0, 0);
+
+    if (!resultOnly && !classifySavedLine) {
+        const QString simplifiedLine = simplifiedExpressionLineForDisplay(
+            interpretedExpression, sourceExpression, settings->simplifyResultExpressions, evaluator);
+        if (!simplifiedLine.isEmpty())
+            appendUniqueLine(QStringLiteral("= ") + simplifiedLine);
+    }
 
     if (settings->simplifyResultExpressions
         && isPureTimeQuantity(value)
@@ -1395,12 +1426,12 @@ inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
                                     settings->resultPrecision,
                                     settings->complexNumbers,
                                     settings->resultComplexForm)));
-        appendUniqueLine(QStringLiteral("= ")
+        appendUniqueLine(resultPrefix
             + normalizedSexagesimal
             + conversionTargetSuffixForDisplay(sourceExpression));
     }
 
-    appendUniqueLine(QStringLiteral("= ") + formatNumericResultLine(
+    appendUniqueLine(resultPrefix + formatNumericResultLine(
         value,
         sourceExpression,
         interpretedExpression,
@@ -1412,9 +1443,14 @@ inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
         settings,
         evaluator));
 
+    // A saved simplified row precedes the first numeric result. Later formats
+    // cannot change that boundary and need not be regenerated to identify it.
+    if (classifySavedLine)
+        return lines;
+
     if (settings->multipleResultLinesEnabled && settings->secondaryResultEnabled
         && settings->alternativeResultFormat != '\0') {
-        appendUniqueLine(QStringLiteral("= ") + formatNumericResultLine(
+        appendUniqueLine(resultPrefix + formatNumericResultLine(
             value,
             sourceExpression,
             interpretedExpression,
@@ -1428,7 +1464,7 @@ inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
     }
     if (settings->multipleResultLinesEnabled && settings->tertiaryResultEnabled
         && settings->tertiaryResultFormat != '\0') {
-        appendUniqueLine(QStringLiteral("= ") + formatNumericResultLine(
+        appendUniqueLine(resultPrefix + formatNumericResultLine(
             value,
             sourceExpression,
             interpretedExpression,
@@ -1442,7 +1478,7 @@ inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
     }
     if (settings->multipleResultLinesEnabled && settings->quaternaryResultEnabled
         && settings->quaternaryResultFormat != '\0') {
-        appendUniqueLine(QStringLiteral("= ") + formatNumericResultLine(
+        appendUniqueLine(resultPrefix + formatNumericResultLine(
             value,
             sourceExpression,
             interpretedExpression,
@@ -1456,7 +1492,7 @@ inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
     }
     if (settings->multipleResultLinesEnabled && settings->quinaryResultEnabled
         && settings->quinaryResultFormat != '\0') {
-        appendUniqueLine(QStringLiteral("= ") + formatNumericResultLine(
+        appendUniqueLine(resultPrefix + formatNumericResultLine(
             value,
             sourceExpression,
             interpretedExpression,
@@ -1472,7 +1508,7 @@ inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
     const QString piRadianResultLine = formatPiRadianResultLineIfNeeded(
         settings, sourceExpression, interpretedExpression, value, evaluator);
     if (!piRadianResultLine.isEmpty())
-        appendUniqueLine(QStringLiteral("= ") + piRadianResultLine);
+        appendUniqueLine(resultPrefix + piRadianResultLine);
 
     if (shouldShowAdditionalRationalForTrig(
             settings, sourceExpression, interpretedExpression, value, evaluator)) {
@@ -1487,7 +1523,7 @@ inline QStringList formatResultLinesForDisplay(const QString& sourceExpression,
         if (piRadianResultLine.isEmpty()
             || normalizeResultLineForComparison(piRadianResultLine)
                 != normalizeResultLineForComparison(piRadianFromTrigLine)) {
-            appendUniqueLine(QStringLiteral("= ") + trigSymbolicLine);
+            appendUniqueLine(resultPrefix + trigSymbolicLine);
         }
     }
 

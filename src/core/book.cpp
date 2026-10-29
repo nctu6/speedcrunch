@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "core/book.h"
 
 #define STYLE \
@@ -405,6 +407,7 @@ const auto makeRFWavelengthPage = []() -> QString
 
 void Book::createPages()
 {
+    StartupDiagnostics::Scope timing("Register formula book pages");
     addPage("index", +makeIndexPage);
     addPage("algebra/quadratic-equation", +makeAlgebraQuadraticEquationPage);
     addPage("algebra/log-base-conversion", +makeAlgebraLogBaseConversionPage);

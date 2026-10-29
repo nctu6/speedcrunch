@@ -93,6 +93,38 @@ If the left-hand side is parenthesized, the bracket applies to the whole parenth
     (5+6)[ly]
     = 11 [ly]
 
+For division written as ``a / b[U]``, the unit block stays with ``b`` when
+the numerator already has a unit. This also applies when the numerator is a
+variable or a function result::
+
+    c = 299792458[m/s]
+    c / 10[MHz]
+    = 29.9792458 m
+
+    299792458[m/s] / 10[MHz]
+    = 29.9792458 m
+
+With a scalar numerator, the trailing unit block applies to the quotient.
+For example, ``1 / 4[lb]`` means ``(1 / 4)[lb]``, giving ``0.25 lb``.
+A variable holding ``1`` follows the same rule.
+
+Use parentheses to make either grouping explicit. ``a / (b[U])`` always
+divides by the quantity ``b[U]``, while ``(a / b)[U]`` always applies the
+unit block to the quotient.
+
+To raise a quantity to a power, put the value and its unit inside parentheses::
+
+    (2[m])²
+    = 4 m²
+
+    (2[m])^(-2)
+    = 0.25 m⁻²
+
+The power applies to both the value and the unit. Parentheses also let you
+raise a compound expression to a power, such as ``(2[m]/1[m])^(-2) = 0.25``.
+Input such as ``2[m]^2`` is rejected because it is ambiguous. Use ``(2[m])^2``
+to square the whole quantity, or ``2[m^2]`` to enter two square metres.
+
 By default SpeedCrunch converts the quantity into SI units::
 
     60[mi/h]

@@ -26,9 +26,10 @@ class QEvent;
 class QFocusEvent;
 class QInputMethodEvent;
 class QKeyEvent;
+class QLabel;
+class QLineEdit;
 class QMimeData;
 class QMouseEvent;
-class QTimeLine;
 class QTimer;
 class QTreeWidget;
 class QWheelEvent;
@@ -44,8 +45,11 @@ public:
 
     bool isAutoCalcEnabled() const;
     bool isAutoCompletionEnabled() const;
+    bool isConstantSearchVisible() const;
+    bool isCursorBlinkingEnabled() const { return m_cursorBlinkingEnabled; }
     Evaluator* evaluator() const { return m_evaluator; }
     static Editor* completionMouseSelectionOwner();
+    static QString historyExpressionForInput(const QString&);
     void clearHistory();
     QColor cursorColor() const { return m_themePrimaryColor; }
     int cursorPosition() const;
@@ -56,6 +60,7 @@ public:
     void setAutoCalcEnabled(bool);
     void setAutoCompletionEnabled(bool);
     void setCustomCursorVisible(bool visible);
+    void setCursorBlinkingEnabled(bool enabled);
     void setThemePrimaryColor(const QColor& color, bool usePrimaryOutline);
     void setThemePreviewColorScheme(const ColorScheme& scheme);
     void setThemeCompletionColors(const QColor& background,
@@ -65,7 +70,9 @@ public:
                                   const QColor& selectedRow,
                                   const QColor& selectedRowForeground,
                                   const QColor& outline,
-                                  int cornerRadius);
+                                  int cornerRadius,
+                                  const QColor& searchButtonFill = QColor(),
+                                  const QColor& searchButtonCross = QColor());
     void setThemeSurfaceColor(const QColor& color, const QColor& outerColor = QColor());
     void setSession(Session* session);
     void setHistoryArrowNavigationEnabled(bool enabled);
@@ -95,6 +102,7 @@ signals:
     void shiftPageUpPressed();
     void bulkEvaluationStarted();
     void bulkEvaluationFinished();
+    void constantSearchVisibilityChanged();
 
 public slots:
     void autoCalcSelection(const QString& custom = QString());
@@ -107,6 +115,7 @@ public slots:
     void rehighlight();
     void updateHistory();
     void refreshAutoCalc();
+    void refreshInputMode();
 
 protected slots:
     void insertFromMimeData(const QMimeData*) override;
@@ -136,6 +145,7 @@ protected:
     void paintEvent(QPaintEvent*) override;
     void resizeEvent(QResizeEvent*) override;
     void scrollContentsBy(int, int) override;
+    void doSetTextCursor(const QTextCursor&) override;
     QSize sizeHint() const override;
     void wheelEvent(QWheelEvent*) override;
 
@@ -144,6 +154,7 @@ private:
     friend class EditorCompletion;
 
     bool m_isAutoCalcEnabled;
+    bool m_inputEditInProgress = false;
     bool m_shouldBlockAutoCompletionOnce = false;
     bool m_isAutoCompletionEnabled;
     EditorCompletion* m_completion;
@@ -158,10 +169,12 @@ private:
     int m_currentHistoryIndex;
     QTimer* m_matchingTimer;
     QTimer* m_cursorBlinkTimer;
+    bool m_cursorBlinkingEnabled;
     bool m_customCursorVisible;
     bool m_themedCursorVisible = false;
     bool m_historyArrowNavigationEnabled;
     bool m_canScrollWrappedText = false;
+    bool m_updatingWrappedTextHeight = false;
     bool m_mouseSelectionInProgress = false;
     bool m_currentAutoCalcDismissed = false;
     bool m_pendingDeadCaretPreedit = false;
@@ -177,6 +190,8 @@ private:
     QColor m_completionSelectedRowColor;
     QColor m_completionSelectedRowForegroundColor;
     QColor m_completionOutlineColor;
+    QColor m_completionSearchButtonFill;
+    QColor m_completionSearchButtonCross;
     int m_completionCornerRadius = 0;
     std::optional<ColorScheme> m_themePreviewColorScheme;
     bool m_usePrimaryOutline = false;
@@ -184,6 +199,7 @@ private:
     Session* m_session;
 
     void updateHeightForWrappedText();
+    void updateAppearance();
     void updateHeightAndEnsureCursorVisible();
     void showThemedCursorAndRestartBlink();
     void hideThemedCursorAndStopBlink();
@@ -256,32 +272,30 @@ public:
                         const QColor& selectedRow,
                         const QColor& selectedRowForeground,
                         const QColor& outline,
-                        int cornerRadius);
+                        int cornerRadius,
+                        const QColor& searchButtonFill = QColor(),
+                        const QColor& searchButtonCross = QColor());
     void showCompletion();
+    bool isVisible() const;
 
 signals:
     void canceledCompletion();
     void selectedCompletion(const QString&);
+    void visibilityChanged();
 
 public slots:
     void doneCompletion();
 
-protected slots:
-    void setHorizontalPosition(int);
-    void showCategory();
-    void showConstants();
-
 private:
     Q_DISABLE_COPY(ConstantCompletion)
 
-    QTreeWidget* m_categoryWidget;
-    QList<Constant> m_constantList;
     Editor* m_editor;
-    QString m_lastDomain;
+    QLineEdit* m_search;
     QTreeWidget* m_constantWidget;
+    QLabel* m_noMatchLabel;
     QFrame* m_popup;
     QSize m_popupSize;
-    QTimeLine* m_slider;
+    bool m_finishing = false;
     QColor m_backgroundColor;
     QColor m_foregroundColor;
     QColor m_scrollbarThumbColor;
@@ -289,9 +303,14 @@ private:
     QColor m_selectedRowColor;
     QColor m_selectedRowForegroundColor;
     QColor m_outlineColor;
+    QColor m_searchButtonFill;
+    QColor m_searchButtonCross;
     int m_cornerRadius = 0;
 
     void applyThemeColors();
+    void updateSearchClearButton(bool focused);
+    void filter();
+    void restoreEditorFocus();
 };
 
 #endif

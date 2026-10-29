@@ -6,13 +6,14 @@
 #define GUI_CONSTANTSWIDGET_H
 
 #include <QColor>
+#include <QStringList>
 #include <QWidget>
 
 class QSize;
 class QComboBox;
 class QEvent;
 class QFrame;
-class QHBoxLayout;
+class QGridLayout;
 class QLabel;
 class QLineEdit;
 class QPoint;
@@ -25,7 +26,13 @@ class ConstantsWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit ConstantsWidget(QWidget* parent = nullptr);
+    struct InitialState {
+        QString domain;
+        QString subdomain;
+        QString searchText;
+    };
+
+    explicit ConstantsWidget(QWidget* parent = nullptr, const InitialState& state = {});
     ~ConstantsWidget();
     QSize minimumSizeHint() const override;
     QString selectedDomain() const;
@@ -58,6 +65,10 @@ protected:
     void resizeEvent(QResizeEvent* event) override;
 
 private:
+    enum class ListUpdate { DeferPopulation, Populate };
+
+    void translateControls(ListUpdate mode);
+    void refreshList(ListUpdate mode);
     void applySummaryPopupTheme();
     void ensureSummaryPopup();
     void hideSummaryPopup();
@@ -67,6 +78,7 @@ private:
                                                const QPoint& globalPos);
     void updateSummaryPopupMask();
     void updateEmptyHeaderStretch();
+    void resizeColumnsToContents();
     void updateDomainLayout();
     void updateDomainLabelAlignment();
 
@@ -82,11 +94,7 @@ private:
     QTreeWidget* m_list;
     QLabel* m_noMatchLabel;
     QWidget* m_domainBox;
-    QHBoxLayout* m_domainLayout;
-    QWidget* m_domainRow1;
-    QHBoxLayout* m_domainRow1Layout;
-    QWidget* m_domainRow2;
-    QHBoxLayout* m_domainRow2Layout;
+    QGridLayout* m_domainLayout;
     QFrame* m_summaryPopup = nullptr;
     QLabel* m_summaryPopupLabel = nullptr;
     QColor m_summaryPopupBackgroundColor;
@@ -96,6 +104,8 @@ private:
     bool m_isCompactDomainLayout = false;
     bool m_domainLayoutInitialized = false;
     bool m_emptyHeaderStretchQueued = false;
+    bool m_columnsNeedResize = false;
+    QStringList m_populatedInputs;
 };
 
 #endif

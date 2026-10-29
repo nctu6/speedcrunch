@@ -6,8 +6,13 @@
 
 #include "core/functions.h"
 #include "core/settings.h"
+#include "core/startupdiagnostics.h"
 #include "gui/dockliststyle.h"
 #include "gui/themedlineedit.h"
+#include "gui/uiconfig.h"
+
+#include <algorithm>
+#include <utility>
 
 #include <QEvent>
 #include <QString>
@@ -17,10 +22,11 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QShortcut>
+#include <QSignalBlocker>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
-FunctionsWidget::FunctionsWidget(QWidget* parent)
+FunctionsWidget::FunctionsWidget(QWidget* parent, const InitialState& state)
     : QWidget(parent)
     , m_filterTimer(new QTimer(this))
     , m_domain(new QComboBox(this))
@@ -31,7 +37,6 @@ FunctionsWidget::FunctionsWidget(QWidget* parent)
     , m_searchLabel(new QLabel(this))
 {
     constexpr int kControlRowHorizontalPadding = 8;
-    constexpr int kControlRowVerticalPadding = 6;
 
     m_filterTimer->setInterval(500);
     m_filterTimer->setSingleShot(true);
@@ -58,20 +63,22 @@ FunctionsWidget::FunctionsWidget(QWidget* parent)
     QHBoxLayout* domainLayout = new QHBoxLayout;
     domainLayout->addWidget(m_domainLabel);
     domainLayout->addWidget(m_domain);
+    domainLayout->setSpacing(6);
     domainLayout->setContentsMargins(kControlRowHorizontalPadding,
-                                     kControlRowVerticalPadding,
+                                     UiConfig::DockSearchRowVerticalPadding,
                                      kControlRowHorizontalPadding,
-                                     kControlRowVerticalPadding);
+                                     0);
     domainBox->setLayout(domainLayout);
 
     QWidget* searchBox = new QWidget(this);
     QHBoxLayout* searchLayout = new QHBoxLayout;
     searchLayout->addWidget(m_searchLabel);
     searchLayout->addWidget(m_searchFilter);
+    searchLayout->setSpacing(6);
     searchLayout->setContentsMargins(kControlRowHorizontalPadding,
-                                     kControlRowVerticalPadding,
+                                     UiConfig::DockSearchRowVerticalPadding,
                                      kControlRowHorizontalPadding,
-                                     kControlRowVerticalPadding);
+                                     UiConfig::DockSearchRowVerticalPadding);
     searchBox->setLayout(searchLayout);
 
     QVBoxLayout* layout = new QVBoxLayout;
@@ -85,7 +92,7 @@ FunctionsWidget::FunctionsWidget(QWidget* parent)
     QWidget::setTabOrder(m_searchFilter, m_functions);
     setFocusProxy(m_searchFilter);
 
-    retranslateText();
+    translateControls(ListUpdate::DeferPopulation);
 
     connect(m_filterTimer, SIGNAL(timeout()), SLOT(updateList()));
     connect(m_domain, SIGNAL(activated(int)), SLOT(updateList()));
@@ -104,7 +111,7 @@ FunctionsWidget::FunctionsWidget(QWidget* parent)
             emit functionSelected(current->text(0));
     });
 
-    updateList();
+    restoreState(state.domain, state.searchText);
 }
 
 FunctionsWidget::~FunctionsWidget()
@@ -114,15 +121,26 @@ FunctionsWidget::~FunctionsWidget()
 
 void FunctionsWidget::updateList()
 {
-    setUpdatesEnabled(false);
-
     m_filterTimer->stop();
-    m_functions->clear();
     QString term = m_searchFilter->text();
     const QString selectedDomain = m_domain->currentText();
     QStringList functionNames = FunctionRepo::instance()->getIdentifiers();
     FunctionRepo::instance()->retranslateText();
 
+    QStringList inputs {tr("All"), selectedDomain, term, QString::number(layoutDirection())};
+    inputs.reserve(inputs.size() + functionNames.size() * 3);
+    for (const QString& identifier : functionNames) {
+        if (const Function* function = FunctionRepo::instance()->find(identifier))
+            inputs << identifier << function->name() << function->domain();
+    }
+    const bool unchanged = inputs == m_populatedInputs;
+    StartupDiagnostics::AppearanceScope timing(unchanged
+        ? "Skip unchanged functions dock list" : "Populate functions dock list", this);
+    if (unchanged)
+        return;
+
+    setUpdatesEnabled(false);
+    m_functions->clear();
     for (int k = 0; k < functionNames.count(); ++k) {
         const QString identifier = functionNames.at(k);
         Function* f = FunctionRepo::instance()->find(identifier);
@@ -160,11 +178,18 @@ void FunctionsWidget::updateList()
         DockListStyle::showCenteredNoMatchLabel(m_functions, m_noMatchLabel);
     }
 
+    m_populatedInputs = std::move(inputs);
     setUpdatesEnabled(true);
 }
 
 void FunctionsWidget::retranslateText()
 {
+    translateControls(ListUpdate::Populate);
+}
+
+void FunctionsWidget::translateControls(ListUpdate mode)
+{
+    FunctionRepo::instance()->retranslateText();
     QStringList titles;
     const QString identifier = tr("Identifier");
     const QString name = tr("Name");
@@ -173,15 +198,20 @@ void FunctionsWidget::retranslateText()
 
     m_searchLabel->setText(tr("Search"));
     m_domainLabel->setText(tr("Domain"));
+    updateControlLabelWidths();
     const QString selectedDomain = m_domain->currentText();
+    const int selectedDomainIndex = m_domain->currentIndex();
     m_domain->clear();
     m_domain->addItem(tr("All"));
     m_domain->addItems(FunctionRepo::instance()->domains());
-    const int selectedIndex = m_domain->findText(selectedDomain);
+    int selectedIndex = m_domain->findText(selectedDomain);
+    if (selectedIndex < 0 && selectedDomainIndex >= 0 && selectedDomainIndex < m_domain->count())
+        selectedIndex = selectedDomainIndex;
     m_domain->setCurrentIndex(selectedIndex >= 0 ? selectedIndex : 0);
     m_noMatchLabel->setText(tr("No match found"));
 
-    updateList();
+    if (mode == ListUpdate::Populate)
+        updateList();
 }
 
 QList<QTreeWidgetItem*> FunctionsWidget::selectedItems() const
@@ -197,8 +227,21 @@ const QTreeWidgetItem* FunctionsWidget::currentItem() const
 QString FunctionsWidget::searchText() const { return m_searchFilter->text(); }
 void FunctionsWidget::setSearchText(const QString& text) { m_searchFilter->setText(text); }
 QString FunctionsWidget::selectedDomain() const { return m_domain->currentText(); }
+void FunctionsWidget::restoreState(const QString& domain, const QString& searchText)
+{
+    StartupDiagnostics::AppearanceContext context("Restore functions dock filters");
+    const QSignalBlocker searchBlocker(m_searchFilter);
+    const int index = m_domain->findText(domain);
+    if (index >= 0)
+        m_domain->setCurrentIndex(index);
+    if (!searchText.isNull())
+        m_searchFilter->setText(searchText);
+    updateList();
+}
+
 void FunctionsWidget::setSelectedDomain(const QString& domain)
 {
+    StartupDiagnostics::AppearanceContext context("Functions dock domain change");
     const int index = m_domain->findText(domain);
     if (index >= 0) {
         m_domain->setCurrentIndex(index);
@@ -225,8 +268,20 @@ void FunctionsWidget::triggerFilter()
 void FunctionsWidget::changeEvent(QEvent* event)
 {
     if (event->type() == QEvent::LanguageChange) {
-        FunctionRepo::instance()->retranslateText();
+        StartupDiagnostics::AppearanceContext context("Functions dock LanguageChange");
         retranslateText();
-    } else
+    } else {
         QWidget::changeEvent(event);
+        if (event->type() == QEvent::LayoutDirectionChange)
+            retranslateText();
+        if (event->type() == QEvent::FontChange)
+            QTimer::singleShot(0, this, [this]() { updateControlLabelWidths(); });
+    }
+}
+
+void FunctionsWidget::updateControlLabelWidths()
+{
+    const int labelWidth = std::max(m_domainLabel->sizeHint().width(), m_searchLabel->sizeHint().width());
+    m_domainLabel->setFixedWidth(labelWidth);
+    m_searchLabel->setFixedWidth(labelWidth);
 }

@@ -1,0 +1,111 @@
+name: Fedora Rawhide
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:rawhide
+      options: --shm-size=1g
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 30
+    env:
+      DNF_PACKAGES: >-
+        cmake gcc gcc-c++ make pkgconf-pkg-config libxcb-devel
+        qt6-qtbase-devel qt6-qtbase-gui qt6-qttools-devel qt6-assistant
+        qt6-linguist qt6-doctools dejavu-sans-fonts dejavu-sans-mono-fonts
+        openbox xorg-x11-server-Xvfb xorg-x11-xauth xprop
+    steps:
+      - name: Prepare container
+        run: dnf install -y --setopt=install_weak_deps=False git-core tar zstd findutils
+
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Resolve dependencies
+        id: dnf-dependencies
+        run: |
+          read -r -a packages <<< "$DNF_PACKAGES"
+          dnf --setopt=cachedir="$GITHUB_WORKSPACE/.cache/dnf" --refresh repoquery \
+            --available --latest-limit=1 --queryformat '%{full_nevra}\n' \
+            "${packages[@]}" > "$RUNNER_TEMP/dnf-packages.txt"
+          dnf --setopt=cachedir="$GITHUB_WORKSPACE/.cache/dnf" repoquery \
+            --available --latest-limit=1 --providers-of=requires --recursive \
+            --queryformat '%{full_nevra}\n' \
+            "${packages[@]}" >> "$RUNNER_TEMP/dnf-packages.txt"
+          LC_ALL=C sort -u "$RUNNER_TEMP/dnf-packages.txt" > "$RUNNER_TEMP/dnf-packages-sorted.txt"
+          echo "hash=$(sha256sum "$RUNNER_TEMP/dnf-packages-sorted.txt" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependency downloads
+        id: dnf-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .cache/dnf/**/packages/*.rpm
+          key: fedora-rawhide-${{ runner.arch }}-dnf-v1-${{ steps.dnf-dependencies.outputs.hash }}
+
+      - name: Install dependencies
+        run: |
+          read -r -a packages <<< "$DNF_PACKAGES"
+          dnf --setopt=cachedir="$GITHUB_WORKSPACE/.cache/dnf" \
+            --setopt=keepcache=True --setopt=install_weak_deps=False \
+            install -y "${packages[@]}"
+
+      - name: Save dependency downloads
+        if: steps.dnf-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .cache/dnf/**/packages/*.rpm
+          key: ${{ steps.dnf-cache.outputs.cache-primary-key }}
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+
+      - name: Build
+        run: cmake --build build --parallel 4
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: xcb
+        run: |
+          xvfb-run -a -s "-screen 0 1280x1024x24" sh -c '
+            openbox >/dev/null 2>&1 &
+            wm_ready=false
+            for attempt in $(seq 1 100); do
+              if xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | grep -q "window id #"; then
+                wm_ready=true
+                break
+              fi
+              sleep 0.1
+            done
+            if [ "$wm_ready" != true ]; then
+              echo "Openbox did not become ready" >&2
+              exit 1
+            fi
+            ctest --test-dir build --output-on-failure --test-output-size-failed 0 \
+              --output-junit "$GITHUB_WORKSPACE/test-results.xml"
+          '
+
+      - name: Upload test logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fedora-rawhide-test-logs
+          path: |
+            build/Testing/Temporary/LastTest.log
+            test-results.xml
+          if-no-files-found: ignore

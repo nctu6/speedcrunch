@@ -15,6 +15,12 @@
 
 class Settings {
 public:
+    enum SubsequentLaunchAction {
+        ActivateExistingWindow = 0,
+        OpenNewWindow = 1,
+        OpenNewTab = 2
+    };
+
     enum UpDownArrowBehavior {
         UpDownArrowBehaviorNever = 0,
         UpDownArrowBehaviorAlways = 1,
@@ -35,6 +41,37 @@ public:
         CustomKeypadActionBackspace = 1,
         CustomKeypadActionClearExpression = 2,
         CustomKeypadActionEvaluateExpression = 3
+    };
+
+    enum SystemColorMode {
+        SystemColorModeFollowSystem = 0,
+        SystemColorModeLight = 1,
+        SystemColorModeDark = 2
+    };
+
+    enum MenuAppearance {
+        MenuAppearanceSystem = 0,
+        MenuAppearanceSpeedCrunch = 1
+    };
+
+    enum DockAppearance {
+        DockAppearanceSystem = 0,
+        DockAppearanceSpeedCrunch = 1
+    };
+
+    enum StatusBarAppearance {
+        StatusBarAppearanceSystem = 0,
+        StatusBarAppearanceSpeedCrunch = 1
+    };
+
+    enum EditorDisplayStyle {
+        EditorDisplayModern = 0,
+        EditorDisplayClassic = 1
+    };
+
+    enum KeypadAppearance {
+        KeypadAppearanceModern = 0,
+        KeypadAppearanceClassic = 1
     };
 
     enum NumberFormatStyle {
@@ -87,10 +124,12 @@ public:
     static QString getConfigPath();
     static QString getDataPath();
     static QString getCachePath();
+    static bool preparePortableStorage(QString* errorMessage);
     static CustomKeypad defaultCustomKeypad();
 
     void load();
     void save();
+    bool resetToDefaults();
     void saveSessionLayoutJson();
 
     char radixCharacter() const; // 0 or '*': Automatic.
@@ -121,6 +160,7 @@ public:
     bool quinaryResultEnabled;
     bool multipleResultLinesEnabled; // UI toggle: show/use extra result lines.
     int resultPrecision; // Main precision. See HMath documentation.
+    bool removeTrailingZeroes;
     char resultRoundingMode;
     char unitNegativeExponentStyle;
     int secondaryResultPrecision; // Secondary precision.
@@ -140,6 +180,7 @@ public:
     bool autoAns;
     bool autoCalc;
     bool autoCompletion;
+    bool autoCompletionAcceptWithEnter;
     bool autoCompletionBuiltInFunctions;
     bool autoCompletionBuiltInVariables;
     bool autoCompletionLongFormUnits;
@@ -151,13 +192,18 @@ public:
     NumberFormatStyle numberFormatStyle;
     bool hasNumberFormatStyleSetting;
     bool leaveLastExpression;
-    bool showEmptyHistoryHint;
     bool syntaxHighlighting;
+    bool automaticInputAdjustments;
+    bool inputDigitGrouping;
+    bool cursorBlinking;
+    bool escapeClearsEditor;
     bool hoverHighlightResults;
     bool windowAlwaysOnTop;
     bool autoResultToClipboard;
     bool simplifyResultExpressions;
     bool windowPositionSave;
+    bool openPrivateTabOnStartup;
+    SubsequentLaunchAction subsequentLaunchAction;
     QString startupUserDefinitions;
 
     bool constantsDockVisible;
@@ -184,8 +230,15 @@ public:
     QString userUnitsDockSearchText;
     QString variablesDockSearchText;
     QString formulaBookActivePage;
+    QString dockColumnOrdersJson;
 
     QString colorScheme;
+    SystemColorMode systemColorMode;
+    MenuAppearance menuAppearance;
+    DockAppearance dockAppearance;
+    StatusBarAppearance statusBarAppearance;
+    EditorDisplayStyle editorDisplayStyle;
+    KeypadAppearance keypadAppearance;
     QString customColorSchemeJson;
     QString displayFont;
     QString sessionLayoutJson;

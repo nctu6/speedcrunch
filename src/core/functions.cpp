@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 
+#include "core/startupdiagnostics.h"
+
 #include "core/functions.h"
 
 #include "core/mathdsl.h"
@@ -581,6 +583,12 @@ Quantity function_cbrt(Function* f, const Function::ArgumentList& args)
 {
     ENSURE_ARGUMENT_COUNT(1);
     return DMath::cbrt(args[0]);
+}
+
+Quantity function_root(Function* f, const Function::ArgumentList& args)
+{
+    ENSURE_ARGUMENT_COUNT(2);
+    return DMath::root(args[0], args[1]);
 }
 
 Quantity function_exp(Function* f, const Function::ArgumentList& args)
@@ -2000,6 +2008,7 @@ void FunctionRepo::createFunctions()
     FUNCTION_INSERT(FunctionDomain::Arithmetic, round);
     FUNCTION_INSERT(FunctionDomain::Arithmetic, roundeven);
     FUNCTION_INSERT(FunctionDomain::Arithmetic, sgn);
+    FUNCTION_INSERT(FunctionDomain::Arithmetic, root);
     FUNCTION_INSERT(FunctionDomain::Arithmetic, sqrt);
     FUNCTION_INSERT(FunctionDomain::Arithmetic, trunc);
 
@@ -2180,6 +2189,7 @@ FunctionRepo* FunctionRepo::instance()
 
 FunctionRepo::FunctionRepo()
 {
+    StartupDiagnostics::Scope timing("Initialize built-in functions");
     createFunctions();
     setNonTranslatableFunctionUsages();
     retranslateText();
@@ -2191,6 +2201,7 @@ void FunctionRepo::insert(Function* function)
         return;
     function->setDomain(domainToDisplay(function->domainType()));
     m_functions.insert(function->identifier().toUpper(), function);
+    m_identifiers.clear();
 }
 
 Function* FunctionRepo::find(const QString& identifier) const
@@ -2228,12 +2239,15 @@ QString FunctionRepo::displayIdentifier(const QString& identifier) const
 
 QStringList FunctionRepo::getIdentifiers() const
 {
-    QStringList result = m_functions.keys();
-    std::transform(result.begin(), result.end(), result.begin(), [this](const QString& s) {
-        return displayIdentifier(s);
-    });
-    result.removeDuplicates();
-    return result;
+    // Highlighting asks for these names repeatedly. They only change when
+    // a function is inserted, and QStringList shares the cached strings.
+    if (m_identifiers.isEmpty()) {
+        m_identifiers = m_functions.keys();
+        std::transform(m_identifiers.begin(), m_identifiers.end(), m_identifiers.begin(),
+                       [this](const QString& s) { return displayIdentifier(s); });
+        m_identifiers.removeDuplicates();
+    }
+    return m_identifiers;
 }
 
 const QStringList& FunctionRepo::domains() const
@@ -2362,6 +2376,7 @@ void FunctionRepo::setNonTranslatableFunctionUsages()
     FUNCTION_USAGE(real, "x");
     FUNCTION_USAGE(rat, "x");
     FUNCTION_USAGE(rectform, "x");
+    FUNCTION_USAGE(root, "n; x");
     FUNCTION_USAGE(sci, "x");
     FUNCTION_USAGE(sec, "x)");
     FUNCTION_USAGE(sgn, "x");
@@ -2545,6 +2560,7 @@ void FunctionRepo::setFunctionNames()
     FUNCTION_NAME(rectform, tr("Convert to Rectangular Complex Form"));
     FUNCTION_NAME(round, tr("Round Half Away from Zero"));
     FUNCTION_NAME(roundeven, tr("Round Half Even"));
+    FUNCTION_NAME(root, tr("Nth Root"));
     FUNCTION_NAME(sci, tr("Convert to Scientific Notation"));
     FUNCTION_NAME(sec, tr("Secant"));
     FUNCTION_NAME(shl, tr("Arithmetic Shift Left"));
